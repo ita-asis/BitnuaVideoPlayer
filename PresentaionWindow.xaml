@@ -1,0 +1,76 @@
+﻿<Window x:Class="BitnuaVideoPlayer.PresentaionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Vlc="clr-namespace:Vlc.DotNet.Wpf;assembly=Vlc.DotNet.Wpf"
+        xmlns:wpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
+        xmlns:my="clr-namespace:BitnuaVideoPlayer"
+        Title="MainWindow"
+        Height="{my:SettingBinding  prWindow.Height}"
+        Width="{my:SettingBinding   prWindow.Width}"
+        Left="{my:SettingBinding    prWindow.Left}"
+        Top="{my:SettingBinding     prWindow.Top}">
+    <Window.Resources>
+        <my:GridLengthConverter x:Key="gridLengthConverter" />
+        <my:ColorToSolidColorBrushValueConverter x:Key="colorCnv"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{Binding VideoCtrlHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
+            <RowDefinition Height="5" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="{Binding VideoCtrlWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" >
+                <Label HorizontalAlignment="Stretch" 
+                       VerticalAlignment="Stretch"
+                       HorizontalContentAlignment="Center"
+                       VerticalContentAlignment="Center"
+                       
+                       Background ="{Binding LeftPicTitle.BackColor, Converter={StaticResource colorCnv}}"
+                       Foreground ="{Binding LeftPicTitle.ForeColor, Converter={StaticResource colorCnv}}"
+                       Content    ="{Binding LeftPicTitle.Text}" 
+                       FontSize   ="{Binding LeftPicTitle.FontSize}" 
+                       FontFamily ="{Binding LeftPicTitle.FontFamily}" 
+                       />
+                <Image x:Name="m_LeftPic"
+                       Source="{Binding LeftPicSource}"
+                       StretchDirection="Both"
+                       Stretch="Fill"
+                       />
+            </StackPanel>
+
+            <GridSplitter Grid.Column="1"
+                          Width="5"
+                          HorizontalAlignment="Stretch" />
+            <Vlc:VlcControl x:Name="VlcControl"
+                            Grid.Column="2" />
+        </Grid>
+
+
+        <GridSplitter Grid.Row="1"
+                      Height="5"
+                      HorizontalAlignment="Stretch" />
+        <Grid Grid.Row="2"
+              x:Name="statusGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="text"  />
+            <wpf:ChromiumWebBrowser Grid.Row="2"
+                                    x:Name="browser" 
+                                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                    IsEnabled="False"
+                                    Height="60px"/>
+
+            
+        </Grid>
+
+    </Grid>
+</Window>
