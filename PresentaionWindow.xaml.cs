@@ -103,13 +103,14 @@ namespace BitnuaVideoPlayer
         {
             var player = VlcControl.MediaPlayer;
             player.VlcLibDirectoryNeeded += OnVlcControlNeedsLibDirectory;
+            player.VlcMediaplayerOptions = new[] { "-I rc", "--rc-quiet" }; //"-I dummy","--dummy-quiet"
             player.EndInit();
-
+            
             // This can also be called before EndInit
-            player.Log += (sender, args) =>
-            {
-                System.Diagnostics.Debug.WriteLine(string.Format("libVlc : {0} {1} @ {2}", args.Level, args.Message, args.Module));
-            };
+            //player.Log += (sender, args) =>
+            //{
+            //    System.Diagnostics.Debug.WriteLine(string.Format("libVlc : {0} {1} @ {2}", args.Level, args.Message, args.Module));
+            //};
 
             VlcControl.MouseDown += Window_MouseDown;
             player.Audio.IsMute = true;

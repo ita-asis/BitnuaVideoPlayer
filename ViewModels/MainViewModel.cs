@@ -53,6 +53,31 @@ namespace BitnuaVideoPlayer
             set { m_Banner = value; OnPropertyChanged(() => Banner); }
         }
 
+        private Song m_Song;
+        [JsonIgnore]
+        public Song Song
+        {
+            get { return m_Song; }
+            set { m_Song = value; OnPropertyChanged(() => Song); }
+        }
+
+        private double m_SongTitleFontSize;
+
+        public double SongTitleFontSize
+        {
+            get { return m_SongTitleFontSize; }
+            set { m_SongTitleFontSize = value; OnPropertyChanged(() => SongTitleFontSize); }
+        }
+
+        private double m_Song2ndFontSize;
+
+        public double Song2ndFontSize
+        {
+            get { return m_Song2ndFontSize; }
+            set { m_Song2ndFontSize = value; OnPropertyChanged(() => Song2ndFontSize); }
+        }
+
+
         private ePicMode m_SelectedPicMode;
 
         public ePicMode SelectedPicMode
@@ -163,6 +188,8 @@ namespace BitnuaVideoPlayer
             get { return m_LeftPicSource; }
             set { m_LeftPicSource = value; OnPropertyChanged(() => LeftPicSource); }
         }
+
+        public string WatchDir { get; set; } = @"C:\AMPS\vmmplay";
     }
 
     public class CheckBoxItem : ViewModelBase
@@ -260,6 +287,16 @@ namespace BitnuaVideoPlayer.ViewModels
         public double FontSize => Font.Size;
         [JsonIgnore]
         public System.Windows.Media.FontFamily FontFamily => new System.Windows.Media.FontFamily(Font.Name);
+    }
+
+    public class Song
+    {
+        public string Title { get; set; }
+        public string Performer { get; set; }
+        public string Creator { get; set; }
+        public string Composer { get; set; }
+        public string Writer { get; set; }
+        public int? Year { get; set; }
     }
 
     public enum ePicMode

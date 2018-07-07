@@ -12,6 +12,7 @@
     <Window.Resources>
         <my:GridLengthConverter x:Key="gridLengthConverter" />
         <my:ColorToSolidColorBrushValueConverter x:Key="colorCnv"/>
+        <my:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -62,7 +63,56 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="text"  />
+            <Grid FlowDirection="RightToLeft">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="9*"/>
+                </Grid.ColumnDefinitions>
+                <Image x:Name="m_ArtistPic"
+                       Grid.RowSpan="2"
+                       Source="{Binding ArtistPicSource}"
+                       StretchDirection="Both"
+                       Stretch="Fill"
+                       />
+
+                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                    <TextBlock Text="{Binding Song.Title}" FontSize="{Binding SongTitleFontSize}"
+                               VerticalAlignment="Bottom"/>
+                    <TextBlock FontSize="{Binding Song2ndFontSize}" Margin="4,0" VerticalAlignment="Bottom"
+                               Visibility="{Binding Song.Year, Converter={StaticResource NullToVisibilityConverter}}">
+                        <Run>(</Run>
+                        <Run Text="{Binding Song.Year}"/>
+                        <Run>)</Run>
+                    </TextBlock>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+                    <TextBlock Text="יוצר" FontSize="{Binding Song2ndFontSize}"
+                               Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
+                    <TextBlock Text="{Binding Song.Creator}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="4,0,25,0"
+                               Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                    <TextBlock Text="מבצע" FontSize="{Binding Song2ndFontSize}"
+                               Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
+                    <TextBlock Text="{Binding Song.Performer}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="4,0,25,0"
+                               Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                    <TextBlock Text="לחן" FontSize="{Binding Song2ndFontSize}"
+                               Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
+                    <TextBlock Text="{Binding Song.Composer}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="4,0,25,0"
+                               Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                    <TextBlock Text="משורר" FontSize="{Binding Song2ndFontSize}" 
+                               Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
+                    <TextBlock Text="{Binding Song.Writer}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="4,0,25,0"
+                               Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                </StackPanel>
+            </Grid>
             <wpf:ChromiumWebBrowser Grid.Row="2"
                                     x:Name="browser" 
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
