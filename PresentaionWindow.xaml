@@ -13,6 +13,10 @@
         <my:GridLengthConverter x:Key="gridLengthConverter" />
         <my:ColorToSolidColorBrushValueConverter x:Key="colorCnv"/>
         <my:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <my:EnumBooleanConverter x:Key="enumToBool"/>
+        <my:StringToEnumConverter x:Key="stringToEnum"/>
+        
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -26,7 +30,10 @@
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="{Binding VideoCtrlWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" >
+            <!--LeftPanel - Pics-->
+            <StackPanel Grid.Column="0" 
+                        Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Pics}"
+                        Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
                 <Label HorizontalAlignment="Stretch" 
                        VerticalAlignment="Stretch"
                        HorizontalContentAlignment="Center"
@@ -41,8 +48,31 @@
                 <Image x:Name="m_LeftPic"
                        Source="{Binding LeftPicSource}"
                        StretchDirection="Both"
-                       Stretch="Fill"
+                       Stretch="{Binding LeftPicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}"
                        />
+            </StackPanel>
+
+            <!--LeftPanel - Lyrics-->
+            <Grid Grid.Column="0" 
+                        Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Lyrics}"
+                        Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
+                <Viewbox Stretch="Fill" StretchDirection="Both">
+                    
+                <TextBlock TextWrapping="Wrap" 
+                           TextAlignment="Right"
+                           Padding="4"
+                           Text="{Binding Lyrics.Text}" 
+                           FontSize="{Binding Lyrics.FontSize}" 
+                           FontFamily="{Binding Lyrics.FontFamily}"
+                           Background="{Binding Lyrics.BackColor,Converter={StaticResource colorCnv}}"
+                           Foreground="{Binding Lyrics.ForeColor,Converter={StaticResource colorCnv}}"/>
+                </Viewbox>
+            </Grid>
+
+            <!--LeftPanel - Flyer-->
+            <StackPanel Grid.Column="0" 
+                        Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Flyer}"
+                        Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
             </StackPanel>
 
             <GridSplitter Grid.Column="1"
@@ -93,22 +123,22 @@
                 <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
                     <TextBlock Text="יוצר" FontSize="{Binding Song2ndFontSize}"
                                Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
-                    <TextBlock Text="{Binding Song.Creator}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="4,0,25,0"
+                    <TextBlock Text="{Binding Song.Creator}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="10,0,25,0"
                                Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
 
                     <TextBlock Text="מבצע" FontSize="{Binding Song2ndFontSize}"
                                Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                    <TextBlock Text="{Binding Song.Performer}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="4,0,25,0"
+                    <TextBlock Text="{Binding Song.Performer}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="10,0,25,0"
                                Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
 
                     <TextBlock Text="לחן" FontSize="{Binding Song2ndFontSize}"
                                Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                    <TextBlock Text="{Binding Song.Composer}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="4,0,25,0"
+                    <TextBlock Text="{Binding Song.Composer}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="10,0,25,0"
                                Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
 
                     <TextBlock Text="משורר" FontSize="{Binding Song2ndFontSize}" 
                                Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                    <TextBlock Text="{Binding Song.Writer}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="4,0,25,0"
+                    <TextBlock Text="{Binding Song.Writer}" FontSize="{Binding Song2ndFontSize}" FontWeight="Bold" Margin="10,0,25,0"
                                Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
 
                 </StackPanel>

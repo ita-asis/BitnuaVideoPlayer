@@ -172,6 +172,15 @@ namespace BitnuaVideoPlayer
             set { m_ClipsNums = value; OnPropertyChanged(() => ClipsNums); }
         }
 
+        private string m_LeftPicStretch;
+
+        public string LeftPicStretch
+        {
+            get { return m_LeftPicStretch; }
+            set { m_LeftPicStretch = value; OnPropertyChanged(() => LeftPicStretch); }
+        }
+
+
         private TextVM m_LeftPicTitle;
 
         [JsonIgnore]

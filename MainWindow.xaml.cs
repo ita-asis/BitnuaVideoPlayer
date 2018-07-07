@@ -37,7 +37,7 @@ namespace BitnuaVideoPlayer
 
             m_FileSysWatcher = new FileSystemWatcher()
             {
-                Path = @"\\192.168.1.120\vmmplay",// VM.WatchDir,
+                Path = VM.WatchDir,
                 NotifyFilter = NotifyFilters.LastWrite,
                 Filter = "*.*",
                 EnableRaisingEvents = true

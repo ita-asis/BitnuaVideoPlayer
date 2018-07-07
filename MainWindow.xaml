@@ -17,6 +17,7 @@
             <Setter Property="Height" Value="25"/>
             <Setter Property="Background" Value="{Binding Converter={StaticResource colorCnv}}"/>
         </Style>
+        
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -100,6 +101,12 @@
                                     Margin="4,0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top"/>
+                            <ComboBox Text="{Binding LeftPicStretch}">
+                                <ComboBoxItem>None</ComboBoxItem>
+                                <ComboBoxItem>Fill</ComboBoxItem>
+                                <ComboBoxItem>Uniform</ComboBoxItem>
+                                <ComboBoxItem>UniformToFill</ComboBoxItem>
+                            </ComboBox>
                         </StackPanel>
                     </Grid>
                 </GroupBox>

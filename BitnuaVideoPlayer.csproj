@@ -99,6 +99,7 @@
     <Compile Include="SettingBindingExtension.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\Converters\EnumBooleanConverter.cs" />
+    <Compile Include="UI\Converters\StringToEnumConverter.cs" />
     <Compile Include="UI\Converters\GridLengthConverter.cs" />
     <Compile Include="UI\Converters\NullVisibilityConverter.cs" />
     <Compile Include="ViewModelBase.cs" />
