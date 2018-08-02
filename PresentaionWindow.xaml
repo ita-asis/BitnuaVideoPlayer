@@ -1,10 +1,13 @@
 ﻿<Window x:Class="BitnuaVideoPlayer.PresentaionWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:Vlc="clr-namespace:Vlc.DotNet.Wpf;assembly=Vlc.DotNet.Wpf"
         xmlns:wpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         xmlns:my="clr-namespace:BitnuaVideoPlayer"
+        xmlns:props="clr-namespace:BitnuaVideoPlayer.UI.AttachedProps"
         Title="MainWindow"
+        Closed="Window_Closed"
         Height="{my:SettingBinding  prWindow.Height}"
         Width="{my:SettingBinding   prWindow.Width}"
         Left="{my:SettingBinding    prWindow.Left}"
@@ -16,24 +19,57 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <my:EnumBooleanConverter x:Key="enumToBool"/>
         <my:StringToEnumConverter x:Key="stringToEnum"/>
-        
+        <DataTemplate DataType="{x:Type my:PictureItem}">
+            <Viewbox Margin="4"
+                             StretchDirection="Both" 
+                             Stretch="Fill">
+                <!--Stretch="{Binding Stretch, Mode=OneWay, Converter={StaticResource stringToEnum}}">-->
+                <Image Source="{Binding Path}" />
+            </Viewbox>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type my:VideoItem}">
+            <Vlc:VlcControl Margin="4" >
+                <i:Interaction.Behaviors>
+                    <props:VideoCtrlBehavior Source="{Binding VideoSource}"/>
+                </i:Interaction.Behaviors>
+            </Vlc:VlcControl>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type my:YoutubeVideoItem}">
+            <props:YoutubeWebBrowser IsEnabled="True" Margin="4">
+                <i:Interaction.Behaviors>
+                    <props:YouTubeCtrlBehaviour YouTubeId="{Binding Path}"/>
+                </i:Interaction.Behaviors>
+            </props:YoutubeWebBrowser>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="{Binding VideoCtrlHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
-            <RowDefinition Height="5" />
             <RowDefinition />
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid>
+        
+        
+        <Grid x:Name="defualtLayout"
+              Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"
+              Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="{Binding VideoCtrlWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
+                <ColumnDefinition Width="{Binding DefaultLayout_VideoCtrlWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
+            </Grid.RowDefinitions>
             <!--LeftPanel - Pics-->
-            <StackPanel Grid.Column="0" 
+            <Grid Grid.Column="0" 
                         Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Pics}"
                         Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
                 <Label HorizontalAlignment="Stretch" 
                        VerticalAlignment="Stretch"
                        HorizontalContentAlignment="Center"
@@ -45,12 +81,11 @@
                        FontSize   ="{Binding LeftPicTitle.FontSize}" 
                        FontFamily ="{Binding LeftPicTitle.FontFamily}" 
                        />
-                <Image x:Name="m_LeftPic"
-                       Source="{Binding LeftPicSource}"
-                       StretchDirection="Both"
-                       Stretch="{Binding LeftPicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}"
-                       />
-            </StackPanel>
+                <Viewbox Grid.Row="1" StretchDirection="Both" Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}">
+                    <Image Source="{Binding LeftPicSource}"
+                           />
+                </Viewbox>
+            </Grid>
 
             <!--LeftPanel - Lyrics-->
             <Grid Grid.Column="0" 
@@ -61,7 +96,7 @@
                 <TextBlock TextWrapping="Wrap" 
                            TextAlignment="Right"
                            Padding="4"
-                           Text="{Binding Lyrics.Text}" 
+                           Text="{Binding Song.Lyrics}" 
                            FontSize="{Binding Lyrics.FontSize}" 
                            FontFamily="{Binding Lyrics.FontFamily}"
                            Background="{Binding Lyrics.BackColor,Converter={StaticResource colorCnv}}"
@@ -70,48 +105,55 @@
             </Grid>
 
             <!--LeftPanel - Flyer-->
-            <StackPanel Grid.Column="0" 
+            <Grid Grid.Column="0" 
                         Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Flyer}"
                         Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
-            </StackPanel>
+
+                <Image x:Name="m_FlyerPic"
+                       Source="{Binding LeftPicSource}"
+                       StretchDirection="Both"
+                       Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}"
+                       />
+            </Grid>
 
             <GridSplitter Grid.Column="1"
                           Width="5"
                           HorizontalAlignment="Stretch" />
-            <Vlc:VlcControl x:Name="VlcControl"
-                            Grid.Column="2" />
-        </Grid>
+            <ContentControl Content="{Binding DefaultLayout_VideoItem}" Grid.Column="2" />
 
+            <GridSplitter Grid.Row="1"
+                          Grid.ColumnSpan="3"
+                          Height="5"
+                          HorizontalAlignment="Stretch" />
 
-        <GridSplitter Grid.Row="1"
-                      Height="5"
-                      HorizontalAlignment="Stretch" />
-        <Grid Grid.Row="2"
-              x:Name="statusGrid">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <Grid FlowDirection="RightToLeft">
+            <!--Song Info-->
+            <Grid Grid.Row="2"
+                  Grid.ColumnSpan="3"
+                  FlowDirection="RightToLeft">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="9*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Image x:Name="m_ArtistPic"
-                       Grid.RowSpan="2"
+                       Grid.RowSpan="3"
+                       Margin="4"
                        Source="{Binding ArtistPicSource}"
                        StretchDirection="Both"
-                       Stretch="Fill"
+                       Stretch="UniformToFill"
                        />
 
-                <StackPanel Orientation="Horizontal" Grid.Column="1">
-                    <TextBlock Text="{Binding Song.Title}" FontSize="{Binding SongTitleFontSize}"
-                               VerticalAlignment="Bottom"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
+                    <TextBlock FontSize="{Binding SongTitleFontSize}"
+                               VerticalAlignment="Bottom">
+                        <Run Text="{Binding Song.HebTitle}"/>
+                        <Run>   </Run>
+                        <Run Text="{Binding Song.Title}"/>
+                    </TextBlock>
                     <TextBlock FontSize="{Binding Song2ndFontSize}" Margin="4,0" VerticalAlignment="Bottom"
                                Visibility="{Binding Song.Year, Converter={StaticResource NullToVisibilityConverter}}">
                         <Run>(</Run>
@@ -143,6 +185,106 @@
 
                 </StackPanel>
             </Grid>
+
+        </Grid>
+        <Grid x:Name="presentationLayout"
+              Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Presentation}"
+              Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
+            <Grid.Resources>
+                <Style TargetType="ItemsControl">
+                    <Setter Property="ItemsPanel">
+                        <Setter.Value>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="{Binding (props:UGrid.Rows), RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                             Columns="{Binding (props:UGrid.Cols), RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            />
+                            </ItemsPanelTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+
+               
+            </Grid.Resources>
+
+            <ItemsControl ItemsSource="{Binding PresentationVM.PresentationItems}"
+                          props:UGrid.Rows="{Binding PresentationVM.Rows}"
+                          props:UGrid.Cols="{Binding PresentationVM.Cols}">
+            </ItemsControl>
+
+        </Grid>
+        <!--<Grid x:Name="twoVideoLayout"
+              Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=TwoVideos}"
+              Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding TwoVidoesLayout_LeftWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Vlc:VlcControl x:Name="twoVid_LeftVlcControl"
+                            Margin="4"
+                             />
+            <GridSplitter Grid.Column="1"
+                          Width="5"
+                          HorizontalAlignment="Stretch" />
+            <Vlc:VlcControl x:Name="twoVid_RightVlcControl"
+                            Margin="4"
+                            Grid.Column="2" />
+
+
+            <wpf:ChromiumWebBrowser Grid.Column="2"
+                                    x:Name="twoVId_RightBrowser" 
+                                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                    IsEnabled="False"
+                                    />
+
+        </Grid>
+
+        <Grid x:Name="threePicLayout"
+              Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=ThreePics}"
+              Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding ThreePicsLayout_LeftWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="{Binding ThreePicsLayout_MidWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Viewbox Grid.Column="0"
+                     Margin="4"
+                     StretchDirection="Both" 
+                     Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}">
+                <Image Source="{Binding ThreePicsLayout_LeftPicSource}" />
+                </Viewbox>
+            <GridSplitter Grid.Column="1"
+                          Width="5"
+                          HorizontalAlignment="Stretch" />
+            <Viewbox Grid.Column="2"
+                     StretchDirection="Both" 
+                     Margin="4"
+                     Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}">
+                <Image Source="{Binding ThreePicsLayout_MidPicSource}" />
+            </Viewbox>
+            <GridSplitter Grid.Column="3"
+                          Width="5"
+                          HorizontalAlignment="Stretch" />
+            <Viewbox Grid.Column="4"
+                     Margin="4"
+                     StretchDirection="Both" 
+                     Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}">
+                <Image Source="{Binding ThreePicsLayout_RightPicSource}" />
+            </Viewbox>
+        </Grid>-->
+
+
+        <Grid Grid.Row="1"
+              x:Name="statusGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+
             <wpf:ChromiumWebBrowser Grid.Row="2"
                                     x:Name="browser" 
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"

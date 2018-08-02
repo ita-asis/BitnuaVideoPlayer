@@ -1,6 +1,7 @@
 ﻿using CefSharp;
 using CefSharp.Wpf;
 using ColorFont;
+using MongoDB.Driver;
 using System;
 using System.Drawing;
 using System.IO;
@@ -11,12 +12,23 @@ using System.Windows.Input;
 
 namespace BitnuaVideoPlayer
 {
+    internal static class Ex
+    {
+        public static void LoadHtml(this ChromiumWebBrowser browser, string html)
+        {
+            browser.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                ((IWebBrowser)browser).LoadHtml(html);
+            }), System.Windows.Threading.DispatcherPriority.DataBind);
+        }
+    }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class PresentaionWindow : Window
     {
         private MainViewModel VM;
+
         public PresentaionWindow()
         {
             InitializeComponent();
@@ -24,6 +36,15 @@ namespace BitnuaVideoPlayer
             DataContextChanged += PresentaionWindow_DataContextChanged;
             Loaded += (s, e) => { InitAll(); };
             MouseDown += Window_MouseDown;
+            MouseDoubleClick += PresentaionWindow_MouseDoubleClick;
+        }
+
+        private void PresentaionWindow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (this.WindowState != WindowState.Maximized)
+                this.WindowState = WindowState.Maximized;
+            else
+                this.WindowState = WindowState.Normal;
         }
 
         private void PresentaionWindow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -42,18 +63,17 @@ namespace BitnuaVideoPlayer
                 this.DragMove();
         }
 
-        private bool m_IsLeftPicRegistered;
         private void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            // register for prop change of non wpf binded controls
             if (sender == VM.Banner)
             {
                 InitBanner();
             }
         }
 
-        void InitAll()
+        private void InitAll()
         {
-            InitPlayer();
             InitBanner();
             InitLeftPic();
         }
@@ -63,7 +83,7 @@ namespace BitnuaVideoPlayer
             var html =
                 $@"<html><head>
                 <meta charset=utf-8>
-                <style>
+                    <style>
                     body {{
                         overflow: -moz-scrollbars-vertical;
                         overflow-x: hidden;
@@ -93,30 +113,10 @@ namespace BitnuaVideoPlayer
                         </div>
                 </body></html>";
 
-            browser.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                browser.LoadHtml(html);
-            }), System.Windows.Threading.DispatcherPriority.DataBind);
+            browser.LoadHtml(html);
         }
 
-        private void InitPlayer()
-        {
-            var player = VlcControl.MediaPlayer;
-            player.VlcLibDirectoryNeeded += OnVlcControlNeedsLibDirectory;
-            player.VlcMediaplayerOptions = new[] { "-I rc", "--rc-quiet" }; //"-I dummy","--dummy-quiet"
-            player.EndInit();
-            
-            // This can also be called before EndInit
-            //player.Log += (sender, args) =>
-            //{
-            //    System.Diagnostics.Debug.WriteLine(string.Format("libVlc : {0} {1} @ {2}", args.Level, args.Message, args.Module));
-            //};
-
-            VlcControl.MouseDown += Window_MouseDown;
-            player.Audio.IsMute = true;
-            player.Play(new Uri(@"D:\Videos\Movies\Baby Driver (2017) [YTS.AG]\Baby.Driver.2017.720p.BluRay.x264-[YTS.AG].mp4"));
-            player.EndReached += (s, e) => { player.Play(new Uri(@"D:\Videos\Overwolf\Desktop 02-28-2017 15-20-36-931.mp4")); };
-        }
+       
 
         private void InitLeftPic()
         {
@@ -143,16 +143,9 @@ namespace BitnuaVideoPlayer
             }
         }
 
-        private void OnVlcControlNeedsLibDirectory(object sender, Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs e)
+        private void Window_Closed(object sender, EventArgs e)
         {
-            var currentAssembly = Assembly.GetEntryAssembly();
-            var currentDirectory = new FileInfo(currentAssembly.Location).DirectoryName;
-            if (currentDirectory == null)
-                return;
-            if (IntPtr.Size == 4)
-                e.VlcLibDirectory = new DirectoryInfo(Path.Combine(currentDirectory, @"libvlc\win-x86\"));
-            else
-                e.VlcLibDirectory = new DirectoryInfo(Path.Combine(currentDirectory, @"libvlc\win-x64\"));
+            App.Current.Shutdown();
         }
     }
 }

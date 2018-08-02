@@ -24,98 +24,123 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <GroupBox Header="Left side" Margin="4,0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <WrapPanel >
-                    <RadioButton GroupName="leftPicRbs" x:Name="rb_lyrics"  Margin="4" Content="Lyrics"  IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Lyrics}"/>
-                    <RadioButton GroupName="leftPicRbs" x:Name="rb_flyer"   Margin="4" Content="Flyer"   IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Flyer}"/>
-                    <RadioButton GroupName="leftPicRbs" x:Name="rb_picture" Margin="4" Content="Picture" IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Pics}"/>
-                </WrapPanel>
 
-                <!--Lyics fonts-->
-                <GroupBox Grid.Row="1" Header="Lyrics" Visibility="{Binding ElementName=rb_lyrics, Path=IsChecked, Converter={StaticResource BoolToVis}}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Orientation="Horizontal">
-                            <Button Click="btnLyricsFontPicker" 
+        <WrapPanel >
+            <RadioButton GroupName="layoutGrp" Margin="4" Content="Default"  IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"/>
+            <RadioButton GroupName="layoutGrp" Margin="4" Content="Presentation"   IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Presentation}"/>
+            <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Two videos"   IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=TwoVideos}"/>-->
+            <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Three Pictures" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=ThreePics}"/>-->
+        </WrapPanel>
+
+        <!--Default Layout-->
+        <Grid Grid.Row="1"
+              Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"
+              Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <WrapPanel Orientation="Horizontal">
+                <Label Content="Show Client" Padding="4"/>
+                <ComboBox SelectedItem="{Binding CurrentClient}"
+                          ItemsSource="{Binding ActiveClients}"
+                          SelectionChanged="CurrentClientChanged"
+                          Padding="4"/>
+            </WrapPanel>
+            <GroupBox Header="Left side" 
+                      Grid.Row="1"
+                      Margin="4,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <WrapPanel >
+                        <RadioButton GroupName="leftPicRbs" x:Name="rb_lyrics"  Margin="4" Content="Lyrics"  IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Lyrics}"/>
+                        <RadioButton GroupName="leftPicRbs" x:Name="rb_flyer"   Margin="4" Content="Flyer"   IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Flyer}"/>
+                        <RadioButton GroupName="leftPicRbs" x:Name="rb_picture" Margin="4" Content="Picture" IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Pics}"/>
+                    </WrapPanel>
+
+                    <!--Lyics fonts-->
+                    <GroupBox Grid.Row="1" Header="Lyrics" Visibility="{Binding ElementName=rb_lyrics, Path=IsChecked, Converter={StaticResource BoolToVis}}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Click="btnLyricsFontPicker" 
                         Content="Font"
                         Margin="4,0,4,1"
                         Height="25"
                         Padding="4,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Bottom"/>
-                            <Button Click="btnLyricsForeColorPicker" 
+                                <Button Click="btnLyricsForeColorPicker" 
                         Style="{StaticResource colorBtn}"
                         DataContext="{Binding Lyrics.ForeColor}"
                         Margin="4,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"/>
-                            <Button Click="btnLyricsBackColorPicker" 
+                                <Button Click="btnLyricsBackColorPicker" 
                         Style="{StaticResource colorBtn}"
                         DataContext="{Binding Lyrics.BackColor}"
                         Margin="4,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"/>
-                        </StackPanel>
+                            </StackPanel>
 
-                    </Grid>
-                </GroupBox>
-                <!--Pic Header fonts-->
-                <GroupBox Grid.Row="1" Header="Pic Header" Visibility="{Binding ElementName=rb_picture, Path=IsChecked, Converter={StaticResource BoolToVis}}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <WrapPanel Visibility="{Binding ElementName=rb_picture, Path=IsChecked, Converter={StaticResource BoolToVis}}">
-                            <CheckBox Margin="4" Content="Creator"   IsChecked="{Binding Pic_ShowCreator}" />
-                            <CheckBox Margin="4" Content="Performer" IsChecked="{Binding Pic_ShowPerformer}" />
-                            <CheckBox Margin="4" Content="Composer"  IsChecked="{Binding Pic_ShowComposer}" />
-                            <CheckBox Margin="4" Content="Writer"    IsChecked="{Binding Pic_ShowWriter}" />
-                        </WrapPanel>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1">
-                            <Button Click="btnLeftPicHeaderFontPicker" 
+                        </Grid>
+                    </GroupBox>
+                    <!--Pic Header fonts-->
+                    <GroupBox Grid.Row="1" Header="Pic Header" Visibility="{Binding ElementName=rb_picture, Path=IsChecked, Converter={StaticResource BoolToVis}}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <WrapPanel Visibility="{Binding ElementName=rb_picture, Path=IsChecked, Converter={StaticResource BoolToVis}}">
+                                <CheckBox Margin="4" Content="Creator"   IsChecked="{Binding Pic_ShowCreator}" />
+                                <CheckBox Margin="4" Content="Performer" IsChecked="{Binding Pic_ShowPerformer}" />
+                                <CheckBox Margin="4" Content="Composer"  IsChecked="{Binding Pic_ShowComposer}" />
+                                <CheckBox Margin="4" Content="Writer"    IsChecked="{Binding Pic_ShowWriter}" />
+                            </WrapPanel>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                <Button Click="btnLeftPicHeaderFontPicker" 
                                     Content="Font"
                                     Margin="4,0,4,1"
                                     Height="25"
                                     Padding="4,0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Bottom"/>
-                            <Button Click="btnLeftPicHeaderForeColorPicker" 
+                                <Button Click="btnLeftPicHeaderForeColorPicker" 
                                     Style="{StaticResource colorBtn}"
                                     DataContext="{Binding LeftPicTitle.ForeColor}"
                                     Margin="4,0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top"/>
-                            <Button Click="btnLeftPicHeaderBackColorPicker" 
+                                <Button Click="btnLeftPicHeaderBackColorPicker" 
                                     Style="{StaticResource colorBtn}"
                                     DataContext="{Binding LeftPicTitle.BackColor}"
                                     Margin="4,0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top"/>
-                            <ComboBox Text="{Binding LeftPicStretch}">
-                                <ComboBoxItem>None</ComboBoxItem>
-                                <ComboBoxItem>Fill</ComboBoxItem>
-                                <ComboBoxItem>Uniform</ComboBoxItem>
-                                <ComboBoxItem>UniformToFill</ComboBoxItem>
-                            </ComboBox>
-                        </StackPanel>
-                    </Grid>
-                </GroupBox>
-            </Grid>
-
-
-        </GroupBox>
-
-        <GroupBox Header="Main video" Grid.Row="2" Margin="4,0">
+                                <ComboBox Text="{Binding PicStretch}">
+                                    <ComboBoxItem>None</ComboBoxItem>
+                                    <ComboBoxItem>Fill</ComboBoxItem>
+                                    <ComboBoxItem>Uniform</ComboBoxItem>
+                                    <ComboBoxItem>UniformToFill</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Main video" 
+                      Grid.Row="2" 
+                      Margin="4,0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -142,6 +167,29 @@
                 </WrapPanel>
             </Grid>
         </GroupBox>
+        </Grid>
+
+        <!--TwoVideos Layout-->
+        <!--<Grid Grid.Row="1"
+              Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=TwoVideos}"
+              Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+           
+        </Grid>-->
+
+        <!--ThreePics Layout-->
+        <!--<Grid Grid.Row="1"
+              Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=ThreePics}"
+              Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+           
+        </Grid>-->
 
         <!--Banner-->
         <GroupBox Header="Banner" Grid.Row="3" Margin="4,0">
