@@ -10,6 +10,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using BitnuaVideoPlayer.UI.Converters;
 using Newtonsoft.Json.Converters;
+using System.Text.RegularExpressions;
 
 namespace BitnuaVideoPlayer
 {
@@ -63,14 +64,33 @@ namespace BitnuaVideoPlayer
         public string PicPathWriter { get; set; }
         public string PicPathDefault { get; set; }
 
-        private List<ClipCollectionCBItem> m_ClipsNums;
-        public List<ClipCollectionCBItem> ClipsNums
+        private List<ClipCollectionCBItem> m_ClipTypes = new List<ClipCollectionCBItem>()
+        {
+            new ClipCollectionCBItem() { Text = "Song's Clip", Type = eSongClipTypes.SongClips},
+            new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.Dance},
+            new ClipCollectionCBItem() { Text = "Event", Type = eSongClipTypes.Event},
+        };
+
+        [JsonIgnore]
+        public List<ClipCollectionCBItem> ClipTypes
         {
             get
             {
-                return m_ClipsNums;
+                return m_ClipTypes;
             }
-            set { m_ClipsNums = value; OnPropertyChanged(() => ClipsNums); }
+            set { m_ClipTypes = value; OnPropertyChanged(() => ClipTypes); }
+        }
+
+        private List<ClipCollectionCBItem> m_SongYoutubeVideos = new List<ClipCollectionCBItem>()
+        {
+            new ClipCollectionCBItem() { Text = "Clip" },
+            new ClipCollectionCBItem() { Text = "Dance" },
+        };
+
+        public List<ClipCollectionCBItem> SongYoutubeVideos
+        {
+            get { return m_SongYoutubeVideos; }
+            set { m_SongYoutubeVideos = value; OnPropertyChanged(() => SongYoutubeVideos); }
         }
 
         private BannerVM m_Banner;
@@ -191,14 +211,13 @@ namespace BitnuaVideoPlayer
             set { m_DefaultLayout_SongInfoHeight = value; OnPropertyChanged(() => DefaultLayout_SongInfoHeight); }
         }
 
-        private VideoItem m_DefaultLayout_VideoItem;
+        private VideoListItem m_DefaultLayout_VideoItem;
         [JsonIgnore]
-        public VideoItem DefaultLayout_VideoItem
+        public VideoListItem DefaultLayout_VideoItem
         {
-            get { return m_DefaultLayout_VideoItem ?? (m_DefaultLayout_VideoItem = new VideoItem()); }
+            get { return m_DefaultLayout_VideoItem ?? (m_DefaultLayout_VideoItem = new VideoListItem()); }
             set { m_DefaultLayout_VideoItem = value; OnPropertyChanged(() => DefaultLayout_VideoItem); }
         }
-
       
         #endregion
 
@@ -240,10 +259,7 @@ namespace BitnuaVideoPlayer
                     m_SelectedLayout = value;
                     if (value == eLayoutModes.Default)
                     {
-                        if (m_LastLayoutData is VideoItem)
-                        {
-                            DefaultLayout_VideoItem = m_LastLayoutData as VideoItem;
-                        }
+                        DefaultLayout_VideoItem = (VideoListItem)m_LastLayoutData;
                         m_LastLayoutData = PresentationVM.PresentationItems;
                         PresentationVM.PresentationItems = null;
                     }
@@ -403,7 +419,7 @@ namespace BitnuaVideoPlayer
                 new PictureItem() { Path = @"C:\Users\iasis\Pictures\321807-flowers.jpg" },
                 new VideoItem() { VideoSource = new VideoSource(@"\\192.168.1.120\c\AMPS\vmm\VideoClip\זמרים\A-WA\A-WA.mpg") },
                 new VideoItem() { VideoSource = new VideoSource(@"\\192.168.1.120\c\AMPS\vmm\VideoClip\זמרים\אביהו מדינה\אביהו מדינה - שיר השיכור.mpg") },
-                new YoutubeVideoItem() { Path = @"https://www.youtube.com/watch?v=I0BOnxAHztk" },
+                new YoutubeVideoItem(@"https://www.youtube.com/watch?v=I0BOnxAHztk"),
             };
         }
     }
@@ -413,6 +429,14 @@ namespace BitnuaVideoPlayer
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public abstract ePresentationKinds Kind { get; }
+
+
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public double Angle { get; set; }
+        public string Text { get; set; }
     }
 
     public class PictureItem : PresentationItem
@@ -449,36 +473,103 @@ namespace BitnuaVideoPlayer
 
     }
 
+    public class VideoListItem : PresentationItem
+    {
+        public override ePresentationKinds Kind => ePresentationKinds.VideoList;
+
+        private List<VideoSource> m_VideoSources;
+
+        public List<VideoSource> VideoSources
+        {
+            get { return m_VideoSources; }
+            set { m_VideoSources = value; OnPropertyChanged(() => VideoSources); }
+        }
+
+    }
+
+    public class YoutubeVideoSource : VideoSource
+    {
+        [JsonConstructor]
+        public YoutubeVideoSource([JsonProperty("Path")] string videoPath, [JsonProperty("Time")] long? time = default(long?)) 
+            : base(videoPath, time)
+        {
+            m_VideoId = Parse(videoPath);
+        }
+
+        private static string Parse(string videoPath)
+        {
+            if (videoPath == null)
+                return null;
+
+            const int idLen = 11;
+            var prefixes = new[] { "v=", "youtu.be/" };
+            string id = videoPath;
+            int i;
+            foreach (var prefix in prefixes)
+            {
+                if ((i = videoPath.IndexOf(prefix)) > 0)
+                {
+                    id = videoPath.Substring(i + prefix.Length, idLen);
+                    break;
+                }
+            }
+
+            return id;
+        }
+
+        private string m_VideoId;
+
+        [JsonIgnore]
+        public string VideoId
+        {
+            get { return m_VideoId; }
+            set { m_VideoId = value; OnPropertyChanged(() => VideoId); }
+        }
+
+    }
+
     public class YoutubeVideoItem : PresentationItem
     {
         public override ePresentationKinds Kind => ePresentationKinds.YoutubeVideo;
 
-        private string m_Path;
-        public string Path
+        private YoutubeVideoSource m_VideoSource;
+
+        public YoutubeVideoItem()
         {
-            get { return m_Path; }
-            set { m_Path = value; OnPropertyChanged(() => Path); }
         }
 
+        public YoutubeVideoItem(string source)
+        {
+            m_VideoSource = new YoutubeVideoSource(source);
+        }
+
+        public YoutubeVideoSource VideoSource
+        {
+            get { return m_VideoSource; }
+            set { m_VideoSource = value; OnPropertyChanged(() => VideoSource); }
+        }
     }
 
     public enum ePresentationKinds
     {
         Picture,
+        PictureList,
         Video,
+        VideoList,
         YoutubeVideo,
+    }
+
+    public enum eSongClipTypes
+    {
+        SongClips,
+        Event,
+        Dance,
+        YouTubeDance
     }
 
     public class ClipCollectionCBItem : CheckBoxItem
     {
-        private string m_Path;
-
-        public string Path
-        {
-            get { return m_Path; }
-            set { m_Path = value; OnPropertyChanged(() => Path); }
-        }
-
+        public eSongClipTypes Type { get; set; }
     }
 
     public class CheckBoxItem : ViewModelBase
@@ -604,6 +695,8 @@ namespace BitnuaVideoPlayer.ViewModels
         public int? Year { get; set; }
         public string HebTitle { get; set; }
         public string Lyrics { get; set; }
+        public string YouTubeSong { get; set; }
+        public string YouTubeDance { get; set; }
     }
 
     public enum ePicMode
@@ -617,7 +710,8 @@ namespace BitnuaVideoPlayer.ViewModels
     {
         Clip,
         VideoDir1,
-        VideoDir2
+        VideoDir2,
+        Youtube
     }
 
     public enum eLayoutModes

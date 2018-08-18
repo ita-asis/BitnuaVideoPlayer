@@ -1,17 +1,11 @@
 ﻿using BitnuaVideoPlayer.ViewModels;
 using CefSharp;
-using CefSharp.Wpf;
-using ColorFont;
-using Microsoft.WindowsAPICodePack.Shell;
-using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,7 +27,6 @@ namespace BitnuaVideoPlayer
         private FileSystemWatcher m_FileSysWatcher;
         private ClientInfo m_BitnuaClient;
         private IEnumerable<Tuple<string, string>> m_picSources;
-        private IEnumerable<string> m_VideoSources;
         private IEnumerable<string> m_Flyerfiles;
         private CancellationTokenSource m_PicLoopToken;
         private MongoClient m_MongoClient;
@@ -67,6 +60,7 @@ namespace BitnuaVideoPlayer
             VM.PropertyChanged += VM_PropertyChanged;
             await InitMongoDb();
 
+
             m_FileSysWatcher = new FileSystemWatcher()
             {
                 Path = VM.WatchDir,
@@ -80,6 +74,22 @@ namespace BitnuaVideoPlayer
             m_PlayerWindow.WindowStyle = WindowStyle.None;
             m_PlayerWindow.Show();
             m_PlayerWindow.Owner = this;
+
+            await ShowLastSong();
+        }
+
+        private async Task ShowLastSong()
+        {
+            var directory = new DirectoryInfo(VM.WatchDir);
+            var lastFile = (from f in directory.GetFiles("*.xml")
+                            orderby f.LastWriteTimeUtc descending
+                            select f).FirstOrDefault();
+
+            if (lastFile == null || lastFile.LastWriteTimeUtc + TimeSpan.FromMinutes(15) < DateTime.UtcNow)
+                return;
+
+            var song = ReadSongInfo(lastFile.FullName);
+            await UpdateVM(song);
         }
 
         private async void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -136,8 +146,17 @@ namespace BitnuaVideoPlayer
                 song.Writer = field.Value;
             if (fields.TryGetValue(Fields.Year, out field) && int.TryParse(field.Value, out year))
                 song.Year = year;
-            if (fields.TryGetValue(Fields.Lyrics, out field))
+
+            if (fields.TryGetValue(Fields.Lyrics, out field) && !string.IsNullOrWhiteSpace(field.Value))
                 song.Lyrics = field.Value;
+            else if (fields.TryGetValue(Fields.Lyrics2, out field) && !string.IsNullOrWhiteSpace(field.Value))
+                song.Lyrics = field.Value;
+
+            if (fields.TryGetValue(Fields.YouTubeSong, out field) && !string.IsNullOrWhiteSpace(field.Value))
+                song.YouTubeSong = field.Value;
+            if (fields.TryGetValue(Fields.YouTubeDance, out field) && !string.IsNullOrWhiteSpace(field.Value))
+                song.YouTubeDance = field.Value;
+
             return song;
         }
 
@@ -152,10 +171,11 @@ namespace BitnuaVideoPlayer
             try
             {
                 var song = m_Song = ReadSongInfo(filePath);
-                await DB_Plays.InsertOneAsync(new PlayEntry() { Song = song, Client = m_BitnuaClient });
 
                 if (VM.CurrentClient == m_BitnuaClient)
                     await UpdateVM(song);
+
+                await DB_Plays.InsertOneAsync(new PlayEntry() { Song = song, Client = m_BitnuaClient });
             }
             catch (Exception)
             {
@@ -173,17 +193,15 @@ namespace BitnuaVideoPlayer
             VM.Song = song;
             VM.ArtistPicSource = await GetArtistPic();
             m_picSources = GetAvaiableSongPics().Shuffle(m_Random);
-            m_VideoSources = GetAvaiableSongVideos().Shuffle(m_Random);
+            VM.DefaultLayout_VideoItem.VideoSources = GetAvaiableSongVideos().Shuffle(m_Random).ToList();
             m_Flyerfiles = Directory.EnumerateFiles(VM.FlayerDir, "*.*", SearchOption.AllDirectories).Shuffle(m_Random);
 
             m_PicLoopToken = new CancellationTokenSource();
 
             if (VM.SelectedLayout == eLayoutModes.Default)
             {
-                var t = StartLeftPicTask(m_PicLoopToken.Token);
-                var t1 = StartRightVideoTask(m_PicLoopToken.Token);
+                var t = Task.Run(() => StartLeftPicTask(m_PicLoopToken.Token));
             }
-
         }
 
         private IEnumerable<Tuple<string, string>> IterateNextLeftPic(CancellationToken token)
@@ -231,50 +249,6 @@ namespace BitnuaVideoPlayer
             }
         }
 
-        private async Task StartRightVideoTask(CancellationToken token)
-        {
-            await Task.Delay(100);
-            var playTime = DateTime.Now;
-            while (!token.IsCancellationRequested)
-            {
-                try
-                {
-                    if (VM.Song != null)
-                    {
-                        string currVideo = null;
-                        foreach (var videoPath in IterateNextVideo(token))
-                        {
-                            if (videoPath != currVideo)
-                            {
-                                currVideo = videoPath;
-                                long time = CalcLastPlayTime(playTime, videoPath);
-                                VM.DefaultLayout_VideoItem = null;
-                                VM.DefaultLayout_VideoItem = new VideoItem() { VideoSource = new VideoSource(videoPath, time) };
-                            }
-
-                            await Task.Delay(Math.Max(VM.LeftPicDelay, 10000), token).ConfigureAwait(false);
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                }
-            }
-        }
-
-        private static long CalcLastPlayTime(DateTime playTime, string videoPath)
-        {
-            long time = 0;
-            TimeSpan videoDuration;
-            if (GetDuration(videoPath, out videoDuration))
-            {
-                var diff = (DateTime.Now - playTime).TotalMilliseconds;
-                time = (long)(diff % TimeSpan.FromTicks(videoDuration.Ticks).TotalMilliseconds);
-            }
-
-            return time;
-        }
-
         private async Task StartWatchCloudDBTask(CancellationToken token)
         {
             PlayEntry currEntry = null;
@@ -308,16 +282,6 @@ namespace BitnuaVideoPlayer
             var playEntry = (await DB_Plays.Find(filter).Sort(sort).Limit(1).ToListAsync(token)).SingleOrDefault();
 
             return playEntry;
-        }
-
-        private IEnumerable<string> IterateNextVideo(CancellationToken token)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                    using (var videos = m_VideoSources.GetEnumerator())
-                        while (videos.MoveNext() && !token.IsCancellationRequested)
-                            yield return videos.Current;
-            }
         }
 
         private async Task<string> GetArtistPic()
@@ -368,36 +332,45 @@ namespace BitnuaVideoPlayer
             return pics.Select(dir => new Tuple<string, string>(PickRandomFile(dir.Item1), dir.Item2));
         }
 
-        private IEnumerable<string> GetAvaiableSongVideos()
+        private IEnumerable<VideoSource> GetAvaiableSongVideos()
         {
-            var videos = new List<string>();
+            var isChecked = new Func<eSongClipTypes, bool>((eSongClipTypes clipType) => VM.ClipTypes.Single(c => c.Type == clipType).IsChecked);
+
+            var videos = new List<VideoSource>();
 
             if (VM.Song != null)
             {
-                var performerPath = Path.Combine(VM.VideoPathSinger, VM.Song.Performer);
-                var performerVideo = PickRandomFile(performerPath, $"*{VM.Song.Title}*");
-                if (!string.IsNullOrEmpty(performerVideo))
-                    videos.Add(performerVideo);
+                if (!string.IsNullOrWhiteSpace(VM.Song.Performer) && isChecked(eSongClipTypes.SongClips))
+                {
+                    var performerPath = Path.Combine(VM.VideoPathSinger, VM.Song.Performer);
+                    var performerVideo = PickRandomFile(performerPath, $"*{VM.Song.Title}*");
+                    if (!string.IsNullOrEmpty(performerVideo))
+                        videos.Add(new VideoSource(performerVideo));
 
-                performerVideo = PickRandomFile(performerPath, $"*{VM.Song.HebTitle}*");
-                if (!string.IsNullOrEmpty(performerVideo))
-                    videos.Add(performerVideo);
+                    performerVideo = PickRandomFile(performerPath, $"*{VM.Song.HebTitle}*");
+                    if (!string.IsNullOrEmpty(performerVideo))
+                        videos.Add(new VideoSource(performerVideo));
+                }
 
                 var eventVideo = PickRandomFile(Path.Combine(VM.VideoPathEvent, VM.Song.HebTitle));
                 var danceVideo = PickRandomFile(Path.Combine(VM.VideoPathDance, VM.Song.HebTitle));
+                if (!string.IsNullOrEmpty(eventVideo) && isChecked(eSongClipTypes.Event))
+                    videos.Add(new VideoSource(eventVideo));
 
-                if (!string.IsNullOrEmpty(eventVideo))
-                    videos.Add(eventVideo);
-                if (!string.IsNullOrEmpty(danceVideo))
-                    videos.Add(danceVideo);
+                if (!string.IsNullOrEmpty(danceVideo) && isChecked(eSongClipTypes.Dance))
+                    videos.Add(new VideoSource(danceVideo));
+
+                if (!string.IsNullOrEmpty(VM.Song.YouTubeDance) && isChecked(eSongClipTypes.YouTubeDance))
+                    videos.Add(new YoutubeVideoSource(VM.Song.YouTubeDance));
+
             }
 
             if (videos.Count == 0)
             {
                 var defaultVideo = PickRandomFile(Path.Combine(VM.VideoPathDefault));
-                videos.Add(defaultVideo);
+                videos.Add(new VideoSource(defaultVideo));
             }
-
+            //new VideoSource(p)
             return videos;
         }
 
@@ -409,27 +382,6 @@ namespace BitnuaVideoPlayer
                 if (Directory.Exists(dir))
                     pics.Add(new Tuple<string, string>(dir, person));
             }
-        }
-
-        private async Task<string> GetNextVideoPath()
-        {
-            await Task.Delay(50);
-
-            string dir, file = null;
-
-            if (VM.SelectedVideoMode == ViewModels.eVideoMode.VideoDir1)
-                dir = VM.VideoPath1;
-            else if (VM.SelectedVideoMode == ViewModels.eVideoMode.VideoDir2)
-                dir = VM.VideoPath2;
-            else //if (VM.SelectedVideoMode == ViewModels.eVideoMode.Clip)
-            {
-                var selectedClips = VM.ClipsNums.Where(cb => cb.IsChecked).ToArray();
-                dir = selectedClips[m_Random.Next(selectedClips.Length)].Path;
-            }
-
-            var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
-            file = files.First();
-            return file;
         }
 
         private static string GetPicPath(string dir, string person)
@@ -597,25 +549,9 @@ namespace BitnuaVideoPlayer
             public const string Creator = "יוצר";
             public const string Writer = "משורר";
             public const string Lyrics = "Notes";
-        }
-
-        public static bool GetDuration(string filename, out TimeSpan duration)
-        {
-            try
-            {
-                using (var shell = ShellObject.FromParsingName(filename))
-                {
-                    IShellProperty prop = shell.Properties.System.Media.Duration;
-                    var t = (ulong)prop.ValueAsObject;
-                    duration = TimeSpan.FromTicks((long)t);
-                }
-                return true;
-            }
-            catch (Exception)
-            {
-                duration = new TimeSpan();
-                return false;
-            }
+            public const string Lyrics2 = "רשימות";
+            public const string YouTubeSong = "YouTubeSong";
+            public const string YouTubeDance = "YouTubeDance";
         }
 
         private async void CurrentClientChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)

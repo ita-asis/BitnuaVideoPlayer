@@ -34,10 +34,17 @@
                 </i:Interaction.Behaviors>
             </Vlc:VlcControl>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type my:VideoListItem}">
+            <Vlc:VlcControl Margin="4" >
+                <i:Interaction.Behaviors>
+                    <props:VideoDirPlayerBehaviour Videos="{Binding VideoSources}"/>
+                </i:Interaction.Behaviors>
+            </Vlc:VlcControl>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type my:YoutubeVideoItem}">
             <props:YoutubeWebBrowser IsEnabled="True" Margin="4">
                 <i:Interaction.Behaviors>
-                    <props:YouTubeCtrlBehaviour YouTubeId="{Binding Path}"/>
+                    <props:YouTubeCtrlBehaviour YouTubeId="{Binding VideoSource.VideoId}"/>
                 </i:Interaction.Behaviors>
             </props:YoutubeWebBrowser>
         </DataTemplate>
