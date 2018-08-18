@@ -80,7 +80,6 @@ namespace BitnuaVideoPlayer
 
         private async Task InitAll()
         {
-            throw new NotFiniteNumberException();
             DataContext = VM = MainViewModel.Create(c_ConfFilePath);
             VM.CurrentClient = m_BitnuaClient = new ClientInfo() { Name = VM.ClientName };
             VM.PropertyChanged += VM_PropertyChanged;
