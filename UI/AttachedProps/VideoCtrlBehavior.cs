@@ -45,7 +45,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 
         protected virtual void Stop()
         {
-            Player.Stop();
+            Player?.Stop();
         }
 
         public VideoSource Source
@@ -114,7 +114,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 
         protected void Play(VlcControl player, VideoSource video)
         {
-            Play(player.MediaPlayer, video);
+            Play(player?.MediaPlayer, video);
         }
 
         protected void Play(Vlc.DotNet.Forms.VlcControl player = null, VideoSource source = null)

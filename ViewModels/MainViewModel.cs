@@ -11,6 +11,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using BitnuaVideoPlayer.UI.Converters;
 using Newtonsoft.Json.Converters;
 using System.Text.RegularExpressions;
+using System.Collections.ObjectModel;
 
 namespace BitnuaVideoPlayer
 {
@@ -265,9 +266,9 @@ namespace BitnuaVideoPlayer
                     }
                     else if (value == eLayoutModes.Presentation)
                     {
-                        if (m_LastLayoutData is List<PresentationItem>)
+                        if (m_LastLayoutData is ObservableCollection<PresentationItem>)
                         {
-                            PresentationVM.PresentationItems = m_LastLayoutData as List<PresentationItem>;
+                            PresentationVM.PresentationItems = m_LastLayoutData as ObservableCollection<PresentationItem>;
                         }
                         m_LastLayoutData = DefaultLayout_VideoItem;
                         DefaultLayout_VideoItem = null;
@@ -387,10 +388,10 @@ namespace BitnuaVideoPlayer
             set { m_Cols = value; OnPropertyChanged(() => Cols); }
         }
 
-        private List<PresentationItem> m_PresentationItems;
-        private List<PresentationItem> m_PresentationItems_Curr;
+        private ObservableCollection<PresentationItem> m_PresentationItems;
+        private ObservableCollection<PresentationItem> m_PresentationItems_Curr;
         [JsonIgnore]
-        public List<PresentationItem> PresentationItems
+        public ObservableCollection<PresentationItem> PresentationItems
         {
             get { return m_PresentationItems_Curr; }
             set
@@ -406,7 +407,7 @@ namespace BitnuaVideoPlayer
 
 
         [JsonProperty("PresentationItems")]
-        private List<PresentationItem> _PresentationItems
+        private ObservableCollection<PresentationItem> _PresentationItems
         {
             get { return m_PresentationItems; }
             set { m_PresentationItems_Curr = m_PresentationItems = value; OnPropertyChanged(() => PresentationItems); }
@@ -437,6 +438,26 @@ namespace BitnuaVideoPlayer
         public double Height { get; set; }
         public double Angle { get; set; }
         public string Text { get; set; }
+
+        // factory method
+        public static PresentationItem Create(ePresentationKinds kind)
+        {
+            switch (kind)
+            {
+                case ePresentationKinds.Picture:
+                    return new PictureItem();
+                case ePresentationKinds.PictureList:
+                    return new PictureItem(); // TODO
+                case ePresentationKinds.Video:
+                    return new VideoItem();
+                case ePresentationKinds.VideoList:
+                    return new VideoListItem();
+                case ePresentationKinds.YoutubeVideo:
+                    return new YoutubeVideoItem();
+                default:
+                    throw new NotImplementedException();
+            }
+        }
     }
 
     public class PictureItem : PresentationItem

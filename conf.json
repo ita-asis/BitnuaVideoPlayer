@@ -1,0 +1,135 @@
+{
+  "ClientName": "itamar_Test2",
+  "WatchDir": "\\\\192.168.1.120\\c\\AMPS\\vmmplay",
+  "VideoPath1": null,
+  "VideoPath2": null,
+  "VideoPathSinger": "\\\\192.168.1.120\\c\\AMPS\\vmm\\videoClip\\זמרים",
+  "VideoPathEvent": "\\\\192.168.1.120\\c\\AMPS\\vmm\\videoClip\\אירוע",
+  "VideoPathDance": "\\\\192.168.1.120\\c\\AMPS\\vmm\\videoClip\\ריקודים",
+  "VideoPathDefault": "\\\\192.168.1.120\\c\\AMPS\\vmm\\videoClip\\Default",
+  "FlayerDir": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\flayer",
+  "PicPathPerformer": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\מבצע",
+  "PicPathCreator": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\יוצר",
+  "PicPathComposer": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\לחן",
+  "PicPathWriter": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\משורר",
+  "PicPathDefault": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\Default",
+  "SongYoutubeVideos": [
+    {
+      "Type": 0,
+      "IsChecked": false,
+      "Text": "Clip"
+    },
+    {
+      "Type": 0,
+      "IsChecked": false,
+      "Text": "Dance"
+    },
+    {
+      "Type": 0,
+      "IsChecked": false,
+      "Text": "Clip"
+    },
+    {
+      "Type": 0,
+      "IsChecked": false,
+      "Text": "Dance"
+    },
+    {
+      "Type": 0,
+      "IsChecked": false,
+      "Text": "Clip"
+    },
+    {
+      "Type": 0,
+      "IsChecked": false,
+      "Text": "Dance"
+    }
+  ],
+  "Banner": {
+    "Speed": 82,
+    "Direction": "left",
+    "Text": "שלום Banner Text Here ...",
+    "BackColor": "0, 255, 128",
+    "ForeColor": "0, 0, 160",
+    "Font": "Times New Roman, 48pt"
+  },
+  "Lyrics": {
+    "BackColor": "0, 255, 128",
+    "ForeColor": "64, 0, 0",
+    "Font": "Times New Roman, 15.75pt"
+  },
+  "SongTitleFontSize": 34.0,
+  "Song2ndFontSize": 20.0,
+  "SelectedPicMode": "Pics",
+  "SelectedVideoMode": "Clip",
+  "Pic_ShowCreator": true,
+  "Pic_ShowPerformer": true,
+  "Pic_ShowComposer": true,
+  "Pic_ShowWriter": true,
+  "TopPanelHeight": 0.0,
+  "DefaultLayout_VideoCtrlWidth": 536.0,
+  "DefaultLayout_SongInfoHeight": 69.0,
+  "ThreePicsLayout_LeftWidth": 0.0,
+  "ThreePicsLayout_MidWidth": 0.0,
+  "TwoVidoesLayout_LeftWidth": 0.0,
+  "SelectedLayout": "Presentation",
+  "PicStretch": "Fill",
+  "PresentationVM": {
+    "Rows": 2,
+    "Cols": 2,
+    "PresentationItems": [
+      {
+        "Kind": "Picture",
+        "Path": "C:\\Users\\iasis\\Pictures\\321807-flowers.jpg",
+        "Stretch": null,
+        "X": 0.0,
+        "Y": 80.0,
+        "Width": 270.0,
+        "Height": 280.0,
+        "Angle": 0.0,
+        "Text": "Pic 1"
+      },
+      {
+        "Kind": "Video",
+        "VideoSource": {
+          "Path": "\\\\192.168.1.120\\c\\AMPS\\vmm\\VideoClip\\זמרים\\Sting\\Sting.mpg",
+          "Time": null
+        },
+        "X": 270.0,
+        "Y": 250.0,
+        "Width": 370.0,
+        "Height": 110.0,
+        "Angle": 0.0,
+        "Text": "Sting vid"
+      },
+      {
+        "Kind": "Video",
+        "VideoSource": {
+          "Path": "\\\\192.168.1.120\\c\\AMPS\\vmm\\VideoClip\\זמרים\\A-WA\\A-WA.mpg",
+          "Time": null
+        },
+        "X": 0.0,
+        "Y": 0.0,
+        "Width": 270.0,
+        "Height": 80.0,
+        "Angle": 0.0,
+        "Text": "A-WA vid"
+      },
+      {
+        "Kind": "YoutubeVideo",
+        "VideoSource": {
+          "Path": "https://youtu.be/UFZ2F8V9qVk",
+          "Time": null
+        },
+        "X": 270.0,
+        "Y": 0.0,
+        "Width": 370.0,
+        "Height": 250.0,
+        "Angle": 0.0,
+        "Text": "Youtube Video"
+      }
+    ]
+  },
+  "LeftPicDelay": 0,
+  "DbUpdateDelay": 5000
+}

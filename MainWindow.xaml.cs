@@ -13,6 +13,8 @@ using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Xml.Linq;
+using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace BitnuaVideoPlayer
 {
@@ -41,11 +43,34 @@ namespace BitnuaVideoPlayer
 
         public MainWindow()
         {
+            System.Windows.Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+
             InitializeComponent();
 
             Loaded += MainWindow_Loaded;
             MouseDown += Window_MouseDown;
             App.Current.Exit += App_Exit;
+        }
+
+        internal static void LogException(Exception exception)
+        {
+            Trace.WriteLine(null);
+            Trace.WriteLine(null);
+            Trace.TraceError($"{DateTime.Now}");
+
+            var ex = exception;
+            while (ex != null)
+            {
+                Trace.TraceError(ex.Message);
+                Trace.TraceError(ex.StackTrace);
+                ex = ex.InnerException;
+            }
+            Trace.Flush();
+        }
+
+        private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            LogException(e.Exception);
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -55,6 +80,7 @@ namespace BitnuaVideoPlayer
 
         private async Task InitAll()
         {
+            throw new NotFiniteNumberException();
             DataContext = VM = MainViewModel.Create(c_ConfFilePath);
             VM.CurrentClient = m_BitnuaClient = new ClientInfo() { Name = VM.ClientName };
             VM.PropertyChanged += VM_PropertyChanged;
@@ -284,9 +310,9 @@ namespace BitnuaVideoPlayer
             return playEntry;
         }
 
-        private async Task<string> GetArtistPic()
+        private Task<string> GetArtistPic()
         {
-            await Task.Delay(50);
+            string res = null;
             if (VM.Song != null)
             {
                 var path = VM.PicPathPerformer;
@@ -295,11 +321,11 @@ namespace BitnuaVideoPlayer
                 if (Directory.Exists(dir))
                 {
                     var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
-                    return files.First();
+                    res = files.FirstOrDefault();
                 }
             }
 
-            return null;
+            return Task.FromResult(res);
         }
 
         private static string PickRandomFile(string dir, string searchPattern = null)
@@ -564,6 +590,59 @@ namespace BitnuaVideoPlayer
                 await StartWatchCloudDBTask(m_WatchCloudDBToken.Token);
             }
         }
+
+        private void addPresentationItemClick(object sender, RoutedEventArgs e)
+        {
+            ePresentationKinds kind = (ePresentationKinds)presentaionItemCB.SelectedItem;
+            var item = PresentationItem.Create(kind);
+
+            VM.PresentationVM.PresentationItems.Add(item);
+        }
+
+        private void pItemKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                OnDeletePresentationItem();
+            }
+        }
+
+        private void OnDeletePresentationItem()
+        {
+            if (PVM.SelectedPresentationItem != null)
+            {
+                VM.PresentationVM.PresentationItems.Remove(PVM.SelectedPresentationItem);
+            }
+        }
+
+        private void pItemPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var ctrl = ((FrameworkElement)sender);
+            PVM.SelectedPresentationItem = (PresentationItem)ctrl.DataContext;
+            //var listItem = (System.Windows.Controls.ListViewItem)sender;
+
+            //listItem.pa
+
+            //listItem.IsSelected = !listItem.IsSelected;
+        }
+
+
+        private MainWindowVM m_MainWindowVM;
+        public MainWindowVM PVM => m_MainWindowVM ?? (m_MainWindowVM = new MainWindowVM());
+
+        public class MainWindowVM: ViewModelBase
+        {
+
+            private PresentationItem m_SelectedPresentationItem;
+
+            public PresentationItem SelectedPresentationItem
+            {
+                get { return m_SelectedPresentationItem; }
+                set { m_SelectedPresentationItem = value; OnPropertyChanged(() => SelectedPresentationItem); }
+            }
+        }
+
+       
     }
 
     public class ColorToSolidColorBrushValueConverter : IValueConverter
