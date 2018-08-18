@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Xml.Linq;
 using System.Windows.Threading;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace BitnuaVideoPlayer
 {
@@ -50,6 +51,16 @@ namespace BitnuaVideoPlayer
             Loaded += MainWindow_Loaded;
             MouseDown += Window_MouseDown;
             App.Current.Exit += App_Exit;
+
+            VersionLbl.Content = GetVersion();
+            AppUpdateManager.VersionUpdateProgressChanged += p => VersionLbl.Dispatcher.BeginInvoke(new Action(() => VersionLbl.Content = $"Update in progress: {(p / 100d).ToString("P0")}"));
+        }
+
+        private object GetVersion()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            var version = assembly.GetName().Version;
+            return string.Format("Version {0}.{1}.{2}", version.Major, version.Minor, version.Build);
         }
 
         internal static void LogException(Exception exception)

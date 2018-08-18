@@ -45,20 +45,16 @@ namespace BitnuaVideoPlayer
             {
                 using (s_UpdateManager = await getUpdateManager())
                 {
-                    var updateTask = s_UpdateManager.UpdateApp(OnVersionUpdateProgressChanged);
-                    var completedTask = updateTask.ContinueWith((e) =>
+                    var result = await s_UpdateManager.UpdateApp(OnVersionUpdateProgressChanged);
+                    if (result != null)
                     {
-                        if (e.Result != null)
-                        {
-                            UpdateManager.RestartApp();
-                        }
-                    });
-                    await updateTask;
+                        UpdateManager.RestartApp();
+                    }
                 }
             }
             catch (Exception ex)
             {
-                LogException(ex);
+                MainWindow.LogException(ex);
             }
         }
 
@@ -110,17 +106,6 @@ namespace BitnuaVideoPlayer
             if (VersionUpdateProgressChanged != null)
             {
                 VersionUpdateProgressChanged.Invoke(progress);
-            }
-        }
-
-        internal static void LogException(Exception exception)
-        {
-            var ex = exception;
-            while (ex != null)
-            {
-                Trace.WriteLine(ex.Message);
-                Trace.WriteLine(ex.StackTrace);
-                ex = ex.InnerException;
             }
         }
     }

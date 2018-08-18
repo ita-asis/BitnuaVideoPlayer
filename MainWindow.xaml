@@ -33,6 +33,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <WrapPanel >
@@ -641,5 +642,7 @@
 
             </Grid>
         </GroupBox>
+
+        <Label x:Name="VersionLbl" Grid.Row="3"/>
     </Grid>
 </Window>

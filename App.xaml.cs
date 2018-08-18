@@ -17,7 +17,7 @@ namespace BitnuaVideoPlayer
     /// </summary>
     public partial class App : Application
     {
-        private static AppUpdateManager updateManager;
+        public static AppUpdateManager updateManager;
 
         public App()
         {
