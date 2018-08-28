@@ -45,6 +45,13 @@ namespace BitnuaVideoPlayer
             {
                 using (s_UpdateManager = await getUpdateManager())
                 {
+                    SquirrelAwareApp.HandleEvents(
+                        onInitialInstall: v => s_UpdateManager.CreateShortcutForThisExe(),
+                        onAppUpdate: v => s_UpdateManager.CreateShortcutForThisExe(),
+                        onAppUninstall: v => s_UpdateManager.RemoveShortcutForThisExe()
+                        //onFirstRun: () => ShowTheWelcomeWizard = true);
+                    );
+
                     var result = await s_UpdateManager.UpdateApp(OnVersionUpdateProgressChanged);
                     if (result != null)
                     {

@@ -52,7 +52,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="60px"/>
         </Grid.RowDefinitions>
         
         
@@ -287,18 +287,38 @@
 
         <Grid Grid.Row="1"
               x:Name="statusGrid">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+            <Canvas Panel.ZIndex="1"
+                    FlowDirection="{Binding Banner.Direction}"
+                    Background="{Binding Banner.BackColor, Converter={StaticResource colorCnv}}">
+                <!--<TextBlock Text="{Binding Banner.Text}" 
+                           FontSize="{Binding Banner.Font.Size}"
+                           FontFamily="{Binding Banner.Font.FontFamily}"
+                           Foreground="{Binding Banner.ForeColor, Converter={StaticResource colorCnv}}"
+                           >
+                    <i:Interaction.Behaviors>
+                        <props:MarqueeTextBlockBehavior/>
+                    </i:Interaction.Behaviors>
+                </TextBlock>-->
+                <StackPanel Orientation="Horizontal" x:Name="bannerPanel">
+                    <i:Interaction.Behaviors>
+                        <props:MarqueePanel ActualWidthBind="{Binding ActualWidth, ElementName=bannerPanel}" 
+                                            Speed="{Binding Banner.Speed}"  />
+                    </i:Interaction.Behaviors>
 
-
-            <wpf:ChromiumWebBrowser Grid.Row="2"
-                                    x:Name="browser" 
-                                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                    IsEnabled="False"
-                                    Height="60px"/>
-
-            
+                    <ItemsControl ItemsSource="{Binding Banner.Pics}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                    <TextBlock Text="{Binding Banner.Text}" 
+                           FontSize="{Binding Banner.Font.Size}"
+                           FontFamily="{Binding Banner.Font.FontFamily}"
+                           Foreground="{Binding Banner.ForeColor, Converter={StaticResource colorCnv}}"
+                           />
+                </StackPanel>
+            </Canvas>
         </Grid>
 
     </Grid>

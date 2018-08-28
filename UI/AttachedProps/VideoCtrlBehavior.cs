@@ -90,11 +90,18 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             if (player == null || string.IsNullOrEmpty(source.Path))
                 return;
 
-            player.Play(new Uri(source.Path));
-            MutePlayer(player);
-            if (source.Time != null)
+            try
             {
-                player.Time = source.Time.Value;
+                player.Play(new Uri(source.Path));
+                MutePlayer(player);
+                if (source.Time != null)
+                {
+                    player.Time = source.Time.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                MainWindow.LogException(ex);
             }
         }
 

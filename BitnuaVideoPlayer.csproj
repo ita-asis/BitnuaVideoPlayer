@@ -20,6 +20,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>d7d25259</NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -32,7 +33,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -204,6 +204,7 @@
     </Compile>
     <Compile Include="SettingBindingExtension.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="UI\AttachedProps\MarqueeTextBlockBehavior.cs" />
     <Compile Include="UI\AttachedProps\UGrid.cs" />
     <Compile Include="UI\AttachedProps\VideoCtrlBehavior.cs" />
     <Compile Include="UI\AttachedProps\VideoSource.cs" />
@@ -212,6 +213,7 @@
       <DependentUpon>CanvasItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Converters\AngleConverter.cs" />
+    <Compile Include="UI\Converters\Bool2ValueConverter.cs" />
     <Compile Include="UI\Converters\EnumBooleanConverter.cs" />
     <Compile Include="UI\Converters\PresentationItemConverter.cs" />
     <Compile Include="UI\Converters\StringToEnumConverter.cs" />

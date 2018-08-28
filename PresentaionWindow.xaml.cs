@@ -49,12 +49,7 @@ namespace BitnuaVideoPlayer
 
         private void PresentaionWindow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e.OldValue is MainViewModel)
-                ((MainViewModel)e.OldValue).PropertyChanged -= VM_PropertyChanged;
-
             VM = e.NewValue as MainViewModel;
-            VM.PropertyChanged += VM_PropertyChanged;
-            VM.Banner.PropertyChanged += VM_PropertyChanged;
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -63,60 +58,11 @@ namespace BitnuaVideoPlayer
                 this.DragMove();
         }
 
-        private void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            // register for prop change of non wpf binded controls
-            if (sender == VM.Banner)
-            {
-                InitBanner();
-            }
-        }
-
+       
         private void InitAll()
         {
-            InitBanner();
             InitLeftPic();
         }
-
-        private void InitBanner()
-        {
-            var html =
-                $@"<html><head>
-                <meta charset=utf-8>
-                    <style>
-                    body {{
-                        overflow: -moz-scrollbars-vertical;
-                        overflow-x: hidden;
-                        overflow-y: auto;
-                        background-color: rgba({VM.Banner.BackColor.R},{VM.Banner.BackColor.G},{VM.Banner.BackColor.B},{VM.Banner.BackColor.A});
-                    }}
-                    .parent {{
-                        height: 40px;
-                        text-align: center;
-                    }}
-                    .parent > .child {{
-                        line-height: 50px;
-                    }}
-                    marquee {{
-                        font-size: {VM.Banner.Font.Size}px;
-                        font-family: {VM.Banner.Font.FontFamily.Name};
-                        font-style: {(VM.Banner.Font.Italic ? "italic" :"normal")};
-                        font-weight: {(VM.Banner.Font.Bold ? "bold" : "normal")};
-                        text-decoration: {(VM.Banner.Font.Underline ? "underline" : "")} {(VM.Banner.Font.Strikeout ? "line-through" : "")};
-                        color: rgba({VM.Banner.ForeColor.R},{VM.Banner.ForeColor.G},{VM.Banner.ForeColor.B},{VM.Banner.ForeColor.A});
-                    }}
-
-                </style>
-                </head><body>
-                        <div class=""parent"">
-                            <marquee class=""child"" scrolldelay=""{VM.Banner.Speed}"" behavior=""scroll"" direction=""{VM.Banner.Direction}"">{ VM.Banner.Text}</marquee>
-                        </div>
-                </body></html>";
-
-            browser.LoadHtml(html);
-        }
-
-       
 
         private void InitLeftPic()
         {

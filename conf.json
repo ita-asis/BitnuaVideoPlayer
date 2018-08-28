@@ -46,12 +46,12 @@
     }
   ],
   "Banner": {
-    "Speed": 82,
-    "Direction": "left",
+    "Speed": 5,
     "Text": "שלום Banner Text Here ...",
     "BackColor": "0, 255, 128",
     "ForeColor": "0, 0, 160",
-    "Font": "Times New Roman, 48pt"
+    "Font": "Times New Roman, 48pt",
+    "PicsPath": "C:\\Users\\iasis\\Pictures\\banner"
   },
   "Lyrics": {
     "BackColor": "0, 255, 128",

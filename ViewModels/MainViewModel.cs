@@ -12,6 +12,7 @@ using BitnuaVideoPlayer.UI.Converters;
 using Newtonsoft.Json.Converters;
 using System.Text.RegularExpressions;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace BitnuaVideoPlayer
 {
@@ -19,7 +20,7 @@ namespace BitnuaVideoPlayer
     [SettingsSerializeAs(SettingsSerializeAs.String)]
     public class MainViewModel : ViewModelBase
     {
-        private MainViewModel()
+        public MainViewModel()
         {
         }
 
@@ -222,33 +223,8 @@ namespace BitnuaVideoPlayer
       
         #endregion
 
-        private double m_ThreePicsLayout_LeftWidth;
-
-        public double ThreePicsLayout_LeftWidth
-        {
-            get { return m_ThreePicsLayout_LeftWidth; }
-            set { m_ThreePicsLayout_LeftWidth = value; OnPropertyChanged(() => ThreePicsLayout_LeftWidth); }
-        }
-
-        private double m_ThreePicsLayout_MidWidth;
-
-        public double ThreePicsLayout_MidWidth
-        {
-            get { return m_ThreePicsLayout_MidWidth; }
-            set { m_ThreePicsLayout_MidWidth = value; OnPropertyChanged(() => ThreePicsLayout_MidWidth); }
-        }
-
-        private double m_TwoVidoesLayout_LeftWidth;
-
-        public double TwoVidoesLayout_LeftWidth
-        {
-            get { return m_TwoVidoesLayout_LeftWidth; }
-            set { m_TwoVidoesLayout_LeftWidth = value; OnPropertyChanged(() => TwoVidoesLayout_LeftWidth); }
-        }
-
-
         private object m_LastLayoutData;
-        private eLayoutModes m_SelectedLayout;
+        private eLayoutModes m_SelectedLayout = eLayoutModes.Presentation;
         [JsonConverter(typeof(StringEnumConverter))]
         public eLayoutModes SelectedLayout
         {
@@ -311,33 +287,6 @@ namespace BitnuaVideoPlayer
         {
             get { return m_ArtistPicSource; }
             set { m_ArtistPicSource = value; OnPropertyChanged(() => ArtistPicSource); }
-        }
-
-        private string m_ThreePicsLayout_LeftPicSource;
-
-        [JsonIgnore]
-        public string ThreePicsLayout_LeftPicSource
-        {
-            get { return m_ThreePicsLayout_LeftPicSource; }
-            set { m_ThreePicsLayout_LeftPicSource = value; OnPropertyChanged(() => ThreePicsLayout_LeftPicSource); }
-        }
-
-        private string m_ThreePicsLayout_MidPicSource;
-
-        [JsonIgnore]
-        public string ThreePicsLayout_MidPicSource
-        {
-            get { return m_ThreePicsLayout_MidPicSource; }
-            set { m_ThreePicsLayout_MidPicSource = value; OnPropertyChanged(() => ThreePicsLayout_MidPicSource); }
-        }
-
-        private string m_ThreePicsLayout_RightPicSource;
-
-        [JsonIgnore]
-        public string ThreePicsLayout_RightPicSource
-        {
-            get { return m_ThreePicsLayout_RightPicSource; }
-            set { m_ThreePicsLayout_RightPicSource = value; OnPropertyChanged(() => ThreePicsLayout_RightPicSource); }
         }
 
         private ClientInfo m_CurrentClient;
@@ -438,22 +387,23 @@ namespace BitnuaVideoPlayer
         public double Height { get; set; }
         public double Angle { get; set; }
         public string Text { get; set; }
+        public string Path { get; set; }
 
         // factory method
-        public static PresentationItem Create(ePresentationKinds kind)
+        public static PresentationItem Create(ePresentationKinds kind, string path)
         {
             switch (kind)
             {
                 case ePresentationKinds.Picture:
-                    return new PictureItem();
+                    return new PictureItem() { Path = path };
                 case ePresentationKinds.PictureList:
-                    return new PictureItem(); // TODO
+                    return new PictureItem() { Path = path }; // TODO
                 case ePresentationKinds.Video:
-                    return new VideoItem();
+                    return new VideoItem() { VideoSource = new VideoSource(path) };
                 case ePresentationKinds.VideoList:
-                    return new VideoListItem();
+                    return new VideoListItem() { Path = path };
                 case ePresentationKinds.YoutubeVideo:
-                    return new YoutubeVideoItem();
+                    return new YoutubeVideoItem() { VideoSource = new YoutubeVideoSource(path)};
                 default:
                     throw new NotImplementedException();
             }
@@ -464,13 +414,7 @@ namespace BitnuaVideoPlayer
     {
         public override ePresentationKinds Kind => ePresentationKinds.Picture;
 
-        private string m_Path;
-        public string Path
-        {
-            get { return m_Path; }
-            set { m_Path = value; OnPropertyChanged(() => Path); }
-        }
-
+       
         private string m_Stretch;
 
         public string Stretch
@@ -627,13 +571,31 @@ namespace BitnuaVideoPlayer.ViewModels
             set { m_Speed = value; OnPropertyChanged(() => Speed); }
         }
 
-        private string m_Direction = "left";
+        private FlowDirection m_Direction = FlowDirection.LeftToRight;
 
-        public string Direction
+        public FlowDirection Direction
         {
             get { return m_Direction; }
             set { m_Direction = value; OnPropertyChanged(() => Direction); }
         }
+
+        private string m_PicsPath;
+
+        public string PicsPath
+        {
+            get { return m_PicsPath; }
+            set { m_PicsPath = value; OnPropertyChanged(() => PicsPath); }
+        }
+
+        private List<PictureItem> m_Pics;
+        [JsonIgnore]
+        public List<PictureItem> Pics
+        {
+            get { return m_Pics; }
+            set { m_Pics = value; OnPropertyChanged(() => Pics); }
+        }
+
+
     }
 
     public class LyricsVM : TextVM

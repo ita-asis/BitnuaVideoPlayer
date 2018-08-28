@@ -16,6 +16,7 @@ using System.Xml.Linq;
 using System.Windows.Threading;
 using System.Diagnostics;
 using System.Reflection;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace BitnuaVideoPlayer
 {
@@ -111,7 +112,33 @@ namespace BitnuaVideoPlayer
             m_PlayerWindow.Show();
             m_PlayerWindow.Owner = this;
 
+
+            RegisterBannerPicsChanged();
+
             await ShowLastSong();
+        }
+
+        private void RegisterBannerPicsChanged()
+        {
+            if (VM?.Banner != null)
+            {
+                VM.Banner.PropertyChanged += (s,e) => 
+                {
+                    if (e.PropertyName == nameof(VM.Banner.PicsPath))
+                        ReadBannerPics();
+                };
+            }
+
+            ReadBannerPics();
+        }
+
+        private void ReadBannerPics()
+        {
+            if (!string.IsNullOrEmpty(VM?.Banner?.PicsPath))
+            {
+                var directory = new DirectoryInfo(VM.Banner.PicsPath);
+                VM.Banner.Pics = (from f in directory.GetFiles() select new PictureItem() { Path = f.FullName }).ToList();
+            }
         }
 
         private async Task ShowLastSong()
@@ -494,7 +521,7 @@ namespace BitnuaVideoPlayer
             VM.Lyrics.ForeColor = PickColor(VM.Lyrics.ForeColor);
 
         private void btnBannerFontPicker(object sender, RoutedEventArgs e) =>
-            VM.Banner.Font = PickFont(VM.Banner.Font, (int)m_PlayerWindow.browser.Height);
+            VM.Banner.Font = PickFont(VM.Banner.Font);
 
         private void btnBannerBackColorPicker(object sender, RoutedEventArgs e) =>
             VM.Banner.BackColor = PickColor(VM.Banner.BackColor);
@@ -604,8 +631,7 @@ namespace BitnuaVideoPlayer
         private void addPresentationItemClick(object sender, RoutedEventArgs e)
         {
             ePresentationKinds kind = (ePresentationKinds)presentaionItemCB.SelectedItem;
-            var item = PresentationItem.Create(kind);
-
+            var item = PresentationItem.Create(kind, persentaionItemPath.Text);
             VM.PresentationVM.PresentationItems.Add(item);
         }
 
@@ -652,7 +678,37 @@ namespace BitnuaVideoPlayer
             }
         }
 
-       
+        private void btnPresentationPathBrowse(object sender, RoutedEventArgs e)
+        {
+            var selectedType = (ePresentationKinds)presentaionItemCB.SelectedItem;
+            switch (selectedType)
+            {
+                case ePresentationKinds.PictureList:
+                case ePresentationKinds.VideoList:
+                    using (var fileDialog = new CommonOpenFileDialog()
+                    {
+                        IsFolderPicker = true,
+                        EnsureFileExists = false
+                    })
+                    {
+                        if (fileDialog.ShowDialog() == CommonFileDialogResult.Ok)
+                            persentaionItemPath.Text = fileDialog.FileName;
+                    }
+                    break;
+                case ePresentationKinds.Picture:
+                case ePresentationKinds.Video:
+                    using (var fileDialog = new OpenFileDialog())
+                    {
+                        if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                            persentaionItemPath.Text = fileDialog.FileName;
+                    }
+                    break;
+                case ePresentationKinds.YoutubeVideo:
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     public class ColorToSolidColorBrushValueConverter : IValueConverter
