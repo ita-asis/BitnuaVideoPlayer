@@ -286,7 +286,6 @@ namespace BitnuaVideoPlayer
 
         private TextVM m_LeftPicTitle;
 
-        [JsonIgnore]
         public TextVM LeftPicTitle
         {
             get { return m_LeftPicTitle ?? (m_LeftPicTitle = new TextVM()); }

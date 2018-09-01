@@ -65,7 +65,7 @@ namespace BitnuaVideoPlayer
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             var version = assembly.GetName().Version;
-            return string.Format("Version {0}.{1}.{2}", version.Major, version.Minor, version.Build);
+            return string.Format("Version {0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision);
         }
 
         internal static string LogException(Exception exception)

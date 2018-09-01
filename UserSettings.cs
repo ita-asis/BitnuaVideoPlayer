@@ -14,33 +14,33 @@ namespace BitnuaVideoPlayer
 
         private UserSettings()
         {
-#if DEBUG
-#else
             if (Properties.Settings.Default.UpgradeRequired)
             {
+                checkUpgrade();
                 Properties.Settings.Default.Upgrade();
                 Properties.Settings.Default.UpgradeRequired = false;
                 Properties.Settings.Default.Save();
-                checkUpgrade();
             }
-#endif
         }
 
         private void checkUpgrade()
         {
+
             const string strongAppName = "BitnuaVideoPlayer.exe_StrongName_lgujmbe4zuxqp45onbgara1o5b41v3jb";
-            
+
             string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BitnuaVideoPlayer", strongAppName);
-            var v_dirs = Directory.GetDirectories(appPath);
 
             string currConf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
-            if (v_dirs.Length == 0)
+            if (!Directory.Exists(appPath))
             {
+                Directory.CreateDirectory(Path.Combine(appPath,Application.ProductVersion));
                 File.WriteAllText(currConf, Properties.Resources.UserConfTemplate);
             }
             else
             {
-                var currVerDir = v_dirs.SingleOrDefault(d => d == Application.ProductVersion);
+                var v_dirs = Directory.GetDirectories(appPath);
+
+                var currVerDir = v_dirs.SingleOrDefault(d => d.Contains(Application.ProductVersion));
                 if (string.IsNullOrEmpty(currVerDir))
                 {
                     var lastVer = v_dirs.Last();
