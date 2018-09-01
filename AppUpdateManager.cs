@@ -65,9 +65,9 @@ namespace BitnuaVideoPlayer
             }
         }
 
-        private static async Task<Squirrel.UpdateManager> getUpdateManager()
+        private static Task<Squirrel.UpdateManager> getUpdateManager()
         {
-            return await UpdateManager.GitHubUpdateManager("https://github.com/ita-asis/BitnuaVideoPlayer");
+            return UpdateManager.GitHubUpdateManager("https://github.com/ita-asis/BitnuaVideoPlayer");
         }
 
         private static int _isUpdateManagerDisposed = 1;
