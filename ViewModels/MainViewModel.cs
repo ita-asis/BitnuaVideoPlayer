@@ -21,12 +21,34 @@ namespace BitnuaVideoPlayer
     [SettingsSerializeAs(SettingsSerializeAs.String)]
     public class MainViewModel : ViewModelBase
     {
+        public MainViewModel()
+        {
+        }
         public static MainViewModel Create(string json)
         {
             MainViewModel vm = null;
             try
             {
                 vm = JsonConvert.DeserializeObject<MainViewModel>(json);
+                if (vm.m_ClipTypes == null || vm.m_ClipTypes.Count != 3)
+                {
+                    vm.m_ClipTypes = new List<ClipCollectionCBItem>()
+                    {
+                        new ClipCollectionCBItem() { Text = "Song's Clip", Type = eSongClipTypes.SongClips, IsChecked = true},
+                        new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.Dance},
+                        new ClipCollectionCBItem() { Text = "Event", Type = eSongClipTypes.Event},
+                    };
+                }
+
+                if (vm.m_SongYoutubeVideos == null || vm.m_SongYoutubeVideos.Count != 2)
+                {
+                    vm.m_SongYoutubeVideos = new List<ClipCollectionCBItem>()
+                    {
+                        new ClipCollectionCBItem() { Text = "Clip" , Type = eSongClipTypes.YouTubeClip, IsChecked = true},
+                        new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.YouTubeDance },
+                    };
+                }
+
             }
             catch { }
             finally
@@ -62,32 +84,26 @@ namespace BitnuaVideoPlayer
         public string PicPathWriter { get; set; }
         public string PicPathDefault { get; set; }
 
-        private List<ClipCollectionCBItem> m_ClipTypes = new List<ClipCollectionCBItem>()
-        {
-            new ClipCollectionCBItem() { Text = "Song's Clip", Type = eSongClipTypes.SongClips},
-            new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.Dance},
-            new ClipCollectionCBItem() { Text = "Event", Type = eSongClipTypes.Event},
-        };
+        private List<ClipCollectionCBItem> m_ClipTypes;
 
-        [JsonIgnore]
         public List<ClipCollectionCBItem> ClipTypes
         {
             get
             {
                 return m_ClipTypes;
             }
+            set { m_ClipTypes = value; OnPropertyChanged(() => ClipTypes); }
         }
 
-        private List<ClipCollectionCBItem> m_SongYoutubeVideos = new List<ClipCollectionCBItem>()
-        {
-            new ClipCollectionCBItem() { Text = "Clip" , Type = eSongClipTypes.YouTubeClip},
-            new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.YouTubeDance },
-        };
+        private List<ClipCollectionCBItem> m_SongYoutubeVideos;
 
-        [JsonIgnore]
         public List<ClipCollectionCBItem> SongYoutubeVideos
         {
-            get { return m_SongYoutubeVideos; }
+            get
+            {
+                return m_SongYoutubeVideos;
+            }
+            set { m_SongYoutubeVideos = value; OnPropertyChanged(() => SongYoutubeVideos); }
         }
 
         private BannerVM m_Banner;
@@ -325,22 +341,6 @@ namespace BitnuaVideoPlayer
 
     public class PresentationModeViewModel : ViewModelBase
     {
-        private int m_Rows = 1;
-
-        public int Rows
-        {
-            get { return m_Rows; }
-            set { m_Rows = value; OnPropertyChanged(() => Rows); }
-        }
-
-        private int m_Cols = 1;
-
-        public int Cols
-        {
-            get { return m_Cols; }
-            set { m_Cols = value; OnPropertyChanged(() => Cols); }
-        }
-
         private ObservableCollection<PresentationItem> m_PresentationItems;
         private ObservableCollection<PresentationItem> m_PresentationItems_Curr;
         [JsonIgnore]
@@ -363,7 +363,11 @@ namespace BitnuaVideoPlayer
         private ObservableCollection<PresentationItem> _PresentationItems
         {
             get { return m_PresentationItems; }
-            set { m_PresentationItems_Curr = m_PresentationItems = value; OnPropertyChanged(() => PresentationItems); }
+            set
+            {
+                m_PresentationItems_Curr = m_PresentationItems = value ?? new ObservableCollection<PresentationItem>();
+                OnPropertyChanged(() => PresentationItems);
+            }
         }
 
         private List<PresentationItem> GetDefaultPresentationItems()

@@ -61,6 +61,26 @@ namespace BitnuaVideoPlayer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;configuration&gt;
+        ///    &lt;userSettings&gt;
+        ///        &lt;BitnuaVideoPlayer.Properties.Settings&gt;
+        ///            &lt;setting name=&quot;rmtCtrl&quot; serializeAs=&quot;Xml&quot;&gt;
+        ///                &lt;value&gt;
+        ///                    &lt;WindowStateDTO xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        ///                        xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
+        ///                        &lt;Height&gt;503&lt;/Height&gt;
+        ///                        &lt;Width&gt;400&lt;/Width&gt;
+        ///                        &lt;Left&gt;796&lt;/Left&gt;
+        ///            [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string UserConfTemplate {
+            get {
+                return ResourceManager.GetString("UserConfTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
         ///&lt;html&gt;
         ///&lt;body&gt;

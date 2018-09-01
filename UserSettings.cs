@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
@@ -13,6 +14,8 @@ namespace BitnuaVideoPlayer
 
         private UserSettings()
         {
+#if DEBUG
+#else
             if (Properties.Settings.Default.UpgradeRequired)
             {
                 Properties.Settings.Default.Upgrade();
@@ -20,21 +23,33 @@ namespace BitnuaVideoPlayer
                 Properties.Settings.Default.Save();
                 checkUpgrade();
             }
+#endif
         }
 
         private void checkUpgrade()
         {
-                const string goodVersion = "1.0.1";
-                string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BitnuaVideoPlayer");
-                var v_dir = Directory.GetDirectories(appPath).FirstOrDefault(d => Directory.GetDirectories(d).Any(dir => dir.Contains(goodVersion)));
-                if (!string.IsNullOrEmpty(v_dir))
-                {
-                    string v_conf = Path.Combine(v_dir, goodVersion, "user.config");
-                    string currConf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+            const string strongAppName = "BitnuaVideoPlayer.exe_StrongName_lgujmbe4zuxqp45onbgara1o5b41v3jb";
+            
+            string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BitnuaVideoPlayer", strongAppName);
+            var v_dirs = Directory.GetDirectories(appPath);
 
-                    File.Copy(v_conf, currConf, true);
-                    Properties.Settings.Default.Reload();
+            string currConf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+            if (v_dirs.Length == 0)
+            {
+                File.WriteAllText(currConf, Properties.Resources.UserConfTemplate);
+            }
+            else
+            {
+                var currVerDir = v_dirs.SingleOrDefault(d => d == Application.ProductVersion);
+                if (string.IsNullOrEmpty(currVerDir))
+                {
+                    var lastVer = v_dirs.Last();
+                    string prevConf = Path.Combine(lastVer, "user.config");
+
+                    File.Copy(prevConf, currConf, true);
                 }
+            }
+            Properties.Settings.Default.Reload();
         }
 
         private static UserSettings s_instance;
