@@ -64,6 +64,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <WrapPanel Orientation="Horizontal">
@@ -208,6 +209,11 @@
                     </GroupBox>
                 </Grid>
             </GroupBox>
+            <GroupBox Header="Song info" 
+                      Grid.Row="3" 
+                      Margin="4,0">
+                <CheckBox Content="Show ?" IsChecked="{Binding ShowSongInfo}"/>
+            </GroupBox>
         </Grid>
 
         <!--Presentation Layout-->
@@ -276,11 +282,25 @@
                                 <Image Source="Resources/videoItem.png"/>
                             </UI:CanvasItem>
                         </DataTemplate>
-                        
+
+                        <!--VideoListItem-->
+                        <DataTemplate DataType="{x:Type my:VideoListItem}">
+                            <UI:CanvasItem>
+                                <Image Source="Resources/videosItem.png"/>
+                            </UI:CanvasItem>
+                        </DataTemplate>
+
                         <!--imageItem-->
                         <DataTemplate DataType="{x:Type my:PictureItem}">
                             <UI:CanvasItem>
                                 <Image Source="Resources/imageItem.jpg"/>
+                            </UI:CanvasItem>
+                        </DataTemplate>
+
+                        <!--imageItem-->
+                        <DataTemplate DataType="{x:Type my:PictureListItem}">
+                            <UI:CanvasItem>
+                                <Image Source="Resources/imagesItem.png"/>
                             </UI:CanvasItem>
                         </DataTemplate>
 
@@ -300,7 +320,9 @@
                                      ClipToBounds="True"
                                      Width="640"
                                      Height="360"
-                                     SnapsToDevicePixels="True"/>
+                                     SnapsToDevicePixels="True"
+                                     Loaded="designerCanvasLoaded"
+                                     />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemContainerStyle>

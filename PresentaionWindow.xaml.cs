@@ -18,7 +18,9 @@ namespace BitnuaVideoPlayer
         {
             browser.Dispatcher.BeginInvoke(new Action(() =>
             {
-                ((IWebBrowser)browser).LoadHtml(html);
+                var brws = ((IWebBrowser)browser);
+                brws.LoadHtml(html);
+
             }), System.Windows.Threading.DispatcherPriority.DataBind);
         }
     }

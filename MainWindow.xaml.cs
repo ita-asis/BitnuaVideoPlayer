@@ -17,6 +17,8 @@ using System.Windows.Threading;
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Collections.ObjectModel;
+using System.Windows.Controls;
 
 namespace BitnuaVideoPlayer
 {
@@ -137,7 +139,7 @@ namespace BitnuaVideoPlayer
             if (!string.IsNullOrEmpty(VM?.Banner?.PicsPath))
             {
                 var directory = new DirectoryInfo(VM.Banner.PicsPath);
-                VM.Banner.Pics = (from f in directory.GetFiles() select new PictureItem() { Path = f.FullName }).ToList();
+                VM.Banner.Pics = new ObservableCollection<PictureItem>(from f in directory.GetFiles() select new PictureItem() { Path = f.FullName });
             }
         }
 
@@ -220,7 +222,24 @@ namespace BitnuaVideoPlayer
             if (fields.TryGetValue(Fields.YouTubeDance, out field) && !string.IsNullOrWhiteSpace(field.Value))
                 song.YouTubeDance = field.Value;
 
+            TrimNames(song);
+
             return song;
+        }
+
+        private static void TrimNames(Song song)
+        {
+            int seperatorInd = song.Title?.IndexOf('-') ?? -1;
+            if (seperatorInd > 0)
+            {
+                song.Title = song.Title.Substring(0, seperatorInd).Trim();
+            }
+
+            seperatorInd = song.HebTitle?.IndexOf('-') ?? -1;
+            if (seperatorInd > 0)
+            {
+                song.HebTitle = song.HebTitle.Substring(0, seperatorInd).Trim();
+            }
         }
 
         private async void OnWatchDirChanged(object sender, FileSystemEventArgs e)
@@ -632,6 +651,8 @@ namespace BitnuaVideoPlayer
         {
             ePresentationKinds kind = (ePresentationKinds)presentaionItemCB.SelectedItem;
             var item = PresentationItem.Create(kind, persentaionItemPath.Text);
+            item.X = (int)(m_PresentationCanvas.Width - item.Width)/ 2;
+            item.Y = (int)(m_PresentationCanvas.Height - item.Height) / 2;
             VM.PresentationVM.PresentationItems.Add(item);
         }
 
@@ -664,6 +685,8 @@ namespace BitnuaVideoPlayer
 
 
         private MainWindowVM m_MainWindowVM;
+        private Canvas m_PresentationCanvas;
+
         public MainWindowVM PVM => m_MainWindowVM ?? (m_MainWindowVM = new MainWindowVM());
 
         public class MainWindowVM: ViewModelBase
@@ -708,6 +731,11 @@ namespace BitnuaVideoPlayer
                 default:
                     break;
             }
+        }
+
+        private void designerCanvasLoaded(object sender, RoutedEventArgs e)
+        {
+            m_PresentationCanvas = sender as Canvas;
         }
     }
 

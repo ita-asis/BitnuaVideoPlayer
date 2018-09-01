@@ -11,6 +11,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MoveResizeRotateWithAdorners;component/Resources/DesignerItem.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis" />
         </ResourceDictionary>
     </UserControl.Resources>
     
@@ -20,14 +21,21 @@
                             Height="{Binding Height, Mode=TwoWay}"
                             Padding="1"
                             Style="{StaticResource DesignerItemStyle}">
-                <Border BorderThickness="2" BorderBrush="Beige" IsHitTestVisible="False">
+                <Border x:Name="PART_Border" IsHitTestVisible="False">
+                    <Border.Style>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="BorderBrush" Value="Beige"/>
+                        </Style>
+                    </Border.Style>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <ContentPresenter Content="{TemplateBinding Content}"/>
+                        <ContentPresenter  x:Name="PART_ContentPresenter" Content="{TemplateBinding Content}"/>
                         <Label Grid.Row="1"
+                               x:Name="PART_Lable"
                                Foreground="White"
                                HorizontalContentAlignment="Center"
                                Content="{Binding Text}"/>

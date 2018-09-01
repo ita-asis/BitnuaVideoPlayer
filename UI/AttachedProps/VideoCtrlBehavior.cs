@@ -16,7 +16,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 {
     public class VideoCtrlBehavior : Behavior<VlcControl>
     {
-        private Vlc.DotNet.Forms.VlcControl Player => AssociatedObject?.MediaPlayer;
+        private VlcControl PlayerCtrl => AssociatedObject;
         protected override void OnAttached()
         {
             RegisterEvents();
@@ -45,7 +45,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 
         protected virtual void Stop()
         {
-            Player?.Stop();
+            PlayerCtrl?.MediaPlayer?.Stop();
         }
 
         public VideoSource Source
@@ -65,9 +65,9 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 
         private void InitPlayer()
         {
-            Player.VlcLibDirectoryNeeded += OnVlcControlNeedsLibDirectory;
-            Player.VlcMediaplayerOptions = new[] { "-I rc", "--rc-quiet" }; //"-I dummy","--dummy-quiet"
-            Player.EndInit();
+            PlayerCtrl.MediaPlayer.VlcLibDirectoryNeeded += OnVlcControlNeedsLibDirectory;
+            PlayerCtrl.MediaPlayer.VlcMediaplayerOptions = new[] { "-I rc", "--rc-quiet" }; //"-I dummy","--dummy-quiet"
+            PlayerCtrl.MediaPlayer.EndInit();
 
             // This can also be called before EndInit
             //player.Log += (sender, args) =>
@@ -81,7 +81,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         {
             if (!string.IsNullOrWhiteSpace(Source?.Path))
             {
-                PlayerPlay(Player, Source);
+                PlayerPlay(PlayerCtrl.MediaPlayer, Source);
             }
         }
 
@@ -119,14 +119,17 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             behaviour.Play();
         }
 
-        protected void Play(VlcControl player, VideoSource video)
+        protected async Task Play(VlcControl player, VideoSource video)
         {
-            Play(player?.MediaPlayer, video);
+            if (player != null)
+            {
+                await player.Dispatcher.BeginInvoke((Action)(() => Play(player?.MediaPlayer, video)));
+            }
         }
 
         protected void Play(Vlc.DotNet.Forms.VlcControl player = null, VideoSource source = null)
         {
-            PlayerPlay(player ?? Player, source ?? Source);
+            PlayerPlay(player ?? PlayerCtrl?.MediaPlayer, source ?? Source);
         }
 
         private void OnVlcControlNeedsLibDirectory(object sender, Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs e)
@@ -145,10 +148,10 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 
     public class VideoDirPlayerBehaviour : VideoCtrlBehavior
     {
-        protected override void OnAttached()
+        protected override async void OnAttached()
         {
             base.OnAttached();
-
+            await Init();
         }
 
         #region Props
@@ -185,13 +188,20 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         private static async void OnVideosChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var @this = d as VideoDirPlayerBehaviour;
+            if (@this.AssociatedObject == null)
+                return;
 
-            @this.Stop();
-            @this.m_LoopToken = new CancellationTokenSource();
-            var token = @this.m_LoopToken.Token;
-            if (@this.Videos != null)
+            await @this.Init();
+        }
+
+        private async Task Init()
+        {
+            Stop();
+            m_LoopToken = new CancellationTokenSource();
+            var token = m_LoopToken.Token;
+            if (Videos != null)
             {
-                await @this.StartVideoTask(@this.AssociatedObject, @this.Videos, @this.Delay, token);
+                await StartVideoTask(AssociatedObject, Videos, Delay, token);
             }
         }
 
@@ -209,7 +219,8 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
                         {
                             currVideo = video;
                             long time = CalcLastPlayTime(playTime, video.Path);
-                            Play(player, video);
+                            video.Time = time;
+                            await Play(player, video);
                         }
 
                         await Task.Delay(delay, token).ConfigureAwait(false);
@@ -237,16 +248,6 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 
     public static class Ex
     {
-        public static IEnumerable<T> IterateLoop<T>(this IEnumerable<T> source, CancellationToken token)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                using (var videos = source.GetEnumerator())
-                    while (videos.MoveNext() && !token.IsCancellationRequested)
-                        yield return videos.Current;
-            }
-        }
-
         public static bool GetDuration(string filename, out TimeSpan duration)
         {
             try

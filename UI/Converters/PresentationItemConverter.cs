@@ -27,6 +27,14 @@ namespace BitnuaVideoPlayer.UI.Converters
             {
                 itemType = typeof(PictureItem);
             }
+            else if (itemKind == ePresentationKinds.PictureList)
+            {
+                itemType = typeof(PictureListItem);
+            }
+            else if (itemKind == ePresentationKinds.VideoList)
+            {
+                itemType = typeof(VideoListItem);
+            }
             else if (itemKind == ePresentationKinds.Video)
             {
                 itemType = typeof(VideoItem);

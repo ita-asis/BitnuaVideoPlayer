@@ -13,6 +13,7 @@ using Newtonsoft.Json.Converters;
 using System.Text.RegularExpressions;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Linq;
 
 namespace BitnuaVideoPlayer
 {
@@ -85,10 +86,11 @@ namespace BitnuaVideoPlayer
 
         private List<ClipCollectionCBItem> m_SongYoutubeVideos = new List<ClipCollectionCBItem>()
         {
-            new ClipCollectionCBItem() { Text = "Clip" },
-            new ClipCollectionCBItem() { Text = "Dance" },
+            new ClipCollectionCBItem() { Text = "Clip" , Type = eSongClipTypes.YouTubeClip},
+            new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.YouTubeDance },
         };
 
+        [JsonIgnore]
         public List<ClipCollectionCBItem> SongYoutubeVideos
         {
             get { return m_SongYoutubeVideos; }
@@ -187,6 +189,15 @@ namespace BitnuaVideoPlayer
             set { m_Pic_ShowWriter = value; OnPropertyChanged(() => Pic_ShowWriter); }
         }
 
+        private bool m_ShowSongInfo = true;
+
+        public bool ShowSongInfo
+        {
+            get { return m_ShowSongInfo; }
+            set { m_ShowSongInfo = value; OnPropertyChanged(() => ShowSongInfo); }
+        }
+
+
         private double m_TopPanelHeight;
 
         public double TopPanelHeight
@@ -197,12 +208,12 @@ namespace BitnuaVideoPlayer
 
         #region DefaultLayout
 
-        private double m_DefaultLayout_VideoCtrlWidth;
+        private double m_DefaultLayout_LeftWidth;
 
-        public double DefaultLayout_VideoCtrlWidth
+        public double DefaultLayout_LeftWidth
         {
-            get { return m_DefaultLayout_VideoCtrlWidth; }
-            set { m_DefaultLayout_VideoCtrlWidth = value; OnPropertyChanged(() => DefaultLayout_VideoCtrlWidth); }
+            get { return m_DefaultLayout_LeftWidth; }
+            set { m_DefaultLayout_LeftWidth = value; OnPropertyChanged(() => DefaultLayout_LeftWidth); }
         }
 
         private double m_DefaultLayout_SongInfoHeight;
@@ -224,7 +235,7 @@ namespace BitnuaVideoPlayer
         #endregion
 
         private object m_LastLayoutData;
-        private eLayoutModes m_SelectedLayout = eLayoutModes.Presentation;
+        private eLayoutModes m_SelectedLayout = eLayoutModes.Default;
         [JsonConverter(typeof(StringEnumConverter))]
         public eLayoutModes SelectedLayout
         {
@@ -269,7 +280,7 @@ namespace BitnuaVideoPlayer
         [JsonIgnore]
         public TextVM LeftPicTitle
         {
-            get { return m_LeftPicTitle; }
+            get { return m_LeftPicTitle ?? (m_LeftPicTitle = new TextVM()); }
             set { m_LeftPicTitle = value; OnPropertyChanged(() => LeftPicTitle); }
         }
 
@@ -381,13 +392,13 @@ namespace BitnuaVideoPlayer
         public abstract ePresentationKinds Kind { get; }
 
 
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public double Angle { get; set; }
-        public string Text { get; set; }
-        public string Path { get; set; }
+        public virtual double X { get; set; }
+        public virtual double Y { get; set; }
+        public virtual double Width { get; set; }
+        public virtual double Height { get; set; }
+        public virtual double Angle { get; set; }
+        public virtual string Text { get; set; }
+        public virtual string Path { get; set; }
 
         // factory method
         public static PresentationItem Create(ePresentationKinds kind, string path)
@@ -397,17 +408,24 @@ namespace BitnuaVideoPlayer
                 case ePresentationKinds.Picture:
                     return new PictureItem() { Path = path };
                 case ePresentationKinds.PictureList:
-                    return new PictureItem() { Path = path }; // TODO
+                    return new PictureListItem() { Path = path };
                 case ePresentationKinds.Video:
                     return new VideoItem() { VideoSource = new VideoSource(path) };
                 case ePresentationKinds.VideoList:
-                    return new VideoListItem() { Path = path };
+                    return new VideoListItem(path);
                 case ePresentationKinds.YoutubeVideo:
                     return new YoutubeVideoItem() { VideoSource = new YoutubeVideoSource(path)};
                 default:
                     throw new NotImplementedException();
             }
         }
+
+    
+    }
+    public class PictureListItem : PictureItem
+    {
+        public override ePresentationKinds Kind => ePresentationKinds.PictureList;
+
     }
 
     public class PictureItem : PresentationItem
@@ -442,14 +460,47 @@ namespace BitnuaVideoPlayer
     {
         public override ePresentationKinds Kind => ePresentationKinds.VideoList;
 
+        public VideoListItem(string path)
+        {
+            Path = path;
+        }
+
+        public VideoListItem()
+        {
+        }
+
+        public override string Path
+        {
+            get
+            {
+                return base.Path;
+            }
+
+            set
+            {
+                base.Path = value;
+                VideoSources = ReadVideos(value);
+            }
+        }
+
         private List<VideoSource> m_VideoSources;
 
+        [JsonIgnore]
         public List<VideoSource> VideoSources
         {
             get { return m_VideoSources; }
             set { m_VideoSources = value; OnPropertyChanged(() => VideoSources); }
         }
+        private static List<VideoSource> ReadVideos(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                var files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+                return files.Select(filePath => new VideoSource(filePath)).ToList();
+            }
 
+            return null;
+        }
     }
 
     public class YoutubeVideoSource : VideoSource
@@ -529,7 +580,8 @@ namespace BitnuaVideoPlayer
         SongClips,
         Event,
         Dance,
-        YouTubeDance
+        YouTubeDance,
+        YouTubeClip
     }
 
     public class ClipCollectionCBItem : CheckBoxItem
@@ -587,9 +639,9 @@ namespace BitnuaVideoPlayer.ViewModels
             set { m_PicsPath = value; OnPropertyChanged(() => PicsPath); }
         }
 
-        private List<PictureItem> m_Pics;
+        private ObservableCollection<PictureItem> m_Pics;
         [JsonIgnore]
-        public List<PictureItem> Pics
+        public ObservableCollection<PictureItem> Pics
         {
             get { return m_Pics; }
             set { m_Pics = value; OnPropertyChanged(() => Pics); }

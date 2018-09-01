@@ -4,7 +4,7 @@ namespace BitnuaVideoPlayer
 {
     public class VideoSource : ViewModelBase
     {
-        private readonly long? m_Time;
+        private long? m_Time;
         private readonly string m_VideoPath;
 
 
@@ -16,7 +16,7 @@ namespace BitnuaVideoPlayer
         }
 
         public string Path => m_VideoPath;
-        public long? Time => m_Time;
+        public long? Time { get { return m_Time; } set { m_Time = value; } }
 
         public override bool Equals(object obj)
         {

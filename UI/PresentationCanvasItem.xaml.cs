@@ -18,10 +18,9 @@ namespace BitnuaVideoPlayer.UI
     /// <summary>
     /// Interaction logic for CanvasItem.xaml
     /// </summary>
-   
-    public partial class CanvasItem : UserControl
+    public partial class PresentationCanvasItem : UserControl
     {
-        public CanvasItem()
+        public PresentationCanvasItem()
         {
             InitializeComponent();
         }

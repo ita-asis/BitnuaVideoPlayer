@@ -13,38 +13,6 @@
   "PicPathComposer": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\לחן",
   "PicPathWriter": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\משורר",
   "PicPathDefault": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\Default",
-  "SongYoutubeVideos": [
-    {
-      "Type": 0,
-      "IsChecked": false,
-      "Text": "Clip"
-    },
-    {
-      "Type": 0,
-      "IsChecked": false,
-      "Text": "Dance"
-    },
-    {
-      "Type": 0,
-      "IsChecked": false,
-      "Text": "Clip"
-    },
-    {
-      "Type": 0,
-      "IsChecked": false,
-      "Text": "Dance"
-    },
-    {
-      "Type": 0,
-      "IsChecked": false,
-      "Text": "Clip"
-    },
-    {
-      "Type": 0,
-      "IsChecked": false,
-      "Text": "Dance"
-    }
-  ],
   "Banner": {
     "Speed": 5,
     "Text": "שלום Banner Text Here ...",

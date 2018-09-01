@@ -11,15 +11,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 {
     public class YoutubeWebBrowser : CefSharp.Wpf.ChromiumWebBrowser
     {
-        public void SimulateMouseClick()
-        {
-            var args = new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
-            {
-                RoutedEvent = Mouse.MouseDownEvent,
-                Source = this,
-            };
-            RaiseEvent(args);
-        }
+       
     }
 
     public class YouTubeCtrlBehaviour : Behavior<YoutubeWebBrowser>
