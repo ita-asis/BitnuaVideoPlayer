@@ -19,6 +19,8 @@ using System.Reflection;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace BitnuaVideoPlayer
 {
@@ -27,7 +29,7 @@ namespace BitnuaVideoPlayer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const string c_ConfFilePath = "conf.json";
+        private const string c_MainVmSettingKey = "MainVmJson";
         private static Random m_Random = new Random();
         private PresentaionWindow m_PlayerWindow;
         private FileSystemWatcher m_FileSysWatcher;
@@ -66,8 +68,10 @@ namespace BitnuaVideoPlayer
             return string.Format("Version {0}.{1}.{2}", version.Major, version.Minor, version.Build);
         }
 
-        internal static void LogException(Exception exception)
+        internal static string LogException(Exception exception)
         {
+            var sb = new StringBuilder();
+
             Trace.WriteLine(null);
             Trace.WriteLine(null);
             Trace.TraceError($"{DateTime.Now}");
@@ -76,15 +80,26 @@ namespace BitnuaVideoPlayer
             while (ex != null)
             {
                 Trace.TraceError(ex.Message);
+                sb.AppendLine(ex.Message);
                 Trace.TraceError(ex.StackTrace);
+                sb.AppendLine();
+                sb.AppendLine(ex.StackTrace);
+                sb.AppendLine();
+                sb.AppendLine();
+
+
                 ex = ex.InnerException;
             }
             Trace.Flush();
+
+            return sb.ToString();
         }
 
         private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            LogException(e.Exception);
+            e.Handled = true;
+            var msg = LogException(e.Exception);
+            System.Windows.MessageBox.Show(msg, "Exception!", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -94,7 +109,8 @@ namespace BitnuaVideoPlayer
 
         private async Task InitAll()
         {
-            DataContext = VM = MainViewModel.Create(c_ConfFilePath);
+            string vmJson = Convert.ToString(UserSettings.Get(c_MainVmSettingKey));
+            DataContext = VM = MainViewModel.Create(vmJson);
             VM.CurrentClient = m_BitnuaClient = new ClientInfo() { Name = VM.ClientName };
             VM.PropertyChanged += VM_PropertyChanged;
             await InitMongoDb();
@@ -276,7 +292,11 @@ namespace BitnuaVideoPlayer
             VM.ArtistPicSource = await GetArtistPic();
             m_picSources = GetAvaiableSongPics().Shuffle(m_Random);
             VM.DefaultLayout_VideoItem.VideoSources = GetAvaiableSongVideos().Shuffle(m_Random).ToList();
-            m_Flyerfiles = Directory.EnumerateFiles(VM.FlayerDir, "*.*", SearchOption.AllDirectories).Shuffle(m_Random);
+
+            if (!string.IsNullOrWhiteSpace(VM.FlayerDir))
+            {
+                m_Flyerfiles = Directory.EnumerateFiles(VM.FlayerDir, "*.*", SearchOption.AllDirectories).Shuffle(m_Random);
+            }
 
             m_PicLoopToken = new CancellationTokenSource();
 
@@ -386,6 +406,9 @@ namespace BitnuaVideoPlayer
 
         private static string PickRandomFile(string dir, string searchPattern = null)
         {
+            if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir))
+                return null;
+
             string file = null;
             try
             {
@@ -422,7 +445,7 @@ namespace BitnuaVideoPlayer
 
             if (VM.Song != null)
             {
-                if (!string.IsNullOrWhiteSpace(VM.Song.Performer) && isChecked(eSongClipTypes.SongClips))
+                if (!string.IsNullOrWhiteSpace(VM.VideoPathSinger) && !string.IsNullOrWhiteSpace(VM.Song.Performer) && isChecked(eSongClipTypes.SongClips))
                 {
                     var performerPath = Path.Combine(VM.VideoPathSinger, VM.Song.Performer);
                     var performerVideo = PickRandomFile(performerPath, $"*{VM.Song.Title}*");
@@ -434,20 +457,29 @@ namespace BitnuaVideoPlayer
                         videos.Add(new VideoSource(performerVideo));
                 }
 
-                var eventVideo = PickRandomFile(Path.Combine(VM.VideoPathEvent, VM.Song.HebTitle));
-                var danceVideo = PickRandomFile(Path.Combine(VM.VideoPathDance, VM.Song.HebTitle));
-                if (!string.IsNullOrEmpty(eventVideo) && isChecked(eSongClipTypes.Event))
-                    videos.Add(new VideoSource(eventVideo));
+                if (!string.IsNullOrWhiteSpace(VM.VideoPathEvent) && !string.IsNullOrWhiteSpace(VM.Song.HebTitle) && isChecked(eSongClipTypes.Event))
+                {
+                    var eventVideo = PickRandomFile(Path.Combine(VM.VideoPathEvent, VM.Song.HebTitle));
+                    if (!string.IsNullOrEmpty(eventVideo))
+                        videos.Add(new VideoSource(eventVideo));
+                }
 
-                if (!string.IsNullOrEmpty(danceVideo) && isChecked(eSongClipTypes.Dance))
-                    videos.Add(new VideoSource(danceVideo));
+                if (!string.IsNullOrWhiteSpace(VM.VideoPathDance) && !string.IsNullOrWhiteSpace(VM.Song.HebTitle) && isChecked(eSongClipTypes.Dance))
+                {
+                    var danceVideo = PickRandomFile(Path.Combine(VM.VideoPathDance, VM.Song.HebTitle));
+                    if (!string.IsNullOrEmpty(danceVideo))
+                        videos.Add(new VideoSource(danceVideo));
+                }
+
+                if (!string.IsNullOrEmpty(VM.Song.YouTubeSong) && isChecked(eSongClipTypes.YouTubeClip))
+                    videos.Add(new YoutubeVideoSource(VM.Song.YouTubeSong));
 
                 if (!string.IsNullOrEmpty(VM.Song.YouTubeDance) && isChecked(eSongClipTypes.YouTubeDance))
                     videos.Add(new YoutubeVideoSource(VM.Song.YouTubeDance));
 
             }
 
-            if (videos.Count == 0)
+            if (videos.Count == 0 && !string.IsNullOrWhiteSpace(VM.VideoPathDefault))
             {
                 var defaultVideo = PickRandomFile(Path.Combine(VM.VideoPathDefault));
                 videos.Add(new VideoSource(defaultVideo));
@@ -501,7 +533,8 @@ namespace BitnuaVideoPlayer
             m_WatchCloudDBToken?.Cancel();
             DeInitMongoDb();
             Properties.Settings.Default.Save();
-            VM.SaveTo(c_ConfFilePath);
+            var vmJson = JsonConvert.SerializeObject(VM, Formatting.Indented);
+            UserSettings.Set(c_MainVmSettingKey, vmJson);
         }
 
         private void DeInitMongoDb()
@@ -566,8 +599,9 @@ namespace BitnuaVideoPlayer
             return font;
         }
 
-        private static Color PickColor(Color color)
+        private static Color PickColor(Color? i_color = null)
         {
+            var color = i_color ?? Color.Black;
             var colorDialog = new ColorDialog() { AnyColor = true, Color = color };
             var dr = colorDialog.ShowDialog();
             if (dr != System.Windows.Forms.DialogResult.Cancel)

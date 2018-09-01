@@ -18,7 +18,7 @@ namespace BitnuaVideoPlayer
     public partial class App : Application
     {
         public static AppUpdateManager updateManager;
-
+        
         public App()
         {
             ServicePointManager.Expect100Continue = true;

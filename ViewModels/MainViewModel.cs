@@ -21,17 +21,12 @@ namespace BitnuaVideoPlayer
     [SettingsSerializeAs(SettingsSerializeAs.String)]
     public class MainViewModel : ViewModelBase
     {
-        public MainViewModel()
-        {
-        }
-
         public static MainViewModel Create(string json)
         {
             MainViewModel vm = null;
             try
             {
-                var conf = File.ReadAllText(json);
-                vm = JsonConvert.DeserializeObject<MainViewModel>(conf);
+                vm = JsonConvert.DeserializeObject<MainViewModel>(json);
             }
             catch { }
             finally
@@ -81,7 +76,6 @@ namespace BitnuaVideoPlayer
             {
                 return m_ClipTypes;
             }
-            set { m_ClipTypes = value; OnPropertyChanged(() => ClipTypes); }
         }
 
         private List<ClipCollectionCBItem> m_SongYoutubeVideos = new List<ClipCollectionCBItem>()
@@ -94,7 +88,6 @@ namespace BitnuaVideoPlayer
         public List<ClipCollectionCBItem> SongYoutubeVideos
         {
             get { return m_SongYoutubeVideos; }
-            set { m_SongYoutubeVideos = value; OnPropertyChanged(() => SongYoutubeVideos); }
         }
 
         private BannerVM m_Banner;
@@ -103,16 +96,16 @@ namespace BitnuaVideoPlayer
         {
             get
             {
-                return m_Banner;
+                return m_Banner ?? (m_Banner = new BannerVM());
             }
             set { m_Banner = value; OnPropertyChanged(() => Banner); }
         }
 
-        private LyricsVM m_Lyrics = new LyricsVM();
+        private LyricsVM m_Lyrics;
 
         public LyricsVM Lyrics
         {
-            get { return m_Lyrics; }
+            get { return m_Lyrics ?? (m_Lyrics = new LyricsVM()); }
             set { m_Lyrics = value; OnPropertyChanged(() => Lyrics); }
         }
 

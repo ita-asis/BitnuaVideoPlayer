@@ -207,6 +207,10 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 
         private async Task StartVideoTask(VlcControl player, List<VideoSource> videos, int delay, CancellationToken token)
         {
+            if (videos == null || videos.Count == 0)
+                throw new ArgumentNullException(nameof(videos));
+
+
             var playTime = DateTime.Now;
             while (!token.IsCancellationRequested)
             {
