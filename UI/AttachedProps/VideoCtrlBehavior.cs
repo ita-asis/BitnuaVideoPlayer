@@ -101,7 +101,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             }
             catch (Exception ex)
             {
-                MainWindow.LogException(ex);
+                App.LogException(ex);
             }
         }
 

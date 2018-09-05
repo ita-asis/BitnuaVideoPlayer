@@ -1,13 +1,9 @@
 ﻿using CefSharp;
 using CefSharp.Wpf;
-using ColorFont;
-using MongoDB.Driver;
 using System;
 using System.Drawing;
-using System.IO;
-using System.Reflection;
 using System.Windows;
-using System.Windows.Forms;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace BitnuaVideoPlayer
@@ -94,6 +90,12 @@ namespace BitnuaVideoPlayer
         private void Window_Closed(object sender, EventArgs e)
         {
             App.Current.Shutdown();
+        }
+
+        private void bannerShowOnTopChecked(object sender, RoutedEventArgs e)
+        {
+            bool isChecked = ((CheckBox)sender).IsChecked ?? false;
+            statusGrid.SetValue(Grid.RowProperty, isChecked ? 0 : 2);
         }
     }
 }

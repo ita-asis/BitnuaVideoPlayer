@@ -55,13 +55,16 @@ namespace BitnuaVideoPlayer
                     var result = await s_UpdateManager.UpdateApp(OnVersionUpdateProgressChanged);
                     if (result != null)
                     {
-                        UpdateManager.RestartApp();
+                        if (Debugger.IsAttached)
+                            Debugger.Break();
+                        else
+                            UpdateManager.RestartApp();
                     }
                 }
             }
             catch (Exception ex)
             {
-                MainWindow.LogException(ex);
+                App.LogException(ex);
             }
         }
 

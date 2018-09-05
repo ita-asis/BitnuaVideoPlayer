@@ -71,7 +71,7 @@
                 <Label Content="Show Client" Padding="4"/>
                 <ComboBox SelectedItem="{Binding CurrentClient}"
                           ItemsSource="{Binding ActiveClients}"
-                          SelectionChanged="CurrentClientChanged"
+             
                           Padding="4"/>
             </WrapPanel>
             <GroupBox Header="Left side" 
@@ -212,7 +212,70 @@
             <GroupBox Header="Song info" 
                       Grid.Row="3" 
                       Margin="4,0">
-                <CheckBox Content="Show ?" IsChecked="{Binding ShowSongInfo}"/>
+                <StackPanel>
+                    <CheckBox Content="Show ?" IsChecked="{Binding ShowSongInfo}" Margin="4"/>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="Song Title" Grid.Row="0" Grid.Column="0" />
+                        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" >
+                            <Button Click="btnSongInfoFontPicker" 
+                                    Content="Font"
+                                    Margin="4,0,4,1"
+                                    Height="25"
+                                    Padding="4,0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Bottom"/>
+                            <Button Click="btnSongInfoForeColorPicker" 
+                                    Style="{StaticResource colorBtn}"
+                                    DataContext="{Binding SongInfo01.ForeColor}"
+                                    Margin="4,0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top"/>
+                        </StackPanel>
+                        <Label Content="Song Details" Grid.Row="1" Grid.Column="0"/>
+
+                        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+                            <Button Click="btnSongInfo2FontPicker" 
+                        Content="Font"
+                        Margin="4,0,4,1"
+                        Height="25"
+                        Padding="4,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"/>
+                            <Button Click="btnSongInfo2ForeColorPicker" 
+                        Style="{StaticResource colorBtn}"
+                        DataContext="{Binding SongInfo02.ForeColor}"
+                        Margin="4,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"/>
+
+                        </StackPanel>
+
+                        <Label Content="Background" Grid.Row="2" Grid.Column="0"/>
+                        <Button Click="btnSongInfoBackColorPicker" 
+                                Grid.Row="2" Grid.Column="1"
+                                Style="{StaticResource colorBtn}"
+                                DataContext="{Binding SongInfo01.BackColor}"
+                                Margin="4,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"/>
+
+
+                    </Grid>
+
+                </StackPanel>
+
             </GroupBox>
         </Grid>
 
@@ -669,6 +732,8 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <DockPanel LastChildFill="True" Margin="4">
                     <TextBlock DockPanel.Dock="Left" Text="Text" Padding="4,0"/>
@@ -680,6 +745,35 @@
                     <TextBox Text="{Binding Banner.PicsPath}" Margin="4,0" Width="Auto"/>
                 </DockPanel>
                 <StackPanel Grid.Row="2" Orientation="Horizontal">
+                    <Label Content="Position"/>
+
+                    <RadioButton x:Name="rb_BannerPosButtom" Content="Buttom"  Margin="4,0,4,0" IsChecked="True"
+                              VerticalAlignment="Center"
+                                 />
+                    <RadioButton x:Name="rb_BannerPosTop" Content="Top" Margin="4,0,10,0" IsChecked="{Binding Banner.ShowOnTop}"
+                              VerticalAlignment="Center"
+                                 />
+
+                    <Label Content="Height"/>
+                    <TextBox Text="{Binding Banner.Height}" VerticalAlignment="Center" Width="20" />
+
+                </StackPanel>
+                <StackPanel Grid.Row="3" Orientation="Horizontal">
+                    <Label Content="Speed"/>
+                    <Slider Width="100"
+                        Margin="4,0"
+                        Minimum="2" 
+                        Maximum="25" 
+                        SmallChange="0.5" 
+                        VerticalAlignment="Center"
+                        Value="{Binding Banner.Speed}" />
+                    
+                    <CheckBox Content="Left -> Right" 
+                              Margin="4,0,4,0"
+                              VerticalAlignment="Center"
+                              IsChecked="{Binding Banner.Direction, Converter={StaticResource bool2FlowDirection}}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="4" Orientation="Horizontal">
                     <Button Click="btnBannerFontPicker" 
                         Content="Font"
                         Margin="4,0"
@@ -700,14 +794,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"/>
 
-                    <CheckBox Content="Left -> Right" IsChecked="{Binding Banner.Direction, Converter={StaticResource bool2FlowDirection}}"/>
-                    <Slider Width="100"
-                        Margin="4,0"
-                        Minimum="2" 
-                        Maximum="25" 
-                        SmallChange="0.5" 
-                        VerticalAlignment="Center"
-                        Value="{Binding Banner.Speed}" />
+                   
                 </StackPanel>
 
             </Grid>

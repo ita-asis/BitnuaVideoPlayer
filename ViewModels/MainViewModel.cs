@@ -110,18 +110,15 @@ namespace BitnuaVideoPlayer
 
         public BannerVM Banner
         {
-            get
-            {
-                return m_Banner ?? (m_Banner = new BannerVM());
-            }
+            get { return m_Banner ?? (m_Banner = new BannerVM()); }
             set { m_Banner = value; OnPropertyChanged(() => Banner); }
         }
 
-        private LyricsVM m_Lyrics;
+        private ColoredTextVm m_Lyrics;
 
-        public LyricsVM Lyrics
+        public ColoredTextVm Lyrics
         {
-            get { return m_Lyrics ?? (m_Lyrics = new LyricsVM()); }
+            get { return m_Lyrics ?? (m_Lyrics = new ColoredTextVm()); }
             set { m_Lyrics = value; OnPropertyChanged(() => Lyrics); }
         }
 
@@ -131,22 +128,6 @@ namespace BitnuaVideoPlayer
         {
             get { return m_Song; }
             set { m_Song = value; OnPropertyChanged(() => Song); }
-        }
-
-        private double m_SongTitleFontSize;
-
-        public double SongTitleFontSize
-        {
-            get { return m_SongTitleFontSize; }
-            set { m_SongTitleFontSize = value; OnPropertyChanged(() => SongTitleFontSize); }
-        }
-
-        private double m_Song2ndFontSize;
-
-        public double Song2ndFontSize
-        {
-            get { return m_Song2ndFontSize; }
-            set { m_Song2ndFontSize = value; OnPropertyChanged(() => Song2ndFontSize); }
         }
 
 
@@ -175,7 +156,6 @@ namespace BitnuaVideoPlayer
         }
 
         private bool m_Pic_ShowPerformer;
-
         public bool Pic_ShowPerformer
         {
             get { return m_Pic_ShowPerformer; }
@@ -183,7 +163,6 @@ namespace BitnuaVideoPlayer
         }
 
         private bool m_Pic_ShowComposer;
-
         public bool Pic_ShowComposer
         {
             get { return m_Pic_ShowComposer; }
@@ -191,7 +170,6 @@ namespace BitnuaVideoPlayer
         }
 
         private bool m_Pic_ShowWriter;
-
         public bool Pic_ShowWriter
         {
             get { return m_Pic_ShowWriter; }
@@ -199,16 +177,27 @@ namespace BitnuaVideoPlayer
         }
 
         private bool m_ShowSongInfo = true;
-
         public bool ShowSongInfo
         {
             get { return m_ShowSongInfo; }
             set { m_ShowSongInfo = value; OnPropertyChanged(() => ShowSongInfo); }
         }
 
+        private ColoredTextVm m_SongInfo01;
+        public ColoredTextVm SongInfo01
+        {
+            get { return m_SongInfo01 ?? (m_SongInfo01 = new ColoredTextVm()); }
+            set { m_SongInfo01 = value; OnPropertyChanged(() => SongInfo01); }
+        }
+
+        private ColoredTextVm m_SongInfo02;
+        public ColoredTextVm SongInfo02
+        {
+            get { return m_SongInfo02 ?? (m_SongInfo02 = new ColoredTextVm()); }
+            set { m_SongInfo02 = value; OnPropertyChanged(() => SongInfo02); }
+        }
 
         private double m_TopPanelHeight;
-
         public double TopPanelHeight
         {
             get { return m_TopPanelHeight; }
@@ -218,7 +207,6 @@ namespace BitnuaVideoPlayer
         #region DefaultLayout
 
         private double m_DefaultLayout_LeftWidth;
-
         public double DefaultLayout_LeftWidth
         {
             get { return m_DefaultLayout_LeftWidth; }
@@ -226,7 +214,6 @@ namespace BitnuaVideoPlayer
         }
 
         private double m_DefaultLayout_SongInfoHeight;
-
         public double DefaultLayout_SongInfoHeight
         {
             get { return m_DefaultLayout_SongInfoHeight; }
@@ -336,6 +323,13 @@ namespace BitnuaVideoPlayer
 
         public int LeftPicDelay { get; set; }
         public int DbUpdateDelay { get; set; } = 5000; // 5 sec default
+
+        [JsonIgnore]
+        public IEnumerable<Tuple<string, string>> PicSources;
+        [JsonIgnore]
+        public IEnumerable<string> Flyerfiles;
+
+
     }
 
     public class PresentationModeViewModel : ViewModelBase
@@ -627,6 +621,23 @@ namespace BitnuaVideoPlayer.ViewModels
             set { m_Direction = value; OnPropertyChanged(() => Direction); }
         }
 
+        private bool m_ShowOnTop;
+
+        public bool ShowOnTop
+        {
+            get { return m_ShowOnTop; }
+            set { m_ShowOnTop = value; OnPropertyChanged(() => ShowOnTop); }
+        }
+
+        private double m_Height = 60d;
+
+        public double Height
+        {
+            get { return m_Height; }
+            set { m_Height = value; OnPropertyChanged(() => Height); }
+        }
+
+
         private string m_PicsPath;
 
         public string PicsPath
@@ -646,33 +657,8 @@ namespace BitnuaVideoPlayer.ViewModels
 
     }
 
-    public class LyricsVM : TextVM
+    public class ColoredTextVm : ViewModelBase
     {
-        [JsonIgnore]
-        public override string Text
-        {
-            get
-            {
-                return base.Text;
-            }
-
-            set
-            {
-                base.Text = value;
-            }
-        }
-    }
-    public class TextVM : ViewModelBase
-    {
-        private string m_Text = "Text Here ...";
-
-        public virtual string Text
-        {
-            get { return m_Text; }
-            set { m_Text = value; OnPropertyChanged(() => Text); }
-        }
-
-
         private Color m_BackColor;
 
         [TypeConverter(typeof(Color))]
@@ -714,6 +700,17 @@ namespace BitnuaVideoPlayer.ViewModels
         public double FontSize => Font.Size;
         [JsonIgnore]
         public System.Windows.Media.FontFamily FontFamily => new System.Windows.Media.FontFamily(Font.Name);
+    }
+
+    public class TextVM : ColoredTextVm
+    {
+        private string m_Text = "Text Here ...";
+
+        public virtual string Text
+        {
+            get { return m_Text; }
+            set { m_Text = value; OnPropertyChanged(() => Text); }
+        }
     }
 
     public class Song

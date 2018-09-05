@@ -29,18 +29,17 @@ namespace BitnuaVideoPlayer
             const string strongAppName = "BitnuaVideoPlayer.exe_StrongName_lgujmbe4zuxqp45onbgara1o5b41v3jb";
 
             string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BitnuaVideoPlayer", strongAppName);
-
             string currConf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
             if (!Directory.Exists(appPath))
             {
-                Directory.CreateDirectory(Path.Combine(appPath,Application.ProductVersion));
+                Directory.CreateDirectory(Path.GetDirectoryName(currConf));
                 File.WriteAllText(currConf, Properties.Resources.UserConfTemplate);
             }
             else
             {
                 var v_dirs = Directory.GetDirectories(appPath);
-
-                var currVerDir = v_dirs.SingleOrDefault(d => d.Contains(Application.ProductVersion));
+                var version = GetVersion();
+                var currVerDir = v_dirs.SingleOrDefault(d => d.Contains(version));
                 if (string.IsNullOrEmpty(currVerDir))
                 {
                     var lastVer = v_dirs.Last();
@@ -50,6 +49,14 @@ namespace BitnuaVideoPlayer
                 }
             }
             Properties.Settings.Default.Reload();
+        }
+
+        private static string GetVersion()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            var productVersion = assembly.GetName().Version;
+            var version = string.Format("{0}.{1}.{2}", productVersion.Major, productVersion.Minor, productVersion.Build);
+            return version;
         }
 
         private static UserSettings s_instance;
