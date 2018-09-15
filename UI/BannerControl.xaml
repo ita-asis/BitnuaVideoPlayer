@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="BitnuaVideoPlayer.UI.BannerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             mc:Ignorable="d"
+             xmlns:props="clr-namespace:BitnuaVideoPlayer.UI.AttachedProps"
+             xmlns:my="clr-namespace:BitnuaVideoPlayer"
+             d:DesignHeight="300" d:DesignWidth="300"
+             x:Name="root">
+    <UserControl.Resources>
+        <my:ColorToSolidColorBrushValueConverter x:Key="colorCnv"/>
+
+        <DataTemplate DataType="{x:Type my:PictureItem}">
+            <Viewbox StretchDirection="Both" Stretch="Fill">
+                <Image Source="{Binding Path}" />
+            </Viewbox>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Canvas Panel.ZIndex="1"
+            ClipToBounds="True"
+            Height="{Binding Height, ElementName=root}"
+            FlowDirection="{Binding Banner.Direction}"
+            Background="{Binding Banner.BackColor, Converter={StaticResource colorCnv}}">
+       
+        <!--<TextBlock Text="{Binding Banner.Text}" 
+                           FontSize="{Binding Banner.Font.Size}"
+                           FontFamily="{Binding Banner.Font.FontFamily}"
+                           Foreground="{Binding Banner.ForeColor, Converter={StaticResource colorCnv}}"
+                           >
+                    <i:Interaction.Behaviors>
+                        <props:MarqueeTextBlockBehavior/>
+                    </i:Interaction.Behaviors>
+                </TextBlock>-->
+        <StackPanel Orientation="Horizontal" x:Name="bannerPanel">
+            <i:Interaction.Behaviors>
+                <props:MarqueePanel ActualWidthBind="{Binding ActualWidth, ElementName=bannerPanel}" 
+                                            Speed="{Binding Banner.Speed}"  />
+            </i:Interaction.Behaviors>
+
+            <ItemsControl ItemsSource="{Binding Banner.Pics}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="{x:Type ContentPresenter}">
+                        <Setter Property="Margin" Value="4,0"/>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+            <TextBlock Text="{Binding Banner.Text}" 
+                               FontSize="{Binding Banner.Font.Size}"
+                               FontFamily="{Binding Banner.Font.FontFamily}"
+                               Foreground="{Binding Banner.ForeColor, Converter={StaticResource colorCnv}}"
+                               VerticalAlignment="Center"
+                               />
+        </StackPanel>
+    </Canvas>
+</UserControl>

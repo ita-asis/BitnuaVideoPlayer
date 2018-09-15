@@ -1,4 +1,5 @@
 ﻿using BitnuaVideoPlayer.ViewModels;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 using Squirrel;
@@ -58,7 +59,6 @@ namespace BitnuaVideoPlayer
             InitUpdateManager();
             await InitAll();
 
-
             m_MainWindow = (MainWindow)MainWindow;
             m_MainWindow.DataContext = m_MainWindow.VM = VM;
             m_MainWindow.Closed += M_MainWindow_Closed;
@@ -80,10 +80,10 @@ namespace BitnuaVideoPlayer
 
             m_PicLoopToken?.Cancel();
             m_WatchCloudDBToken?.Cancel();
-            DeInitMongoDb();
             BitnuaVideoPlayer.Properties.Settings.Default.Save();
             var vmJson = JsonConvert.SerializeObject(VM, Formatting.Indented);
             UserSettings.Set(c_MainVmSettingKey, vmJson);
+            DeInitMongoDb();
         }
 
         private void InitUpdateManager()
@@ -100,20 +100,63 @@ namespace BitnuaVideoPlayer
             VM = MainViewModel.Create(vmJson);
             VM.PropertyChanged += VM_PropertyChanged;
             VM.CurrentClient = m_BitnuaClient = new ClientInfo() { Name = VM.ClientName };
-            await InitMongoDb();
+
+            if (!Directory.Exists(VM.WatchDir))
+                throw new DirectoryNotFoundException($"Amps dir not found in {VM.WatchDir}");
 
             m_FileSysWatcher = new FileSystemWatcher()
+                {
+                    Path = VM.WatchDir,
+                    NotifyFilter = NotifyFilters.LastWrite,
+                    Filter = "*.*",
+                    EnableRaisingEvents = true
+                };
+                m_FileSysWatcher.Changed += new FileSystemEventHandler(OnWatchDirChanged);
+                RegisterBannerPicsChanged();
+                await ShowLastSong();
+
+
+            if (CheckForInternetConnection())
             {
-                Path = VM.WatchDir,
-                NotifyFilter = NotifyFilters.LastWrite,
-                Filter = "*.*",
-                EnableRaisingEvents = true
-            };
-            m_FileSysWatcher.Changed += new FileSystemEventHandler(OnWatchDirChanged);
+                await InitMongoDb();
+            }
+            else
+            {
+                m_WatchCloudDBToken = new CancellationTokenSource();
+#pragma warning disable 
+                CheckConnectionLoop(m_WatchCloudDBToken.Token).ContinueWith(t =>
+                 {
+                     if (t.IsCompleted)
+                         return InitMongoDb();
+                     else
+                         return Task.FromCanceled(m_WatchCloudDBToken.Token);
+                 });
+            }
+#pragma warning restore
+        }
 
-            RegisterBannerPicsChanged();
+        public static async Task CheckConnectionLoop(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested && !CheckForInternetConnection())
+            {
+                await Task.Delay(1000);
+            }
+        }
 
-            await ShowLastSong();
+        public static bool CheckForInternetConnection()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                using (client.OpenRead("http://google.com"))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private void RegisterBannerPicsChanged()
@@ -170,25 +213,44 @@ namespace BitnuaVideoPlayer
             {
                 CurrentClientChanged();
             }
+            else if (e.PropertyName == nameof(VM.Pic_ShowComposer) ||
+                     e.PropertyName == nameof(VM.Pic_ShowCreator) ||
+                     e.PropertyName == nameof(VM.Pic_ShowPerformer) ||
+                     e.PropertyName == nameof(VM.Pic_ShowWriter) ||
+                     e.PropertyName == nameof(VM.ClipTypes) ||
+                     e.PropertyName == nameof(VM.SongYoutubeVideos) ||
+                     e.PropertyName == nameof(VM.SelectedVideoMode) ||
+                     e.PropertyName == nameof(VM.SelectedPicMode))
+            {
+                await UpdateVM();
+            }
         }
 
         private async Task InitMongoDb()
         {
             var url = new MongoUrl("mongodb://svc_bitnua:zIGloC1lGQ3uw24d@ds247141.mlab.com:47141/bitnua_vplayer");
             m_MongoClient = new MongoClient(url);
-
+            
             var db = m_MongoClient.GetDatabase("bitnua_vplayer");
+
             DB_Plays = db.GetCollection<PlayEntry>("ampsVmmplay");
             DB_ActiveClients = db.GetCollection<ClientInfo>("activeClients");
             DB_ActiveClients.InsertOne(m_BitnuaClient);
 
             VM.ActiveClients = await GetActiveClients();
         }
+
         private void DeInitMongoDb()
         {
-            var clientId = m_BitnuaClient.Id;
-            DB_Plays.DeleteMany(Builders<PlayEntry>.Filter.Eq("Client._id", clientId));
-            DB_ActiveClients.DeleteOne(Builders<ClientInfo>.Filter.Eq("_id", clientId));
+            try
+            {
+                var clientId = m_BitnuaClient.Id;
+                DB_Plays.DeleteMany(Builders<PlayEntry>.Filter.Eq("Client._id", clientId));
+                DB_ActiveClients.DeleteOne(Builders<ClientInfo>.Filter.Eq("_id", clientId));
+            }
+            catch (Exception)
+            {
+            }
         }
 
 
@@ -334,7 +396,7 @@ namespace BitnuaVideoPlayer
             try
             {
                 var files = Directory.EnumerateFiles(dir, searchPattern ?? "*.*", SearchOption.AllDirectories);
-                file = files.FirstOrDefault();
+                file = files.Shuffle().FirstOrDefault();
             }
             catch (Exception)
             {
@@ -433,38 +495,46 @@ namespace BitnuaVideoPlayer
 
             if (VM.Song != null)
             {
-                if (!string.IsNullOrWhiteSpace(VM.VideoPathSinger) && !string.IsNullOrWhiteSpace(VM.Song.Performer) && isChecked(eSongClipTypes.SongClips))
+                if (VM.SelectedVideoMode == eVideoMode.Clip)
                 {
-                    var performerPath = Path.Combine(VM.VideoPathSinger, VM.Song.Performer);
-                    var performerVideo = PickRandomFile(performerPath, $"*{VM.Song.Title}*");
-                    if (!string.IsNullOrEmpty(performerVideo))
-                        videos.Add(new VideoSource(performerVideo));
+                    if (!string.IsNullOrWhiteSpace(VM.VideoPathSinger) && !string.IsNullOrWhiteSpace(VM.Song.Performer) && isChecked(eSongClipTypes.SongClips))
+                    {
+                        var performerPath = Path.Combine(VM.VideoPathSinger, VM.Song.Performer);
+                        var performerVideo = PickRandomFile(performerPath, $"*{VM.Song.Title}*");
+                        if (!string.IsNullOrEmpty(performerVideo))
+                            videos.Add(new VideoSource(performerVideo));
 
-                    performerVideo = PickRandomFile(performerPath, $"*{VM.Song.HebTitle}*");
-                    if (!string.IsNullOrEmpty(performerVideo))
-                        videos.Add(new VideoSource(performerVideo));
+                        performerVideo = PickRandomFile(performerPath, $"*{VM.Song.HebTitle}*");
+                        if (!string.IsNullOrEmpty(performerVideo))
+                            videos.Add(new VideoSource(performerVideo));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(VM.VideoPathEvent) && !string.IsNullOrWhiteSpace(VM.Song.HebTitle) && isChecked(eSongClipTypes.Event))
+                    {
+                        var eventVideo = PickRandomFile(Path.Combine(VM.VideoPathEvent, VM.Song.HebTitle));
+                        if (!string.IsNullOrEmpty(eventVideo))
+                            videos.Add(new VideoSource(eventVideo));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(VM.VideoPathDance) && !string.IsNullOrWhiteSpace(VM.Song.HebTitle) && isChecked(eSongClipTypes.Dance))
+                    {
+                        var danceVideo = PickRandomFile(Path.Combine(VM.VideoPathDance, VM.Song.HebTitle));
+                        if (!string.IsNullOrEmpty(danceVideo))
+                            videos.Add(new VideoSource(danceVideo));
+                    }
                 }
-
-                if (!string.IsNullOrWhiteSpace(VM.VideoPathEvent) && !string.IsNullOrWhiteSpace(VM.Song.HebTitle) && isChecked(eSongClipTypes.Event))
+                else if (VM.SelectedVideoMode == eVideoMode.Youtube)
                 {
-                    var eventVideo = PickRandomFile(Path.Combine(VM.VideoPathEvent, VM.Song.HebTitle));
-                    if (!string.IsNullOrEmpty(eventVideo))
-                        videos.Add(new VideoSource(eventVideo));
+                    if (!string.IsNullOrEmpty(VM.Song.YouTubeSong) && VM.SongYoutubeVideos.Single(c => c.Type == eSongClipTypes.YouTubeClip).IsChecked)
+                        videos.Add(new YoutubeVideoSource(VM.Song.YouTubeSong));
+
+                    if (!string.IsNullOrEmpty(VM.Song.YouTubeDance) && VM.SongYoutubeVideos.Single(c => c.Type == eSongClipTypes.YouTubeDance).IsChecked)
+                        videos.Add(new YoutubeVideoSource(VM.Song.YouTubeDance));
                 }
-
-                if (!string.IsNullOrWhiteSpace(VM.VideoPathDance) && !string.IsNullOrWhiteSpace(VM.Song.HebTitle) && isChecked(eSongClipTypes.Dance))
-                {
-                    var danceVideo = PickRandomFile(Path.Combine(VM.VideoPathDance, VM.Song.HebTitle));
-                    if (!string.IsNullOrEmpty(danceVideo))
-                        videos.Add(new VideoSource(danceVideo));
-                }
-
-                if (!string.IsNullOrEmpty(VM.Song.YouTubeSong) && isChecked(eSongClipTypes.YouTubeClip))
-                    videos.Add(new YoutubeVideoSource(VM.Song.YouTubeSong));
-
-                if (!string.IsNullOrEmpty(VM.Song.YouTubeDance) && isChecked(eSongClipTypes.YouTubeDance))
-                    videos.Add(new YoutubeVideoSource(VM.Song.YouTubeDance));
-
+                else if (VM.SelectedVideoMode == eVideoMode.VideoDir1 && !string.IsNullOrEmpty(VM.VideoPath1))
+                    videos.Add(new VideoSource(VM.VideoPath1));
+                else if (VM.SelectedVideoMode == eVideoMode.VideoDir2 && !string.IsNullOrEmpty(VM.VideoPath2))
+                    videos.Add(new VideoSource(VM.VideoPath2));
             }
 
             if (videos.Count == 0 && !string.IsNullOrWhiteSpace(VM.VideoPathDefault))
@@ -472,7 +542,7 @@ namespace BitnuaVideoPlayer
                 var defaultVideo = PickRandomFile(Path.Combine(VM.VideoPathDefault));
                 videos.Add(new VideoSource(defaultVideo));
             }
-            //new VideoSource(p)
+
             return videos;
         }
 

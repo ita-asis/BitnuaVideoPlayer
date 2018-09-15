@@ -60,6 +60,8 @@ namespace BitnuaVideoPlayer
                         else
                             UpdateManager.RestartApp();
                     }
+
+                    OnVersionUpdateProgressChanged(100);
                 }
             }
             catch (Exception ex)

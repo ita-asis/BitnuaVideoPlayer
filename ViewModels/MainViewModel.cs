@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Linq;
+using System.Collections.Specialized;
 
 namespace BitnuaVideoPlayer
 {
@@ -30,9 +31,9 @@ namespace BitnuaVideoPlayer
             try
             {
                 vm = JsonConvert.DeserializeObject<MainViewModel>(json);
-                if (vm.m_ClipTypes == null || vm.m_ClipTypes.Count != 3)
+                if (vm.ClipTypes == null || vm.ClipTypes.Count != 3)
                 {
-                    vm.m_ClipTypes = new List<ClipCollectionCBItem>()
+                    vm.ClipTypes = new ObservableCollection<ClipCollectionCBItem>()
                     {
                         new ClipCollectionCBItem() { Text = "Song's Clip", Type = eSongClipTypes.SongClips, IsChecked = true},
                         new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.Dance},
@@ -40,9 +41,9 @@ namespace BitnuaVideoPlayer
                     };
                 }
 
-                if (vm.m_SongYoutubeVideos == null || vm.m_SongYoutubeVideos.Count != 2)
+                if (vm.SongYoutubeVideos == null || vm.SongYoutubeVideos.Count != 2)
                 {
-                    vm.m_SongYoutubeVideos = new List<ClipCollectionCBItem>()
+                    vm.SongYoutubeVideos = new ObservableCollection<ClipCollectionCBItem>()
                     {
                         new ClipCollectionCBItem() { Text = "Clip" , Type = eSongClipTypes.YouTubeClip, IsChecked = true},
                         new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.YouTubeDance },
@@ -84,26 +85,57 @@ namespace BitnuaVideoPlayer
         public string PicPathWriter { get; set; }
         public string PicPathDefault { get; set; }
 
-        private List<ClipCollectionCBItem> m_ClipTypes;
+        private ObservableCollection<ClipCollectionCBItem> m_ClipTypes;
 
-        public List<ClipCollectionCBItem> ClipTypes
+        public ObservableCollection<ClipCollectionCBItem> ClipTypes
         {
             get
             {
                 return m_ClipTypes;
             }
-            set { m_ClipTypes = value; OnPropertyChanged(() => ClipTypes); }
+            set
+            {
+                m_ClipTypes = value;
+                OnPropertyChanged(() => ClipTypes);
+                m_ClipTypes.CollectionChanged += (s, e) => items_CollectionChanged(s,e, (s1,e1) => OnPropertyChanged(() => ClipTypes));
+                items_CollectionChanged(null,
+                                        new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, m_ClipTypes),
+                                        (s1, e1) => OnPropertyChanged(() => ClipTypes));
+            }
         }
 
-        private List<ClipCollectionCBItem> m_SongYoutubeVideos;
+        static void items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e, PropertyChangedEventHandler itemPropChanged)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (INotifyPropertyChanged item in e.OldItems)
+                    item.PropertyChanged -= itemPropChanged;
+            }
+            if (e.NewItems != null)
+            {
+                foreach (INotifyPropertyChanged item in e.NewItems)
+                    item.PropertyChanged += itemPropChanged;
+            }
+        }
 
-        public List<ClipCollectionCBItem> SongYoutubeVideos
+
+        private ObservableCollection<ClipCollectionCBItem> m_SongYoutubeVideos;
+
+        public ObservableCollection<ClipCollectionCBItem> SongYoutubeVideos
         {
             get
             {
                 return m_SongYoutubeVideos;
             }
-            set { m_SongYoutubeVideos = value; OnPropertyChanged(() => SongYoutubeVideos); }
+            set
+            {
+                m_SongYoutubeVideos = value;
+                OnPropertyChanged(() => SongYoutubeVideos);
+                m_SongYoutubeVideos.CollectionChanged += (s, e) => items_CollectionChanged(s,e, (s1,e1) => OnPropertyChanged(() => SongYoutubeVideos));
+                items_CollectionChanged(null, 
+                                        new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, m_SongYoutubeVideos), 
+                                        (s1, e1) => OnPropertyChanged(() => SongYoutubeVideos));
+            }
         }
 
         private BannerVM m_Banner;
@@ -181,6 +213,13 @@ namespace BitnuaVideoPlayer
         {
             get { return m_ShowSongInfo; }
             set { m_ShowSongInfo = value; OnPropertyChanged(() => ShowSongInfo); }
+        }
+
+        private bool m_ShowLeftPic = true;
+        public bool ShowLeftPic
+        {
+            get { return m_ShowLeftPic; }
+            set { m_ShowLeftPic = value; OnPropertyChanged(() => ShowLeftPic); }
         }
 
         private ColoredTextVm m_SongInfo01;

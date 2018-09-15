@@ -76,24 +76,47 @@
               Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"
               Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
 
-            <Grid x:Name="defualtLayoutGridSpliterHover"
+
+            <Grid x:Name="defualtLayoutGridRowSpliterHover"
                   Panel.ZIndex="1"
-                  Visibility="{Binding ShowSongInfo, Converter={StaticResource BoolToVis}}">
+                  >
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
                 </Grid.RowDefinitions>
 
+                <Grid x:Name="defualtLayoutGridColSpliterHover"
+                      Grid.Row="0"
+                      Visibility="{Binding ShowLeftPic, Converter={StaticResource BoolToVis}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="{Binding DefaultLayout_LeftWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <GridSplitter Grid.Column="1"
+                              Width="5"
+                              HorizontalAlignment="Stretch" />
+                </Grid>
+
+
                 <GridSplitter Grid.Row="1"
-                          Height="5"
-                          HorizontalAlignment="Stretch"/>
+                              Height="5"
+                              HorizontalAlignment="Stretch"
+                              Visibility="{Binding ShowSongInfo, Converter={StaticResource BoolToVis}}"/>
             </Grid>
             <Grid Panel.ZIndex="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{Binding DefaultLayout_LeftWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
-                    <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition>
+                        <ColumnDefinition.Width>
+                            <MultiBinding Converter="{StaticResource bool2GridMulti}">
+                                <Binding Path="ShowLeftPic" Mode="TwoWay"/>
+                                <Binding Path="DefaultLayout_LeftWidth" Mode="TwoWay" Converter="{StaticResource gridLengthConverter}"/>
+                            </MultiBinding>
+                        </ColumnDefinition.Width>
+                    </ColumnDefinition>
+                    <ColumnDefinition Width="{Binding ShowLeftPic, Converter={StaticResource bool2Grid}, ConverterParameter=5}" />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -106,68 +129,67 @@
                             </MultiBinding>
                         </RowDefinition.Height>
                     </RowDefinition>
-                    <!--Height="{Binding ShowSongInfo, Converter={StaticResource bool2Grid}, 
-                                                ConverterParameter={Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}}"-->
                 </Grid.RowDefinitions>
                 <!--LeftPanel - Pics-->
                 <Grid Grid.Column="0" 
-                        Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Pics}"
-                        Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Viewbox StretchDirection="Both" Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}">
-                        <Image Source="{Binding LeftPicSource}"
+                              Visibility="{Binding ShwoLeftPic, Converter={StaticResource BoolToVis}}">
+                    <Grid Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Pics}"
+                          Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Viewbox StretchDirection="Both" Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}">
+                            <Image Source="{Binding LeftPicSource}"
+                               />
+                        </Viewbox>
+                        <Label Grid.Row="1"
+                           HorizontalAlignment="Stretch" 
+                           VerticalAlignment="Stretch"
+                           HorizontalContentAlignment="Center"
+                           VerticalContentAlignment="Center"
+                           
+                           Background ="{Binding LeftPicTitle.BackColor, Converter={StaticResource colorCnv}}"
+                           Foreground ="{Binding LeftPicTitle.ForeColor, Converter={StaticResource colorCnv}}"
+                           Content    ="{Binding LeftPicTitle.Text}" 
+                           FontSize   ="{Binding LeftPicTitle.FontSize}" 
+                           FontFamily ="{Binding LeftPicTitle.FontFamily}" 
                            />
-                    </Viewbox>
-                    <Label Grid.Row="1"
-                       HorizontalAlignment="Stretch" 
-                       VerticalAlignment="Stretch"
-                       HorizontalContentAlignment="Center"
-                       VerticalContentAlignment="Center"
-                       
-                       Background ="{Binding LeftPicTitle.BackColor, Converter={StaticResource colorCnv}}"
-                       Foreground ="{Binding LeftPicTitle.ForeColor, Converter={StaticResource colorCnv}}"
-                       Content    ="{Binding LeftPicTitle.Text}" 
-                       FontSize   ="{Binding LeftPicTitle.FontSize}" 
-                       FontFamily ="{Binding LeftPicTitle.FontFamily}" 
-                       />
 
+                    </Grid>
+
+                    <!--LeftPanel - Lyrics-->
+                    <Grid Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Lyrics}"
+                          Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
+                        <Viewbox Stretch="Fill" StretchDirection="Both">
+
+                            <TextBlock TextWrapping="Wrap" 
+                               TextAlignment="Right"
+                               Padding="4"
+                               Text="{Binding Song.Lyrics}" 
+                               FontSize="{Binding Lyrics.FontSize}" 
+                               FontFamily="{Binding Lyrics.FontFamily}"
+                               Background="{Binding Lyrics.BackColor,Converter={StaticResource colorCnv}}"
+                               Foreground="{Binding Lyrics.ForeColor,Converter={StaticResource colorCnv}}"/>
+                        </Viewbox>
+                    </Grid>
+
+                    <!--LeftPanel - Flyer-->
+                    <Grid Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Flyer}"
+                          Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
+
+                        <Image x:Name="m_FlyerPic"
+                           Source="{Binding LeftPicSource}"
+                           StretchDirection="Both"
+                           Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}"
+                           />
+                    </Grid>
                 </Grid>
-
-                <!--LeftPanel - Lyrics-->
-                <Grid Grid.Column="0" 
-                        Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Lyrics}"
-                        Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
-                    <Viewbox Stretch="Fill" StretchDirection="Both">
-
-                        <TextBlock TextWrapping="Wrap" 
-                           TextAlignment="Right"
-                           Padding="4"
-                           Text="{Binding Song.Lyrics}" 
-                           FontSize="{Binding Lyrics.FontSize}" 
-                           FontFamily="{Binding Lyrics.FontFamily}"
-                           Background="{Binding Lyrics.BackColor,Converter={StaticResource colorCnv}}"
-                           Foreground="{Binding Lyrics.ForeColor,Converter={StaticResource colorCnv}}"/>
-                    </Viewbox>
-                </Grid>
-
-                <!--LeftPanel - Flyer-->
-                <Grid Grid.Column="0" 
-                        Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Flyer}"
-                        Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
-
-                    <Image x:Name="m_FlyerPic"
-                       Source="{Binding LeftPicSource}"
-                       StretchDirection="Both"
-                       Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}"
-                       />
-                </Grid>
-
                 <GridSplitter Grid.Column="1"
-                          Width="5"
-                          HorizontalAlignment="Stretch" />
+                              Width="5"
+                              Visibility="{Binding ShwoLeftPic, Converter={StaticResource BoolToVis}}"
+                              HorizontalAlignment="Stretch" />
+                
                 <ContentControl Content="{Binding DefaultLayout_VideoItem}" Grid.Column="2" >
                     <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type my:VideoListItem}">
@@ -186,76 +208,8 @@
                   Height="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"
                   MaxHeight="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"
                   Visibility="{Binding ShowSongInfo, Converter={StaticResource BoolToVis}}"
-                  Background="{Binding SongInfo01.BackColor,Converter={StaticResource colorCnv}}"
-                      
-                  FlowDirection="RightToLeft">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <Image x:Name="m_ArtistPic"
-                           Grid.RowSpan="3"
-                           Source="{Binding ArtistPicSource}"
-                           StretchDirection="Both"
-                           Stretch="UniformToFill"
-                       />
-
-                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
-                        <StackPanel.Resources>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="FontSize" Value="{Binding SongInfo01.FontSize}" />
-                                <Setter Property="FontFamily" Value="{Binding SongInfo01.FontFamily}" />
-                                <Setter Property="Foreground" Value="{Binding SongInfo01.ForeColor,Converter={StaticResource colorCnv}}" />
-                            </Style>
-                        </StackPanel.Resources>
-                        <TextBlock VerticalAlignment="Bottom">
-                            <Run Text="{Binding Song.HebTitle}"/>
-                            <Run>   </Run>
-                            <Run Text="{Binding Song.Title}"/>
-                        </TextBlock>
-                        <TextBlock VerticalAlignment="Bottom" Margin="4,0" 
-                                   Visibility="{Binding Song.Year, Converter={StaticResource NullToVisibilityConverter}}">
-                            <Run>(</Run>
-                            <Run Text="{Binding Song.Year}"/>
-                            <Run>)</Run>
-                        </TextBlock>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
-                        <StackPanel.Resources>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="FontSize" Value="{Binding SongInfo02.FontSize}" />
-                                <Setter Property="FontFamily" Value="{Binding SongInfo02.FontFamily}" />
-                                <Setter Property="Foreground" Value="{Binding SongInfo02.ForeColor,Converter={StaticResource colorCnv}}" />
-                            </Style>
-                        </StackPanel.Resources>
-                        <TextBlock Text="יוצר" 
-                               Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        <TextBlock Text="{Binding Song.Creator}"  FontWeight="Bold" Margin="10,0,25,0"
-                               Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
-
-                        <TextBlock Text="מבצע" 
-                               Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        <TextBlock Text="{Binding Song.Performer}"  FontWeight="Bold" Margin="10,0,25,0"
-                               Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
-
-                        <TextBlock Text="לחן" 
-                               Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        <TextBlock Text="{Binding Song.Composer}"  FontWeight="Bold" Margin="10,0,25,0"
-                               Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
-
-                        <TextBlock Text="משורר"  
-                               Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        <TextBlock Text="{Binding Song.Writer}"  FontWeight="Bold" Margin="10,0,25,0"
-                               Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
-
-                    </StackPanel>
-
+                      >
+                    <UI:SongInfoControl />
                 </Grid>
 
             </Grid>
@@ -296,132 +250,13 @@
 
 
         </Grid>
-        <!--<Grid x:Name="twoVideoLayout"
-              Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=TwoVideos}"
-              Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="{Binding TwoVidoesLayout_LeftWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Vlc:VlcControl x:Name="twoVid_LeftVlcControl"
-                            Margin="4"
-                             />
-            <GridSplitter Grid.Column="1"
-                          Width="5"
-                          HorizontalAlignment="Stretch" />
-            <Vlc:VlcControl x:Name="twoVid_RightVlcControl"
-                            Margin="4"
-                            Grid.Column="2" />
-
-
-            <wpf:ChromiumWebBrowser Grid.Column="2"
-                                    x:Name="twoVId_RightBrowser" 
-                                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                    IsEnabled="False"
-                                    />
-
-        </Grid>
-
-        <Grid x:Name="threePicLayout"
-              Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=ThreePics}"
-              Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="{Binding ThreePicsLayout_LeftWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="{Binding ThreePicsLayout_MidWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Viewbox Grid.Column="0"
-                     Margin="4"
-                     StretchDirection="Both" 
-                     Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}">
-                <Image Source="{Binding ThreePicsLayout_LeftPicSource}" />
-                </Viewbox>
-            <GridSplitter Grid.Column="1"
-                          Width="5"
-                          HorizontalAlignment="Stretch" />
-            <Viewbox Grid.Column="2"
-                     StretchDirection="Both" 
-                     Margin="4"
-                     Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}">
-                <Image Source="{Binding ThreePicsLayout_MidPicSource}" />
-            </Viewbox>
-            <GridSplitter Grid.Column="3"
-                          Width="5"
-                          HorizontalAlignment="Stretch" />
-            <Viewbox Grid.Column="4"
-                     Margin="4"
-                     StretchDirection="Both" 
-                     Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}">
-                <Image Source="{Binding ThreePicsLayout_RightPicSource}" />
-            </Viewbox>
-        </Grid>-->
-
+      
         <Grid x:Name="statusGrid" Height="{Binding Banner.Height}">
-            <!--<Grid.Style>
-                <Style TargetType="Grid">
-                    <Setter Property="Grid.Row" Value="2"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Banner.ShowOnTop}">
-                            <Setter Property="Grid.Row" Value="0"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>-->
             <CheckBox Visibility="Collapsed" IsChecked="{Binding Banner.ShowOnTop}" 
                       Checked="bannerShowOnTopChecked"
-                      Unchecked="bannerShowOnTopChecked" />
-            <Canvas Panel.ZIndex="1"
-                    ClipToBounds="True"
-                    Height="{Binding Banner.Height}"
-                    FlowDirection="{Binding Banner.Direction}"
-                    Background="{Binding Banner.BackColor, Converter={StaticResource colorCnv}}">
-                <Canvas.Resources>
-                    <DataTemplate DataType="{x:Type my:PictureItem}">
-                            <Viewbox StretchDirection="Both" Stretch="Fill">
-                                <Image Source="{Binding Path}" />
-                            </Viewbox>
-                    </DataTemplate>
-                </Canvas.Resources>
-                <!--<TextBlock Text="{Binding Banner.Text}" 
-                           FontSize="{Binding Banner.Font.Size}"
-                           FontFamily="{Binding Banner.Font.FontFamily}"
-                           Foreground="{Binding Banner.ForeColor, Converter={StaticResource colorCnv}}"
-                           >
-                    <i:Interaction.Behaviors>
-                        <props:MarqueeTextBlockBehavior/>
-                    </i:Interaction.Behaviors>
-                </TextBlock>-->
-                <StackPanel Orientation="Horizontal" x:Name="bannerPanel">
-                    <i:Interaction.Behaviors>
-                        <props:MarqueePanel ActualWidthBind="{Binding ActualWidth, ElementName=bannerPanel}" 
-                                            Speed="{Binding Banner.Speed}"  />
-                    </i:Interaction.Behaviors>
-
-                    <ItemsControl ItemsSource="{Binding Banner.Pics}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemContainerStyle>
-                            <Style TargetType="{x:Type ContentPresenter}">
-                                <Setter Property="Margin" Value="4,0"/>
-                            </Style>
-                        </ItemsControl.ItemContainerStyle>
-                    </ItemsControl>
-                    <TextBlock Text="{Binding Banner.Text}" 
-                               FontSize="{Binding Banner.Font.Size}"
-                               FontFamily="{Binding Banner.Font.FontFamily}"
-                               Foreground="{Binding Banner.ForeColor, Converter={StaticResource colorCnv}}"
-                               
-                               />
-                </StackPanel>
-            </Canvas>
+                      Unchecked="bannerShowOnTopChecked"
+                      DataContextChanged="CheckBox_DataContextChanged"/>
+            <UI:BannerControl Height="{Binding Banner.Height}"/>
         </Grid>
 
     </Grid>

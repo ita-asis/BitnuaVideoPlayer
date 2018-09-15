@@ -26,5 +26,23 @@
     <Setting Name="MainVmJson" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="bannerWindow" Type="BitnuaVideoPlayer.WindowStateDTO" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;WindowStateDTO xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;Height&gt;0&lt;/Height&gt;
+  &lt;Width&gt;0&lt;/Width&gt;
+  &lt;Left&gt;0&lt;/Left&gt;
+  &lt;Top&gt;0&lt;/Top&gt;
+&lt;/WindowStateDTO&gt;</Value>
+    </Setting>
+    <Setting Name="songInfoWindow" Type="BitnuaVideoPlayer.WindowStateDTO" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;WindowStateDTO xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;Height&gt;0&lt;/Height&gt;
+  &lt;Width&gt;0&lt;/Width&gt;
+  &lt;Left&gt;0&lt;/Left&gt;
+  &lt;Top&gt;0&lt;/Top&gt;
+&lt;/WindowStateDTO&gt;</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -22,6 +22,7 @@ using System.Windows.Controls;
 using System.Text;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using BitnuaVideoPlayer.UI;
 
 namespace BitnuaVideoPlayer
 {
@@ -39,7 +40,7 @@ namespace BitnuaVideoPlayer
             MouseDown += Window_MouseDown;
 
             VersionLbl.Content = GetVersion();
-            AppUpdateManager.VersionUpdateProgressChanged += p => VersionLbl.Dispatcher.BeginInvoke(new Action(() => VersionLbl.Content = $"Update in progress: {(p / 100d).ToString("P0")}"));
+            AppUpdateManager.VersionUpdateProgressChanged += p => VersionLbl.Dispatcher.BeginInvoke(new Action(() => VersionLbl.Content = p >= 100 ? GetVersion() : $"Update in progress: {(p / 100d).ToString("P0")}"));
         }
 
         private object GetVersion()
@@ -222,6 +223,66 @@ namespace BitnuaVideoPlayer
         private void designerCanvasLoaded(object sender, RoutedEventArgs e)
         {
             m_PresentationCanvas = sender as Canvas;
+        }
+
+        private Window m_SongInfoWindow;
+        private void btnShowSongInfoPopup(object sender, RoutedEventArgs e)
+        {
+            var dto = Properties.Settings.Default.songInfoWindow;
+            var defualtHeight = 100 + SystemParameters.WindowCaptionHeight;
+            var content = new SongInfoControl() { DataContext = VM };
+
+            m_SongInfoWindow?.Close();
+            m_SongInfoWindow = CreateUserCtrlWindow(dto, defualtHeight, content);
+            m_SongInfoWindow.Show();
+        }
+
+        private Window m_BannerWindow;
+        private void btnShowBannerPopup(object sender, RoutedEventArgs e)
+        {
+            var dto = Properties.Settings.Default.bannerWindow;
+            var defualtHeight = VM.Banner.Height + SystemParameters.WindowCaptionHeight;
+            var content = new BannerControl() { DataContext = VM };
+
+            m_BannerWindow?.Close();
+            m_BannerWindow = CreateUserCtrlWindow(dto, defualtHeight, content);
+            m_BannerWindow.Show();
+        }
+
+        private Window CreateUserCtrlWindow(WindowStateDTO dto, double defualtHeight, object content)
+        {
+            var window = new Window()
+            {
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                Height = dto.Height > 0 ? dto.Height : defualtHeight,
+                Width = dto.Width > 0 ? dto.Width : SystemParameters.PrimaryScreenWidth,
+                Left = dto.Left,
+                Top = dto.Top,
+                Content = content,
+                Topmost = true,
+                WindowStyle = WindowStyle.ToolWindow,
+            };
+
+            window.SizeChanged += (s, ee) =>
+            {
+                dto.Width = ee.NewSize.Width;
+                dto.Height = ee.NewSize.Height;
+                Properties.Settings.Default.Save();
+            };
+
+            window.LocationChanged += (s, ee) =>
+            {
+                dto.Top = window.Top;
+                dto.Left = window.Left;
+                Properties.Settings.Default.Save();
+            };
+
+            window.MouseDown += (s, ee) =>
+            {
+                if (ee.ChangedButton == MouseButton.Left)
+                    window.DragMove();
+            };
+            return window;
         }
     }
 

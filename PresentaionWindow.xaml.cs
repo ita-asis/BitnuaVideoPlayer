@@ -97,5 +97,10 @@ namespace BitnuaVideoPlayer
             bool isChecked = ((CheckBox)sender).IsChecked ?? false;
             statusGrid.SetValue(Grid.RowProperty, isChecked ? 0 : 2);
         }
+
+        private void CheckBox_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            bannerShowOnTopChecked(sender, null);
+        }
     }
 }

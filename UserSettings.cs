@@ -30,11 +30,9 @@ namespace BitnuaVideoPlayer
 
             string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BitnuaVideoPlayer", strongAppName);
             string currConf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+            Directory.CreateDirectory(Path.GetDirectoryName(currConf));
             if (!Directory.Exists(appPath))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(currConf));
                 File.WriteAllText(currConf, Properties.Resources.UserConfTemplate);
-            }
             else
             {
                 var v_dirs = Directory.GetDirectories(appPath);
