@@ -13,7 +13,9 @@
         <my:ColorToSolidColorBrushValueConverter x:Key="colorCnv"/>
 
         <DataTemplate DataType="{x:Type my:PictureItem}">
-            <Viewbox StretchDirection="Both" Stretch="Fill">
+            <Viewbox StretchDirection="DownOnly" Stretch="Uniform"
+                     Height="{Binding Height, ElementName=root}"
+                     >
                 <Image Source="{Binding Path}" />
             </Viewbox>
         </DataTemplate>

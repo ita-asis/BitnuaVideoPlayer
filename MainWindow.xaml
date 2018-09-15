@@ -810,7 +810,7 @@
                                  />
 
                     <Label Content="Height"/>
-                    <TextBox Text="{Binding Banner.Height}" VerticalAlignment="Center" Width="20" />
+                    <TextBox Text="{Binding Banner.Height, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Width="40"  HorizontalContentAlignment="Center"/>
 
                 </StackPanel>
                 <StackPanel Grid.Row="3" Orientation="Horizontal">
@@ -818,7 +818,7 @@
                     <Slider Width="100"
                         Margin="4,0"
                         Minimum="2" 
-                        Maximum="25" 
+                        Maximum="40" 
                         SmallChange="0.5" 
                         VerticalAlignment="Center"
                         Value="{Binding Banner.Speed}" />

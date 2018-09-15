@@ -187,7 +187,7 @@ namespace BitnuaVideoPlayer
         private void ReadBannerPics()
         {
             VM.Banner.Pics = null;
-            if (!string.IsNullOrEmpty(VM?.Banner?.PicsPath))
+            if (!string.IsNullOrEmpty(VM?.Banner?.PicsPath) && Directory.Exists(VM.Banner.PicsPath))
             {
                 var directory = new DirectoryInfo(VM.Banner.PicsPath);
                 VM.Banner.Pics = new ObservableCollection<PictureItem>(from f in directory.GetFiles() select new PictureItem() { Path = f.FullName });
