@@ -46,10 +46,12 @@ namespace BitnuaVideoPlayer
         private Song m_Song;
 
         public MainViewModel VM { get; set; }
+        public static App Instance { get; private set; }
 
         public App()
         {
             DispatcherUnhandledException += Current_DispatcherUnhandledException;
+            Instance = this;
         }
 
         protected override async void OnStartup(StartupEventArgs e)
@@ -70,6 +72,15 @@ namespace BitnuaVideoPlayer
             m_PlayerWindow.Topmost = true;
             m_PlayerWindow.Show();
 
+        }
+
+        public void ShowPresentaionWindow()
+        {
+            m_PlayerWindow.Show();
+        }
+        public void HidePresentaionWindow()
+        {
+            m_PlayerWindow.Hide();
         }
 
         private void M_MainWindow_Closed(object sender, EventArgs e) => Shutdown();
@@ -175,6 +186,7 @@ namespace BitnuaVideoPlayer
 
         private void ReadBannerPics()
         {
+            VM.Banner.Pics = null;
             if (!string.IsNullOrEmpty(VM?.Banner?.PicsPath))
             {
                 var directory = new DirectoryInfo(VM.Banner.PicsPath);
@@ -217,6 +229,7 @@ namespace BitnuaVideoPlayer
                      e.PropertyName == nameof(VM.Pic_ShowCreator) ||
                      e.PropertyName == nameof(VM.Pic_ShowPerformer) ||
                      e.PropertyName == nameof(VM.Pic_ShowWriter) ||
+                     e.PropertyName == nameof(VM.Pic_ShowDefault) ||
                      e.PropertyName == nameof(VM.ClipTypes) ||
                      e.PropertyName == nameof(VM.SongYoutubeVideos) ||
                      e.PropertyName == nameof(VM.SelectedVideoMode) ||
@@ -471,10 +484,9 @@ namespace BitnuaVideoPlayer
             }
         }
 
-
         private static IEnumerable<Tuple<string, string>> GetAvaiableSongPics(MainViewModel VM)
         {
-            var pics = new List<Tuple<string, string>>() { new Tuple<string, string>(VM.PicPathDefault, string.Empty) };
+            var pics = new List<Tuple<string, string>>();
 
             if (VM.Song != null)
             {
@@ -483,6 +495,9 @@ namespace BitnuaVideoPlayer
                 AddDir(pics, VM.Pic_ShowComposer, VM.Song.Composer, VM.PicPathComposer);
                 AddDir(pics, VM.Pic_ShowPerformer, VM.Song.Performer, VM.PicPathPerformer);
             }
+
+            if (pics.Count == 0 || VM.Pic_ShowDefault)
+                pics.Add(new Tuple<string, string>(VM.PicPathDefault, string.Empty));
 
             return pics.Select(dir => new Tuple<string, string>(PickRandomFile(dir.Item1), dir.Item2));
         }

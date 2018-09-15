@@ -234,6 +234,7 @@ namespace BitnuaVideoPlayer
 
             m_SongInfoWindow?.Close();
             m_SongInfoWindow = CreateUserCtrlWindow(dto, defualtHeight, content);
+           
             m_SongInfoWindow.Show();
         }
 
@@ -263,15 +264,10 @@ namespace BitnuaVideoPlayer
                 WindowStyle = WindowStyle.ToolWindow,
             };
 
-            window.SizeChanged += (s, ee) =>
+            window.Closing += (s, ee) =>
             {
-                dto.Width = ee.NewSize.Width;
-                dto.Height = ee.NewSize.Height;
-                Properties.Settings.Default.Save();
-            };
-
-            window.LocationChanged += (s, ee) =>
-            {
+                dto.Width = window.Width;
+                dto.Height = window.Height;
                 dto.Top = window.Top;
                 dto.Left = window.Left;
                 Properties.Settings.Default.Save();
@@ -283,6 +279,26 @@ namespace BitnuaVideoPlayer
                     window.DragMove();
             };
             return window;
+        }
+
+        private void btnShowPresentaionWindow(object sender, RoutedEventArgs e)
+        {
+            App.Instance.ShowPresentaionWindow();
+        }
+
+        private void btnHidePresentaionWindow(object sender, RoutedEventArgs e)
+        {
+            App.Instance.HidePresentaionWindow();
+        }
+
+        private void btnHideBannerPopup(object sender, RoutedEventArgs e)
+        {
+            m_BannerWindow?.Close();
+        }
+
+        private void btnHideSongInfoPopup(object sender, RoutedEventArgs e)
+        {
+            m_SongInfoWindow?.Close();
         }
     }
 

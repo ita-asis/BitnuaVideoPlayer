@@ -208,6 +208,13 @@ namespace BitnuaVideoPlayer
             set { m_Pic_ShowWriter = value; OnPropertyChanged(() => Pic_ShowWriter); }
         }
 
+        private bool m_Pic_ShowDefault = true;
+        public bool Pic_ShowDefault
+        {
+            get { return m_Pic_ShowDefault; }
+            set { m_Pic_ShowDefault = value; OnPropertyChanged(() => Pic_ShowDefault); }
+        }
+
         private bool m_ShowSongInfo = true;
         public bool ShowSongInfo
         {
@@ -610,7 +617,8 @@ namespace BitnuaVideoPlayer
         Event,
         Dance,
         YouTubeDance,
-        YouTubeClip
+        YouTubeClip,
+        Default
     }
 
     public class ClipCollectionCBItem : CheckBoxItem
