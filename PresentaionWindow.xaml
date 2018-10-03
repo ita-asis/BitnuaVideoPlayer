@@ -78,8 +78,7 @@
 
 
             <Grid x:Name="defualtLayoutGridRowSpliterHover"
-                  Panel.ZIndex="1"
-                  >
+                  Panel.ZIndex="1">
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition Height="5"/>
@@ -87,16 +86,17 @@
                 </Grid.RowDefinitions>
 
                 <Grid x:Name="defualtLayoutGridColSpliterHover"
-                      Grid.Row="0"
+                      Grid.Row="{Binding Grid.Row, ElementName=songVideoPicGrid}"
                       Visibility="{Binding ShowLeftPic, Converter={StaticResource BoolToVis}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="{Binding DefaultLayout_LeftWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
                         <ColumnDefinition Width="5" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <GridSplitter Grid.Column="1"
+                    <!--<GridSplitter Grid.Column="1"
                               Width="5"
-                              HorizontalAlignment="Stretch" />
+                                  Foreground="Blue"
+                              HorizontalAlignment="Stretch" />-->
                 </Grid>
 
 
@@ -106,18 +106,7 @@
                               Visibility="{Binding ShowSongInfo, Converter={StaticResource BoolToVis}}"/>
             </Grid>
             <Grid Panel.ZIndex="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition>
-                        <ColumnDefinition.Width>
-                            <MultiBinding Converter="{StaticResource bool2GridMulti}">
-                                <Binding Path="ShowLeftPic" Mode="TwoWay"/>
-                                <Binding Path="DefaultLayout_LeftWidth" Mode="TwoWay" Converter="{StaticResource gridLengthConverter}"/>
-                            </MultiBinding>
-                        </ColumnDefinition.Width>
-                    </ColumnDefinition>
-                    <ColumnDefinition Width="{Binding ShowLeftPic, Converter={StaticResource bool2Grid}, ConverterParameter=5}" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+              
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition Height="{Binding ShowSongInfo, Converter={StaticResource bool2Grid}, ConverterParameter=5}"/>
@@ -131,7 +120,20 @@
                     </RowDefinition>
                 </Grid.RowDefinitions>
                 <!--LeftPanel - Pics-->
-                <Grid Grid.Column="0" 
+                <Grid x:Name="songVideoPicGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition>
+                            <ColumnDefinition.Width>
+                                <MultiBinding Converter="{StaticResource bool2GridMulti}">
+                                    <Binding Path="ShowLeftPic" Mode="TwoWay"/>
+                                    <Binding Path="DefaultLayout_LeftWidth" Mode="TwoWay" Converter="{StaticResource gridLengthConverter}"/>
+                                </MultiBinding>
+                            </ColumnDefinition.Width>
+                        </ColumnDefinition>
+                        <ColumnDefinition Width="{Binding ShowLeftPic, Converter={StaticResource bool2Grid}, ConverterParameter=5}" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" 
                               Visibility="{Binding ShwoLeftPic, Converter={StaticResource BoolToVis}}">
                     <Grid Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Pics}"
                           Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
@@ -188,6 +190,8 @@
                 <GridSplitter Grid.Column="1"
                               Width="5"
                               Visibility="{Binding ShwoLeftPic, Converter={StaticResource BoolToVis}}"
+                                  Foreground="Yellow"
+                              
                               HorizontalAlignment="Stretch" />
                 
                 <ContentControl Content="{Binding DefaultLayout_VideoItem}" Grid.Column="2" >
@@ -201,14 +205,22 @@
                         </DataTemplate>
                     </ContentControl.Resources>
                 </ContentControl>
+                </Grid>
+
 
                 <!--Song Info-->
-                <Grid Grid.Row="2"
+                <Grid x:Name="songInfoGrid"
+                    Grid.Row="2"
                   Grid.ColumnSpan="3"
                   Height="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"
                   MaxHeight="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"
                   Visibility="{Binding ShowSongInfo, Converter={StaticResource BoolToVis}}"
                       >
+                    <CheckBox Visibility="Collapsed" IsChecked="{Binding DefaultLayout_SongInfoShowOnTop}" 
+                      Checked  ="songInfoShowOnTopChecked"
+                      Unchecked="songInfoShowOnTopChecked"
+                      DataContextChanged="CheckBox_DataContextChanged"/>
+                    
                     <UI:SongInfoControl />
                 </Grid>
 

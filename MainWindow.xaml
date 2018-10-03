@@ -59,6 +59,10 @@
                     HorizontalAlignment="Right" 
                     Orientation="Horizontal">
             <Button Padding="3" Margin="4,0"
+                                Click="btnRestorePresentaionWindow" Width="25">
+                <Image Source="Resources\restore.png" Stretch="Uniform"/>
+            </Button>
+            <Button Padding="3" Margin="4,0"
                     Click="btnShowPresentaionWindow" Width="25" >
                 <Image Source="Resources\export-arrow.png" Stretch="Uniform"/>
             </Button>
@@ -238,6 +242,10 @@
                                 Grid.Column="1" 
                                 Orientation="Horizontal">
                         <Button Padding="3" Margin="4,0"
+                                Click="btnRestoreSongInfoPopup" Width="25">
+                            <Image Source="Resources\restore.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Padding="3" Margin="4,0"
                                 Click="btnShowSongInfoPopup" Width="25">
                             <Image Source="Resources\export-arrow.png" Stretch="Uniform"/>
                         </Button>
@@ -248,7 +256,18 @@
                     </StackPanel>
 
                     <StackPanel>
-                        <CheckBox Content="Show ?" IsChecked="{Binding ShowSongInfo}" Margin="4"/>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="Show ?" IsChecked="{Binding ShowSongInfo}" Margin="8,4"/>
+                            
+                            <Label Content="Position"/>
+                            <RadioButton x:Name="rb_SongInfoPosButtom" Content="Buttom"  Margin="4,0,4,0" IsChecked="True"
+                              VerticalAlignment="Center"
+                                 />
+                            <RadioButton x:Name="rb_SongInfoPosTop" Content="Top" Margin="4,0,10,0" IsChecked="{Binding DefaultLayout_SongInfoShowOnTop}"
+                              VerticalAlignment="Center"
+                                 />
+
+                        </StackPanel>
 
                         <Grid>
                             <Grid.RowDefinitions>
@@ -781,6 +800,10 @@
                                 HorizontalAlignment="Right" 
                                 Grid.Column="1" 
                                 Orientation="Horizontal">
+                    <Button Padding="3" Margin="4,0"
+                                Click="btnRestoreBannerPopup" Width="25">
+                        <Image Source="Resources\restore.png" Stretch="Uniform"/>
+                    </Button>
                     <Button Padding="3" Margin="4,0"
                                 Click="btnShowBannerPopup" Width="25">
                         <Image Source="Resources\export-arrow.png" Stretch="Uniform"/>

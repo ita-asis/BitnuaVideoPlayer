@@ -36,19 +36,24 @@
                     <Setter Property="FontSize" Value="{Binding SongInfo01.FontSize}" />
                     <Setter Property="FontFamily" Value="{Binding SongInfo01.FontFamily}" />
                     <Setter Property="Foreground" Value="{Binding SongInfo01.ForeColor,Converter={StaticResource colorCnv}}" />
+                    <Setter Property="FontWeight" Value="Normal"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SongInfo01.IsBold}" Value="True">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </DataTrigger>
+                    </Style.Triggers>
                 </Style>
             </StackPanel.Resources>
-            <TextBlock VerticalAlignment="Bottom">
+            <TextBlock VerticalAlignment="Bottom" >
                             <Run Text="{Binding Song.HebTitle}"/>
                             <Run>   </Run>
                             <Run Text="{Binding Song.Title}"/>
             </TextBlock>
-            <TextBlock VerticalAlignment="Bottom" Margin="4,0" 
-                                   Visibility="{Binding Song.Year, Converter={StaticResource NullToVisibilityConverter}}">
-                            <Run>(</Run>
-                            <Run Text="{Binding Song.Year}"/>
-                            <Run>)</Run>
-            </TextBlock>
+            <TextBlock VerticalAlignment="Bottom" 
+                       Margin="4,0" 
+                       Text="{Binding Song.Year,StringFormat=({0})}"
+                       FontWeight="Normal"
+                       Visibility="{Binding Song.Year, Converter={StaticResource NullToVisibilityConverter}}"/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" Margin="4,0">

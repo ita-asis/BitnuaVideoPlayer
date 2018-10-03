@@ -300,6 +300,32 @@ namespace BitnuaVideoPlayer
         {
             m_SongInfoWindow?.Close();
         }
+
+        private void btnRestoreSongInfoPopup(object sender, RoutedEventArgs e)
+        {
+            BringWindowIntoView(m_SongInfoWindow);
+        }
+
+        private void btnRestoreBannerPopup(object sender, RoutedEventArgs e)
+        {
+            BringWindowIntoView(m_BannerWindow);
+
+        }
+        private void btnRestorePresentaionWindow(object sender, RoutedEventArgs e)
+        {
+            BringWindowIntoView(App.Instance.m_PlayerWindow);
+        }
+
+        private void BringWindowIntoView(Window window)
+        {
+            if (window == null)
+                return;
+
+            var left = this.Left + this.Width + 10;
+            var top = this.Top;
+            window.Left = left;
+            window.Top = top;
+        }
     }
 
     public class ColorToSolidColorBrushValueConverter : IValueConverter

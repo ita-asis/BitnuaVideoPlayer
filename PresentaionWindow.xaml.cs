@@ -98,9 +98,17 @@ namespace BitnuaVideoPlayer
             statusGrid.SetValue(Grid.RowProperty, isChecked ? 0 : 2);
         }
 
+        private void songInfoShowOnTopChecked(object sender, RoutedEventArgs e)
+        {
+            bool isChecked = ((CheckBox)sender).IsChecked ?? false;
+            songInfoGrid.SetValue(Grid.RowProperty, isChecked ? 0 : 2);
+            songVideoPicGrid.SetValue(Grid.RowProperty, isChecked ? 2 : 0);
+        }
+
         private void CheckBox_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             bannerShowOnTopChecked(sender, null);
+            songInfoShowOnTopChecked(sender, null);
         }
     }
 }

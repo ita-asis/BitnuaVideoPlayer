@@ -35,7 +35,7 @@ namespace BitnuaVideoPlayer
                 {
                     vm.ClipTypes = new ObservableCollection<ClipCollectionCBItem>()
                     {
-                        new ClipCollectionCBItem() { Text = "Song's Clip", Type = eSongClipTypes.SongClips, IsChecked = true},
+                        new ClipCollectionCBItem() { Text = "Performer", Type = eSongClipTypes.SongClips, IsChecked = true},
                         new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.Dance},
                         new ClipCollectionCBItem() { Text = "Event", Type = eSongClipTypes.Event},
                     };
@@ -251,6 +251,15 @@ namespace BitnuaVideoPlayer
         }
 
         #region DefaultLayout
+
+        private bool m_DefaultLayout_SongInfoShowOnTop;
+
+        public bool DefaultLayout_SongInfoShowOnTop
+        {
+            get { return m_DefaultLayout_SongInfoShowOnTop; }
+            set { m_DefaultLayout_SongInfoShowOnTop = value; OnPropertyChanged(() => DefaultLayout_SongInfoShowOnTop); }
+        }
+
 
         private double m_DefaultLayout_LeftWidth;
         public double DefaultLayout_LeftWidth
@@ -740,11 +749,17 @@ namespace BitnuaVideoPlayer.ViewModels
                 OnPropertyChanged(() => Font);
                 OnPropertyChanged(() => FontFamily);
                 OnPropertyChanged(() => FontSize);
+                OnPropertyChanged(() => IsBold);
             }
         }
 
         [JsonIgnore]
         public double FontSize => Font.Size;
+
+
+        [JsonIgnore]
+        public bool IsBold => Font.Bold;
+
         [JsonIgnore]
         public System.Windows.Media.FontFamily FontFamily => new System.Windows.Media.FontFamily(Font.Name);
     }

@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using System.Xml.Linq;
+using System.Windows.Navigation;
 
 namespace BitnuaVideoPlayer
 {
@@ -32,7 +33,7 @@ namespace BitnuaVideoPlayer
 
 
         private MainWindow m_MainWindow;
-        private PresentaionWindow m_PlayerWindow;
+        public PresentaionWindow m_PlayerWindow;
 
         private AppUpdateManager updateManager;
         private FileSystemWatcher m_FileSysWatcher;
@@ -60,6 +61,11 @@ namespace BitnuaVideoPlayer
 
             InitUpdateManager();
             await InitAll();
+        }
+
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
 
             m_MainWindow = (MainWindow)MainWindow;
             m_MainWindow.DataContext = m_MainWindow.VM = VM;
@@ -400,7 +406,7 @@ namespace BitnuaVideoPlayer
         }
 
 
-        private static string PickRandomFile(string dir, string searchPattern = null)
+        private static string PickRandomFile(string dir, string searchPattern = null, bool pickAnyIfNotMatchingPattern = false)
         {
             if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir))
                 return null;
@@ -409,6 +415,9 @@ namespace BitnuaVideoPlayer
             try
             {
                 var files = Directory.EnumerateFiles(dir, searchPattern ?? "*.*", SearchOption.AllDirectories);
+                if (pickAnyIfNotMatchingPattern && !files.Any())
+                    files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
+
                 file = files.Shuffle().FirstOrDefault();
             }
             catch (Exception)
@@ -515,11 +524,11 @@ namespace BitnuaVideoPlayer
                     if (!string.IsNullOrWhiteSpace(VM.VideoPathSinger) && !string.IsNullOrWhiteSpace(VM.Song.Performer) && isChecked(eSongClipTypes.SongClips))
                     {
                         var performerPath = Path.Combine(VM.VideoPathSinger, VM.Song.Performer);
-                        var performerVideo = PickRandomFile(performerPath, $"*{VM.Song.Title}*");
+                        var performerVideo = PickRandomFile(performerPath, $"*{VM.Song.Title}*", false);
                         if (!string.IsNullOrEmpty(performerVideo))
                             videos.Add(new VideoSource(performerVideo));
 
-                        performerVideo = PickRandomFile(performerPath, $"*{VM.Song.HebTitle}*");
+                        performerVideo = PickRandomFile(performerPath, $"*{VM.Song.HebTitle}*", true);
                         if (!string.IsNullOrEmpty(performerVideo))
                             videos.Add(new VideoSource(performerVideo));
                     }
@@ -547,9 +556,17 @@ namespace BitnuaVideoPlayer
                         videos.Add(new YoutubeVideoSource(VM.Song.YouTubeDance));
                 }
                 else if (VM.SelectedVideoMode == eVideoMode.VideoDir1 && !string.IsNullOrEmpty(VM.VideoPath1))
-                    videos.Add(new VideoSource(VM.VideoPath1));
+                {
+                    var dirVideos = GetAllVideos((VM.VideoPath1));
+                    if (dirVideos != null && dirVideos.Any())
+                        videos.AddRange(dirVideos);
+                }
                 else if (VM.SelectedVideoMode == eVideoMode.VideoDir2 && !string.IsNullOrEmpty(VM.VideoPath2))
-                    videos.Add(new VideoSource(VM.VideoPath2));
+                {
+                    var dirVideos = GetAllVideos((VM.VideoPath2));
+                    if (dirVideos != null && dirVideos.Any())
+                        videos.AddRange(dirVideos);
+                }
             }
 
             if (videos.Count == 0 && !string.IsNullOrWhiteSpace(VM.VideoPathDefault))
@@ -561,6 +578,22 @@ namespace BitnuaVideoPlayer
             return videos;
         }
 
+        private static IEnumerable<VideoSource> GetAllVideos(string dir)
+        {
+            if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir))
+                return null;
+
+            try
+            {
+                var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
+                return files.Select(f => new VideoSource(f)).Shuffle();
+            }
+            catch (Exception)
+            {
+            }
+
+            return null;
+        }
         private static void AddDir(List<Tuple<string, string>> pics, bool showFlag, string person, string path)
         {
             if (showFlag && !string.IsNullOrWhiteSpace(person))
