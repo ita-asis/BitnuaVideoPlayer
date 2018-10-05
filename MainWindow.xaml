@@ -813,10 +813,15 @@
                         <Image Source="Resources\close-button.png" Stretch="Uniform"/>
                     </Button>
                 </StackPanel>
+                <StackPanel>
+                    <CheckBox Content="Show ?" IsChecked="{Binding Banner.IsVisible}" Margin="8,4"/>
+
                 <DockPanel LastChildFill="True" Margin="4">
                     <TextBlock DockPanel.Dock="Left" Text="Text" Padding="4,0"/>
                     <TextBox Text="{Binding Banner.Text}" Margin="4,0" Width="Auto"/>
                 </DockPanel>
+                </StackPanel>
+
                 <DockPanel LastChildFill="True" Margin="4"
                            Grid.Row="1">
                     <TextBlock DockPanel.Dock="Left" Text="Pics Dir" Padding="4,0"/>

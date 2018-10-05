@@ -677,6 +677,14 @@ namespace BitnuaVideoPlayer.ViewModels
             set { m_Direction = value; OnPropertyChanged(() => Direction); }
         }
 
+        private bool m_IsVisible;
+
+        public bool IsVisible
+        {
+            get { return m_IsVisible; }
+            set { m_IsVisible = value; OnPropertyChanged(() => IsVisible); }
+        }
+
         private bool m_ShowOnTop;
 
         public bool ShowOnTop
