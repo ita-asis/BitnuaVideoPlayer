@@ -80,23 +80,44 @@
             <Grid x:Name="defualtLayoutGridRowSpliterHover"
                   Panel.ZIndex="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition />
+                    <RowDefinition>
+                        <RowDefinition.Style>
+                            <Style TargetType="RowDefinition">
+                                <Setter Property="Height" Value="*" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DefaultLayout_SongInfoShowOnTop}" Value="True">
+                                        <Setter Property="Height" Value="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </RowDefinition.Style>
+                    </RowDefinition>
                     <RowDefinition Height="5"/>
-                    <RowDefinition Height="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
+                    <RowDefinition>
+                        <RowDefinition.Style>
+                            <Style TargetType="RowDefinition">
+                                <Setter Property="Height" Value="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DefaultLayout_SongInfoShowOnTop}" Value="True">
+                                        <Setter Property="Height" Value="*" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </RowDefinition.Style>
+                    </RowDefinition>
                 </Grid.RowDefinitions>
 
                 <Grid x:Name="defualtLayoutGridColSpliterHover"
-                      Grid.Row="{Binding Grid.Row, ElementName=songVideoPicGrid}"
+                      Grid.Row="0"
                       Visibility="{Binding ShowLeftPic, Converter={StaticResource BoolToVis}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="{Binding DefaultLayout_LeftWidth, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"/>
                         <ColumnDefinition Width="5" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <!--<GridSplitter Grid.Column="1"
-                              Width="5"
-                                  Foreground="Blue"
-                              HorizontalAlignment="Stretch" />-->
+                    <GridSplitter Grid.Column="1"
+                                  Width="5"
+                                  HorizontalAlignment="Stretch" />
                 </Grid>
 
 
@@ -108,15 +129,44 @@
             <Grid Panel.ZIndex="0">
               
                 <Grid.RowDefinitions>
-                    <RowDefinition />
+                    <RowDefinition>
+                        <RowDefinition.Style>
+                            <Style TargetType="RowDefinition">
+                                <Setter Property="Height" Value="*" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DefaultLayout_SongInfoShowOnTop}" Value="True">
+                                        <Setter Property="Height">
+                                            <Setter.Value>
+                                                <MultiBinding Converter="{StaticResource bool2GridMulti}">
+                                                    <Binding Path="ShowSongInfo" Mode="TwoWay"/>
+                                                    <Binding Path="DefaultLayout_SongInfoHeight" Mode="TwoWay" Converter="{StaticResource gridLengthConverter}"/>
+                                                </MultiBinding>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </RowDefinition.Style>
+                    </RowDefinition>
                     <RowDefinition Height="{Binding ShowSongInfo, Converter={StaticResource bool2Grid}, ConverterParameter=5}"/>
-                    <RowDefinition >
-                        <RowDefinition.Height>
-                            <MultiBinding Converter="{StaticResource bool2GridMulti}">
-                                <Binding Path="ShowSongInfo" Mode="TwoWay"/>
-                                <Binding Path="DefaultLayout_SongInfoHeight" Mode="TwoWay" Converter="{StaticResource gridLengthConverter}"/>
-                            </MultiBinding>
-                        </RowDefinition.Height>
+                    <RowDefinition>
+                        <RowDefinition.Style>
+                            <Style TargetType="RowDefinition">
+                                <Setter Property="Height">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource bool2GridMulti}">
+                                            <Binding Path="ShowSongInfo" Mode="TwoWay"/>
+                                            <Binding Path="DefaultLayout_SongInfoHeight" Mode="TwoWay" Converter="{StaticResource gridLengthConverter}"/>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DefaultLayout_SongInfoShowOnTop}" Value="True">
+                                        <Setter Property="Height" Value="*" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </RowDefinition.Style>
                     </RowDefinition>
                 </Grid.RowDefinitions>
                 <!--LeftPanel - Pics-->
@@ -134,7 +184,7 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0" 
-                              Visibility="{Binding ShwoLeftPic, Converter={StaticResource BoolToVis}}">
+                              Visibility="{Binding ShowLeftPic, Converter={StaticResource BoolToVis}}">
                     <Grid Tag="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Pics}"
                           Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
                         <Grid.RowDefinitions>
@@ -213,7 +263,7 @@
                     Grid.Row="2"
                   Grid.ColumnSpan="3"
                   Height="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"
-                  MaxHeight="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"
+                  MaxHeight="{Binding DefaultLayout_SongInfoHeight, Converter={StaticResource gridLengthConverter}}"
                   Visibility="{Binding ShowSongInfo, Converter={StaticResource BoolToVis}}"
                       >
                     <CheckBox Visibility="Collapsed" IsChecked="{Binding DefaultLayout_SongInfoShowOnTop}" 

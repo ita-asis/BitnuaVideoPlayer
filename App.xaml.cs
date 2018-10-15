@@ -57,32 +57,49 @@ namespace BitnuaVideoPlayer
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            // Verify license for this app
+            VerifyLicense();
+
             base.OnStartup(e);
 
             InitUpdateManager();
             await InitAll();
-        }
 
-        protected override void OnActivated(EventArgs e)
-        {
-            base.OnActivated(e);
-
-            m_MainWindow = (MainWindow)MainWindow;
+            MainWindow = m_MainWindow = new MainWindow();
             m_MainWindow.DataContext = m_MainWindow.VM = VM;
             m_MainWindow.Closed += M_MainWindow_Closed;
             m_MainWindow.Topmost = true;
 
-
             m_PlayerWindow = new PresentaionWindow() { DataContext = VM };
             m_PlayerWindow.WindowStyle = WindowStyle.None;
-            m_PlayerWindow.Topmost = true;
-            m_PlayerWindow.Show();
 
+#if DEBUG
+            m_PlayerWindow.Topmost = false;
+#else
+            m_PlayerWindow.Topmost = true;
+#endif
+
+            m_MainWindow.Show();
+            m_PlayerWindow.Show();
+        }
+
+        private static void VerifyLicense()
+        {
+            try
+            {
+                MyAppActivation.ValidateActivation();
+            }
+            catch (Exception ex)
+            {
+                ShowExceptionMsgBox(ex);
+                Environment.Exit(0);
+            }
         }
 
         public void ShowPresentaionWindow()
         {
             m_PlayerWindow.Show();
+            UpdateVM();
         }
         public void HidePresentaionWindow()
         {
@@ -647,7 +664,13 @@ namespace BitnuaVideoPlayer
         private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
-            var msg = LogException(e.Exception);
+            var ex = e.Exception;
+            ShowExceptionMsgBox(ex);
+        }
+
+        private static void ShowExceptionMsgBox(Exception ex)
+        {
+            var msg = LogException(ex);
             System.Windows.MessageBox.Show(msg, "Exception!", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 

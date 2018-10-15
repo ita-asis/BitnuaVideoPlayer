@@ -25,7 +25,6 @@ namespace BitnuaVideoPlayer
 
         private void checkUpgrade()
         {
-
             const string strongAppName = "BitnuaVideoPlayer.exe_StrongName_lgujmbe4zuxqp45onbgara1o5b41v3jb";
 
             string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BitnuaVideoPlayer", strongAppName);
@@ -40,7 +39,7 @@ namespace BitnuaVideoPlayer
                 var currVerDir = v_dirs.SingleOrDefault(d => d.Contains(version));
                 if (string.IsNullOrEmpty(currVerDir))
                 {
-                    var lastVer = v_dirs.Last();
+                    var lastVer = v_dirs.OrderByDescending(d => Version.Parse(new DirectoryInfo(d).Name)).First();
                     string prevConf = Path.Combine(lastVer, "user.config");
 
                     File.Copy(prevConf, currConf, true);

@@ -180,6 +180,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
       <Private>True</Private>
@@ -221,6 +222,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppUpdateManager.cs" />
+    <Compile Include="Encryption.cs" />
+    <Compile Include="MyAppActivation.cs" />
     <Compile Include="PresentaionWindow.xaml.cs">
       <DependentUpon>PresentaionWindow.xaml</DependentUpon>
     </Compile>
@@ -236,6 +239,7 @@
       <DependentUpon>BannerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Converters\BoolToGridRowHeightConverter.cs" />
+    <Compile Include="UI\Converters\DoubleMultiplyConverter.cs" />
     <Compile Include="UI\PresentationCanvasItem.xaml.cs">
       <DependentUpon>PresentationCanvasItem.xaml</DependentUpon>
     </Compile>

@@ -58,7 +58,18 @@
                                FontFamily="{Binding Banner.Font.FontFamily}"
                                Foreground="{Binding Banner.ForeColor, Converter={StaticResource colorCnv}}"
                                VerticalAlignment="Center"
-                               />
+                               >
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontWeight" Value="Normal"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Banner.IsBold}" Value="True">
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
         </StackPanel>
     </Canvas>
 </UserControl>
