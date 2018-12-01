@@ -16,7 +16,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 {
     public class VideoCtrlBehavior : Behavior<VlcControl>
     {
-        private VlcControl PlayerCtrl => AssociatedObject;
+        protected VlcControl PlayerCtrl => AssociatedObject;
         protected override void OnAttached()
         {
             RegisterEvents();
@@ -69,6 +69,8 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             PlayerCtrl.MediaPlayer.VlcMediaplayerOptions = new[] { "-I rc", "--rc-quiet" }; //"-I dummy","--dummy-quiet"
             PlayerCtrl.MediaPlayer.EndInit();
 
+            PlayerCtrl.SizeChanged += (o, e) => PlayerCtrl.MediaPlayer.Video.AspectRatio = $"{e.NewSize.Width}:{e.NewSize.Height}";
+
             // This can also be called before EndInit
             //player.Log += (sender, args) =>
             //{
@@ -119,14 +121,6 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             behaviour.Play();
         }
 
-        protected async Task Play(VlcControl player, VideoSource video)
-        {
-            if (player != null)
-            {
-                await player.Dispatcher.BeginInvoke((Action)(() => Play(player?.MediaPlayer, video)));
-            }
-        }
-
         protected void Play(Vlc.DotNet.Forms.VlcControl player = null, VideoSource source = null)
         {
             PlayerPlay(player ?? PlayerCtrl?.MediaPlayer, source ?? Source);
@@ -151,7 +145,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         protected override async void OnAttached()
         {
             base.OnAttached();
-            await Init();
+            await StartVideoTask();
         }
 
         #region Props
@@ -175,14 +169,22 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         public static readonly DependencyProperty VideosProperty =
             DependencyProperty.Register("Videos", typeof(List<VideoSource>), typeof(VideoDirPlayerBehaviour), new PropertyMetadata(null, OnVideosChanged));
 
+        private int m_CurrVideo;
+        private int m_VideosCount;
         #endregion
 
-        private CancellationTokenSource m_LoopToken;
+        protected Task Play(VlcControl player, int videoId)
+        {
+            if (player == null)
+                return Task.CompletedTask;
+
+            return player.Dispatcher.BeginInvoke((Action)(() => Play(player?.MediaPlayer, Videos[videoId]))).Task;
+        }
 
         protected override void Stop()
         {
-            m_LoopToken?.Cancel();
             base.Stop();
+            PlayerCtrl.MediaPlayer.VlcMediaPlayer.EndReached -= VlcMediaPlayer_EndReached;
         }
 
         private static async void OnVideosChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -191,49 +193,29 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             if (@this.AssociatedObject == null)
                 return;
 
-            await @this.Init();
+            await @this.StartVideoTask();
         }
 
-        private async Task Init()
+        private Task StartVideoTask()
         {
             Stop();
-            m_LoopToken = new CancellationTokenSource();
-            var token = m_LoopToken.Token;
-            if (Videos != null)
-            {
-                await StartVideoTask(AssociatedObject, Videos, Delay, token);
-            }
+            if (Videos == null || Videos.Count == 0)
+                return Task.CompletedTask;
+
+            PlayerCtrl.MediaPlayer.VlcMediaPlayer.EndReached += VlcMediaPlayer_EndReached;
+            m_VideosCount = Videos.Count;
+            m_CurrVideo = 0;
+            return Play(PlayerCtrl, m_CurrVideo);
         }
 
-        private async Task StartVideoTask(VlcControl player, List<VideoSource> videos, int delay, CancellationToken token)
+        private async void VlcMediaPlayer_EndReached(object sender, Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs e)
         {
-            if (videos == null || videos.Count == 0)
-                throw new ArgumentNullException(nameof(videos));
-
-
-            var playTime = DateTime.Now;
-            while (!token.IsCancellationRequested)
+            var ctrl = sender as Vlc.DotNet.Core.VlcMediaPlayer;
+            await Dispatcher.BeginInvoke((Action)(async () =>
             {
-                try
-                {
-                    VideoSource currVideo = default(VideoSource);
-                    foreach (var video in videos.IterateLoop(token))
-                    {
-                        if (video != currVideo)
-                        {
-                            currVideo = video;
-                            long time = CalcLastPlayTime(playTime, video.Path);
-                            video.Time = time;
-                            await Play(player, video);
-                        }
-
-                        await Task.Delay(delay, token).ConfigureAwait(false);
-                    }
-                }
-                catch (Exception)
-                {
-                }
-            }
+                m_CurrVideo = ++m_CurrVideo % m_VideosCount;
+                await Play(PlayerCtrl, m_CurrVideo);
+            }));
         }
 
         private static long CalcLastPlayTime(DateTime playTime, string videoPath)

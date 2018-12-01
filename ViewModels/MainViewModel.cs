@@ -31,23 +31,26 @@ namespace BitnuaVideoPlayer
             try
             {
                 vm = JsonConvert.DeserializeObject<MainViewModel>(json);
-                if (vm.ClipTypes == null || vm.ClipTypes.Count != 3)
+                if (vm != null)
                 {
-                    vm.ClipTypes = new ObservableCollection<ClipCollectionCBItem>()
+                    if (vm.ClipTypes == null || vm.ClipTypes.Count != 3)
+                    {
+                        vm.ClipTypes = new ObservableCollection<ClipCollectionCBItem>()
                     {
                         new ClipCollectionCBItem() { Text = "Performer", Type = eSongClipTypes.SongClips, IsChecked = true},
                         new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.Dance},
                         new ClipCollectionCBItem() { Text = "Event", Type = eSongClipTypes.Event},
                     };
-                }
+                    }
 
-                if (vm.SongYoutubeVideos == null || vm.SongYoutubeVideos.Count != 2)
-                {
-                    vm.SongYoutubeVideos = new ObservableCollection<ClipCollectionCBItem>()
+                    if (vm.SongYoutubeVideos == null || vm.SongYoutubeVideos.Count != 2)
+                    {
+                        vm.SongYoutubeVideos = new ObservableCollection<ClipCollectionCBItem>()
                     {
                         new ClipCollectionCBItem() { Text = "Clip" , Type = eSongClipTypes.YouTubeClip, IsChecked = true},
                         new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.YouTubeDance },
                     };
+                    }
                 }
 
             }
@@ -97,10 +100,13 @@ namespace BitnuaVideoPlayer
             {
                 m_ClipTypes = value;
                 OnPropertyChanged(() => ClipTypes);
-                m_ClipTypes.CollectionChanged += (s, e) => items_CollectionChanged(s,e, (s1,e1) => OnPropertyChanged(() => ClipTypes));
-                items_CollectionChanged(null,
-                                        new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, m_ClipTypes),
-                                        (s1, e1) => OnPropertyChanged(() => ClipTypes));
+                if (m_ClipTypes != null)
+                {
+                    m_ClipTypes.CollectionChanged += (s, e) => items_CollectionChanged(s, e, (s1, e1) => OnPropertyChanged(() => ClipTypes));
+                    items_CollectionChanged(null,
+                                            new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, m_ClipTypes),
+                                            (s1, e1) => OnPropertyChanged(() => ClipTypes));
+                }
             }
         }
 

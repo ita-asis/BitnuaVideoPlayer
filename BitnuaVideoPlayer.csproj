@@ -229,6 +229,7 @@
     </Compile>
     <Compile Include="SettingBindingExtension.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="UI\AttachedProps\DelayExecuter.cs" />
     <Compile Include="UI\AttachedProps\MarqueeTextBlockBehavior.cs" />
     <Compile Include="UI\AttachedProps\UGrid.cs" />
     <Compile Include="UI\AttachedProps\PicCtrlBehavior.cs" />

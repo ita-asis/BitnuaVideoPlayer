@@ -422,6 +422,25 @@ namespace BitnuaVideoPlayer
             return playEntry;
         }
 
+        private static IEnumerable<string> GetDirFiles(string dir, string searchPattern = null, bool pickAnyIfNotMatchingPattern = false)
+        {
+            if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir))
+                return null;
+
+            try
+            {
+                var files = Directory.EnumerateFiles(dir, searchPattern ?? "*.*", SearchOption.AllDirectories);
+                if (pickAnyIfNotMatchingPattern && searchPattern != null && !files.Any())
+                    files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
+
+                return files;
+            }
+            catch (Exception)
+            {
+            }
+
+            return null;
+        }
 
         private static string PickRandomFile(string dir, string searchPattern = null, bool pickAnyIfNotMatchingPattern = false)
         {
@@ -483,7 +502,6 @@ namespace BitnuaVideoPlayer
                             await Task.Delay(Math.Max(VM.LeftPicDelay, 3000), token).ConfigureAwait(false);
                         }
                     }
-
                 }
                 catch (Exception)
                 {
@@ -541,13 +559,14 @@ namespace BitnuaVideoPlayer
                     if (!string.IsNullOrWhiteSpace(VM.VideoPathSinger) && !string.IsNullOrWhiteSpace(VM.Song.Performer) && isChecked(eSongClipTypes.SongClips))
                     {
                         var performerPath = Path.Combine(VM.VideoPathSinger, VM.Song.Performer);
-                        var performerVideo = PickRandomFile(performerPath, $"*{VM.Song.Title}*", false);
-                        if (!string.IsNullOrEmpty(performerVideo))
-                            videos.Add(new VideoSource(performerVideo));
+                        var preformerFiles = GetDirFiles(performerPath, $"*{VM.Song.Title}*", false);
+                        if (preformerFiles != null && performerPath.Any())
+                            videos.AddRange(preformerFiles.Select(f => new VideoSource(f)).Shuffle());
 
-                        performerVideo = PickRandomFile(performerPath, $"*{VM.Song.HebTitle}*", true);
-                        if (!string.IsNullOrEmpty(performerVideo))
-                            videos.Add(new VideoSource(performerVideo));
+                        preformerFiles = GetDirFiles(performerPath, $"*{VM.Song.HebTitle}*", true);
+                        if (preformerFiles != null && performerPath.Any())
+                            videos.AddRange(preformerFiles.Select(f => new VideoSource(f)).Shuffle());
+
                     }
 
                     if (!string.IsNullOrWhiteSpace(VM.VideoPathEvent) && !string.IsNullOrWhiteSpace(VM.Song.HebTitle) && isChecked(eSongClipTypes.Event))
