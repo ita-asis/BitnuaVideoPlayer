@@ -24,7 +24,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <my:EnumBooleanConverter x:Key="enumToBool"/>
         <my:StringToEnumConverter x:Key="stringToEnum"/>
-        <my:BoolToGridRowHeightConverter x:Key="bool2Grid" />
+        <my:BoolToGridGridLengthConverter x:Key="bool2Grid" />
         <my:BoolToGridRowHeightMultiConverter x:Key="bool2GridMulti" />
         
         <DataTemplate DataType="{x:Type my:PictureItem}">
@@ -199,7 +199,7 @@
                            HorizontalAlignment="Stretch" 
                            VerticalAlignment="Stretch"
                            HorizontalContentAlignment="Center"
-                           VerticalContentAlignment="Center"
+                           VerticalContentAlignment="Top"
                            
                            Background ="{Binding LeftPicTitle.BackColor, Converter={StaticResource colorCnv}}"
                            Foreground ="{Binding LeftPicTitle.ForeColor, Converter={StaticResource colorCnv}}"

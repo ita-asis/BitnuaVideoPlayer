@@ -10,7 +10,7 @@ using System.Windows.Data;
 namespace BitnuaVideoPlayer
 {
     [ValueConversion(typeof(bool), typeof(GridLength))]
-    public class BoolToGridRowHeightConverter : IValueConverter
+    public class BoolToGridGridLengthConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

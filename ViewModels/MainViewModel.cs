@@ -36,20 +36,20 @@ namespace BitnuaVideoPlayer
                     if (vm.ClipTypes == null || vm.ClipTypes.Count != 3)
                     {
                         vm.ClipTypes = new ObservableCollection<ClipCollectionCBItem>()
-                    {
-                        new ClipCollectionCBItem() { Text = "Performer", Type = eSongClipTypes.SongClips, IsChecked = true},
-                        new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.Dance},
-                        new ClipCollectionCBItem() { Text = "Event", Type = eSongClipTypes.Event},
-                    };
+                        {
+                            new ClipCollectionCBItem() { Text = "Performer", Type = eSongClipTypes.SongClips, IsChecked = true},
+                            new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.Dance},
+                            new ClipCollectionCBItem() { Text = "Event", Type = eSongClipTypes.Event},
+                        };
                     }
 
                     if (vm.SongYoutubeVideos == null || vm.SongYoutubeVideos.Count != 2)
                     {
                         vm.SongYoutubeVideos = new ObservableCollection<ClipCollectionCBItem>()
-                    {
-                        new ClipCollectionCBItem() { Text = "Clip" , Type = eSongClipTypes.YouTubeClip, IsChecked = true},
-                        new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.YouTubeDance },
-                    };
+                        {
+                            new ClipCollectionCBItem() { Text = "Clip" , Type = eSongClipTypes.YouTubeClip, IsChecked = true},
+                            new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.YouTubeDance },
+                        };
                     }
                 }
 
@@ -226,6 +226,14 @@ namespace BitnuaVideoPlayer
         {
             get { return m_ShowSongInfo; }
             set { m_ShowSongInfo = value; OnPropertyChanged(() => ShowSongInfo); }
+        }
+
+        private bool m_ShowSongInfoPic = true;
+
+        public bool ShowSongInfoPic
+        {
+            get { return m_ShowSongInfoPic; }
+            set { m_ShowSongInfoPic = value; OnPropertyChanged(() => ShowSongInfoPic); }
         }
 
         private bool m_ShowLeftPic = true;
@@ -456,6 +464,8 @@ namespace BitnuaVideoPlayer
         {
             switch (kind)
             {
+                case ePresentationKinds.AmpsLive:
+                    return new AmpsPresentationItem();
                 case ePresentationKinds.Picture:
                     return new PictureItem() { Path = path };
                 case ePresentationKinds.PictureList:
@@ -505,6 +515,11 @@ namespace BitnuaVideoPlayer
             set { m_VideoSource = value; OnPropertyChanged(() => VideoSource); }
         }
 
+    }
+
+    public class AmpsPresentationItem : VideoListItem
+    {
+        public override ePresentationKinds Kind => ePresentationKinds.AmpsLive;
     }
 
     public class VideoListItem : PresentationItem
@@ -619,6 +634,7 @@ namespace BitnuaVideoPlayer
 
     public enum ePresentationKinds
     {
+        AmpsLive,
         Picture,
         PictureList,
         Video,

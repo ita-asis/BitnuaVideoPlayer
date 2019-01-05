@@ -29,7 +29,7 @@ namespace BitnuaVideoPlayer
     public partial class App : Application
     {
         private const string c_MainVmSettingKey = "MainVmJson";
-        private static Random m_Random = new Random();
+        private static Random s_Random = new Random();
 
 
         private MainWindow m_MainWindow;
@@ -352,7 +352,7 @@ namespace BitnuaVideoPlayer
         {
             try
             {
-                var song = m_Song = ReadSongInfo(filePath);
+                var song = ReadSongInfo(filePath);
 
                 if (VM.CurrentClient == m_BitnuaClient)
                     await UpdateVM(song);
@@ -372,21 +372,28 @@ namespace BitnuaVideoPlayer
             if (song == null)
                 return;
 
-            VM.Song = song;
-            VM.ArtistPicSource = await GetArtistPic(VM);
-            VM.PicSources = GetAvaiableSongPics(VM).Shuffle(m_Random);
-            VM.DefaultLayout_VideoItem.VideoSources = GetAvaiableSongVideos(VM).Shuffle(m_Random).ToList();
+            m_Song = VM.Song = song;
+            VM.ArtistPicSource = GetArtistPic(VM);
+            VM.PicSources = GetAvaiableSongPics(VM).Shuffle(s_Random);
 
             if (!string.IsNullOrWhiteSpace(VM.FlayerDir))
             {
-                VM.Flyerfiles = Directory.EnumerateFiles(VM.FlayerDir, "*.*", SearchOption.AllDirectories).Shuffle(m_Random);
+                VM.Flyerfiles = Directory.EnumerateFiles(VM.FlayerDir, "*.*", SearchOption.AllDirectories).Shuffle(s_Random);
             }
 
             m_PicLoopToken = new CancellationTokenSource();
-
+            var songVideos = GetAvaiableSongVideos(VM).Shuffle(s_Random).ToList();
             if (VM.SelectedLayout == eLayoutModes.Default)
             {
+                VM.DefaultLayout_VideoItem.VideoSources = songVideos;
                 var t = Task.Run(() => StartLeftPicTask(m_PicLoopToken.Token));
+            }
+            else
+            {
+                foreach (var item in VM.PresentationVM.PresentationItems.OfType<AmpsPresentationItem>())
+                {
+                    item.VideoSources = songVideos;
+                }
             }
         }
 
@@ -463,7 +470,7 @@ namespace BitnuaVideoPlayer
             return file;
         }
 
-        private static Task<string> GetArtistPic(MainViewModel VM)
+        private static string GetArtistPic(MainViewModel VM)
         {
             string res = null;
             if (VM.Song != null)
@@ -478,7 +485,7 @@ namespace BitnuaVideoPlayer
                 }
             }
 
-            return Task.FromResult(res);
+            return res;
         }
 
         private Task<List<ClientInfo>> GetActiveClients() => DB_ActiveClients.Find(Builders<ClientInfo>.Filter.Empty).ToListAsync();
@@ -487,28 +494,49 @@ namespace BitnuaVideoPlayer
         private async Task StartLeftPicTask(CancellationToken token)
         {
             await Task.Delay(100);
-            while (!token.IsCancellationRequested)
+
+            using (var songPics = IterateInLoop(GetAvaiableSongPics(VM, false), token).GetEnumerator())
+            using (var leftPics = IterateNextLeftPic(VM, token).GetEnumerator())
             {
-                try
+                while (!token.IsCancellationRequested)
                 {
                     var st = DateTime.UtcNow.Ticks;
-                    if (VM.Song != null && (VM.SelectedPicMode != ViewModels.ePicMode.Lyrics))
+                    try
                     {
-                        foreach (var fileNTitle in IterateNextLeftPic(VM, token))
+                        if (VM.Song != null && (VM.SelectedPicMode != ViewModels.ePicMode.Lyrics))
                         {
-                            VM.LeftPicSource = fileNTitle.Item1;
-                            VM.LeftPicTitle.Text = fileNTitle.Item2;
-                            Console.WriteLine($"{TimeSpan.FromTicks(DateTime.UtcNow.Ticks - st)}: {fileNTitle.Item2}");
+                            if (songPics.MoveNext())
+                                VM.ArtistPicSource = songPics.Current.Item1;
+
+                            if (leftPics.MoveNext())
+                            {
+                                var fileNTitle = leftPics.Current;
+                                VM.LeftPicSource = fileNTitle.Item1;
+                                VM.LeftPicTitle.Text = fileNTitle.Item2;
+#if DEBUG
+                                Console.WriteLine($"{TimeSpan.FromTicks(DateTime.UtcNow.Ticks - st)}: {fileNTitle.Item2}");
+#endif
+                            }
+
                             await Task.Delay(Math.Max(VM.LeftPicDelay, 3000), token).ConfigureAwait(false);
                         }
                     }
-                }
-                catch (Exception)
-                {
+                    catch (Exception)
+                    {
+                    }
                 }
             }
         }
 
+        private static IEnumerable<T> IterateInLoop<T>(IEnumerable<T> source, CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                using (var items = source.GetEnumerator())
+                    while (items.MoveNext() && !token.IsCancellationRequested)
+                        yield return items.Current;
+            }
+        }
         private static IEnumerable<Tuple<string, string>> IterateNextLeftPic(MainViewModel VM, CancellationToken token)
         {
             while (!token.IsCancellationRequested)
@@ -528,7 +556,7 @@ namespace BitnuaVideoPlayer
             }
         }
 
-        private static IEnumerable<Tuple<string, string>> GetAvaiableSongPics(MainViewModel VM)
+        private static IEnumerable<Tuple<string, string>> GetAvaiableSongPics(MainViewModel VM, bool addDefault = true)
         {
             var pics = new List<Tuple<string, string>>();
 
@@ -540,7 +568,7 @@ namespace BitnuaVideoPlayer
                 AddDir(pics, VM.Pic_ShowPerformer, VM.Song.Performer, VM.PicPathPerformer);
             }
 
-            if (pics.Count == 0 || VM.Pic_ShowDefault)
+            if (addDefault && (pics.Count == 0 || VM.Pic_ShowDefault))
                 pics.Add(new Tuple<string, string>(VM.PicPathDefault, string.Empty));
 
             return pics.Select(dir => new Tuple<string, string>(PickRandomFile(dir.Item1), dir.Item2));

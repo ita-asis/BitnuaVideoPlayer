@@ -43,6 +43,10 @@ namespace BitnuaVideoPlayer.UI.Converters
             {
                 itemType = typeof(YoutubeVideoItem);
             }
+            else if (itemKind == ePresentationKinds.AmpsLive)
+            {
+                itemType = typeof(AmpsPresentationItem);
+            }
 
             existingValue = Convert.ChangeType(existingValue, itemType);
             existingValue = Activator.CreateInstance(itemType);

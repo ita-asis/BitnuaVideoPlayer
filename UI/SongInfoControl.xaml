@@ -10,6 +10,8 @@
         <my:ColorToSolidColorBrushValueConverter x:Key="colorCnv"/>
         <my:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <my:DoubleMultiplyConverter x:Key="doubleMultiplyConv"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <my:BoolToGridGridLengthConverter x:Key="bool2Grid" />
 
     </UserControl.Resources>
     <Grid
@@ -19,16 +21,20 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition />
+            <ColumnDefinition Width="{Binding ShowSongInfoPic, Converter={StaticResource bool2Grid}}"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         <Image x:Name="m_ArtistPic"
                            Source="{Binding ArtistPicSource}"
+                           Visibility="{Binding ShowSongInfoPic, Converter={StaticResource BoolToVis}}"
                            StretchDirection="Both"
-                           Stretch="UniformToFill"
+                           Stretch="Fill"
                        />
-        
-        <Grid Grid.Column="1" VerticalAlignment="Center">
+
+
+        <Viewbox Grid.Column="1" Stretch="Fill" StretchDirection="Both">
+            
+        <Grid  VerticalAlignment="Center">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -69,28 +75,31 @@
                         <Setter Property="Foreground" Value="{Binding SongInfo02.ForeColor,Converter={StaticResource colorCnv}}" />
                     </Style>
                 </StackPanel.Resources>
-                <TextBlock Text="יוצר" 
+                <TextBlock Text="יוצר:" 
                                Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
                 <TextBlock Text="{Binding Song.Creator}"  FontWeight="Bold" Margin="10,0,25,0"
                                Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
 
-                <TextBlock Text="מבצע" 
+                <TextBlock Text="מבצע:" 
                                Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
                 <TextBlock Text="{Binding Song.Performer}"  FontWeight="Bold" Margin="10,0,25,0"
                                Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
 
-                <TextBlock Text="לחן" 
+                <TextBlock Text="לחן:" 
                                Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
                 <TextBlock Text="{Binding Song.Composer}"  FontWeight="Bold" Margin="10,0,25,0"
                                Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
 
-                <TextBlock Text="משורר"  
+                <TextBlock Text="משורר:"  
                                Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
                 <TextBlock Text="{Binding Song.Writer}"  FontWeight="Bold" Margin="10,0,25,0"
                                Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
 
             </StackPanel>
         </Grid>
+
+        </Viewbox>
+
 
     </Grid>
 </UserControl>

@@ -137,6 +137,7 @@ namespace BitnuaVideoPlayer
         private void addPresentationItemClick(object sender, RoutedEventArgs e)
         {
             ePresentationKinds kind = (ePresentationKinds)presentaionItemCB.SelectedItem;
+            
             var item = PresentationItem.Create(kind, persentaionItemPath.Text);
             item.X = (int)(m_PresentationCanvas.Width - item.Width)/ 2;
             item.Y = (int)(m_PresentationCanvas.Height - item.Height) / 2;
@@ -326,6 +327,14 @@ namespace BitnuaVideoPlayer
             window.Left = left;
             window.Top = top;
         }
+
+        private void presentaionItemCBChecked(object sender, RoutedEventArgs e)
+        {
+            if (btnPresentationPath != null && persentaionItemPath != null)
+                btnPresentationPath.IsEnabled = persentaionItemPath.IsEnabled = ((ePresentationKinds)presentaionItemCB.SelectedValue) != ePresentationKinds.AmpsLive;
+        }
+
+        private void presentaionItemCBContextChanged(object sender, DependencyPropertyChangedEventArgs e) => presentaionItemCBChecked(null, null);
     }
 
     public class ColorToSolidColorBrushValueConverter : IValueConverter
