@@ -195,18 +195,20 @@
                             <Image Source="{Binding LeftPicSource}"
                                />
                         </Viewbox>
-                        <Label Grid.Row="1"
-                           HorizontalAlignment="Stretch" 
-                           VerticalAlignment="Stretch"
-                           HorizontalContentAlignment="Center"
-                           VerticalContentAlignment="Top"
-                           
-                           Background ="{Binding LeftPicTitle.BackColor, Converter={StaticResource colorCnv}}"
-                           Foreground ="{Binding LeftPicTitle.ForeColor, Converter={StaticResource colorCnv}}"
-                           Content    ="{Binding LeftPicTitle.Text}" 
-                           FontSize   ="{Binding LeftPicTitle.FontSize}" 
-                           FontFamily ="{Binding LeftPicTitle.FontFamily}" 
-                           />
+                        <Viewbox StretchDirection="DownOnly" Stretch="Uniform"
+                                 Grid.Row="1">
+                            <Label 
+                               HorizontalContentAlignment="Center"
+                               VerticalContentAlignment="Top"
+                               
+                               Background ="{Binding LeftPicTitle.BackColor, Converter={StaticResource colorCnv}}"
+                               Foreground ="{Binding LeftPicTitle.ForeColor, Converter={StaticResource colorCnv}}"
+                               Content    ="{Binding LeftPicTitle.Text}" 
+                               FontSize   ="{Binding LeftPicTitle.FontSize}" 
+                               FontFamily ="{Binding LeftPicTitle.FontFamily}" 
+                               />
+                        </Viewbox>
+
 
                     </Grid>
 
@@ -239,7 +241,7 @@
                 </Grid>
                 <GridSplitter Grid.Column="1"
                               Width="5"
-                              Visibility="{Binding ShwoLeftPic, Converter={StaticResource BoolToVis}}"
+                              Visibility="{Binding ShowLeftPic, Converter={StaticResource BoolToVis}}"
                                   Foreground="Yellow"
                               
                               HorizontalAlignment="Stretch" />

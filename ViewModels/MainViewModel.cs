@@ -73,6 +73,35 @@ namespace BitnuaVideoPlayer
 
         public string ClientName { get; set; }
         public string WatchDir { get; set; } = @"C:\AMPS\vmmplay";
+        private bool m_RTL = false;
+
+        public bool RTL
+        {
+            get { return m_RTL; }
+            set
+            {
+                m_RTL = value;
+                OnPropertyChanged(() => RTL);
+                OnPropertyChanged(() => Song);
+            }
+        }
+
+        public int SongInfoRows
+        {
+            get
+            {
+                if (Song == null)
+                    return 1;
+
+                int c = 0;
+                if (!string.IsNullOrWhiteSpace(Song.Creator)) c++;
+                if (!string.IsNullOrWhiteSpace(Song.Composer)) c++;
+                if (!string.IsNullOrWhiteSpace(Song.Performer)) c++;
+                if (!string.IsNullOrWhiteSpace(Song.Writer)) c++;
+
+                return (c + 1) / 2;
+            }
+        }
 
         public string VideoPath1 { get; set; }
         public string VideoPath2 { get; set; }
@@ -165,7 +194,12 @@ namespace BitnuaVideoPlayer
         public Song Song
         {
             get { return m_Song; }
-            set { m_Song = value; OnPropertyChanged(() => Song); }
+            set
+            {
+                m_Song = value;
+                OnPropertyChanged(() => Song);
+                OnPropertyChanged(() => SongInfoRows);
+            }
         }
 
 

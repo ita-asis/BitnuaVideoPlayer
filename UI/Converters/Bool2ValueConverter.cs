@@ -9,19 +9,19 @@ using System.Windows.Data;
 namespace BitnuaVideoPlayer
 {
     [ValueConversion(typeof(bool), typeof(object))]
-    public sealed class Bool2ValueConverter : IValueConverter
+    public class Value2BoolConverter : IValueConverter
     {
         public object TrueValue { get; set; }
         public object FalseValue { get; set; }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is bool))
                 return null;
             return (bool)value ? TrueValue : FalseValue;
         }
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (IsEqual(value, TrueValue))
                 return true;
@@ -41,5 +41,11 @@ namespace BitnuaVideoPlayer
 
             return false;
         }
+    }
+
+    public class Bool2ValueConverter: Value2BoolConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture) => base.ConvertBack(value, targetType, parameter, culture);
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => base.Convert(value, targetType, parameter, culture);
     }
 }

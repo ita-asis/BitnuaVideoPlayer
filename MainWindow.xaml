@@ -23,14 +23,14 @@
 
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <my:EnumBooleanConverter x:Key="enumToBool"/>
-            <my:Bool2ValueConverter x:Key="bool2FlowDirection" >
-                <my:Bool2ValueConverter.TrueValue>
+            <my:Value2BoolConverter x:Key="flowDirection2Bool" >
+                <my:Value2BoolConverter.TrueValue>
                     <FlowDirection>LeftToRight</FlowDirection>
-                </my:Bool2ValueConverter.TrueValue>
-                <my:Bool2ValueConverter.FalseValue>
+                </my:Value2BoolConverter.TrueValue>
+                <my:Value2BoolConverter.FalseValue>
                     <FlowDirection>RightToLeft</FlowDirection>
-                </my:Bool2ValueConverter.FalseValue>
-            </my:Bool2ValueConverter>
+                </my:Value2BoolConverter.FalseValue>
+            </my:Value2BoolConverter>
             <my:ColorToSolidColorBrushValueConverter x:Key="colorCnv"/>
             <my:AngleConverter x:Key="AngleConverter"/>
             <Style x:Key="colorBtn" TargetType="Button">
@@ -40,6 +40,7 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
+    <Viewbox StretchDirection="DownOnly" Stretch="Uniform">
     <Grid d:DataContext="{StaticResource designVM}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -51,7 +52,7 @@
         <WrapPanel >
             <RadioButton GroupName="layoutGrp" Margin="4" Content="Default" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"/>
             <RadioButton GroupName="layoutGrp" Margin="4" Content="Presentation" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Presentation}"/>
-            
+            <CheckBox Content="Hebrew?" Margin="4" IsChecked="{Binding RTL}"/>
             <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Two videos"   IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=TwoVideos}"/>-->
             <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Three Pictures" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=ThreePics}"/>-->
         </WrapPanel>
@@ -89,7 +90,7 @@
              
                           Padding="4"/>
             </WrapPanel>
-            <GroupBox Header="Left side" 
+            <GroupBox Header="Left Side" 
                       Grid.Row="1"
                       Margin="4,0">
                 <Grid>
@@ -859,7 +860,7 @@
                     <CheckBox Content="Left -> Right" 
                               Margin="4,0,4,0"
                               VerticalAlignment="Center"
-                              IsChecked="{Binding Banner.Direction, Converter={StaticResource bool2FlowDirection}}"/>
+                              IsChecked="{Binding Banner.Direction, Converter={StaticResource flowDirection2Bool}}"/>
                 </StackPanel>
                 <StackPanel Grid.Row="4" Orientation="Horizontal">
                     <Button Click="btnBannerFontPicker" 
@@ -890,4 +891,6 @@
 
         <Label x:Name="VersionLbl" Grid.Row="3"/>
     </Grid>
+        
+    </Viewbox>
 </Window>
