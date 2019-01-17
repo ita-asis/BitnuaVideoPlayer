@@ -302,13 +302,23 @@ namespace BitnuaVideoPlayer
             if (fields.TryGetValue(Fields.Heb_Title, out field))
                 song.HebTitle = field.Value;
             if (fields.TryGetValue(Fields.Performer, out field))
-                song.Performer = field.Value;
+                song.Heb_Performer = field.Value;
+            if (fields.TryGetValue(Fields.Eng_Performer, out field))
+                song.Eng_Performer = field.Value;
             if (fields.TryGetValue(Fields.Creator, out field))
-                song.Creator = field.Value;
+                song.Heb_Creator = field.Value;
+            if (fields.TryGetValue(Fields.Eng_Creator, out field))
+                song.Eng_Creator = field.Value;
             if (fields.TryGetValue(Fields.Composer, out field))
-                song.Composer = field.Value;
+                song.Heb_Composer = field.Value;
+            if (fields.TryGetValue(Fields.Eng_Composer, out field))
+                song.Eng_Composer = field.Value;
             if (fields.TryGetValue(Fields.Writer, out field))
-                song.Writer = field.Value;
+                song.Heb_Writer = field.Value;
+            if (fields.TryGetValue(Fields.Eng_Writer, out field))
+                song.Eng_Writer = field.Value;
+
+
             if (fields.TryGetValue(Fields.Year, out field) && int.TryParse(field.Value, out year))
                 song.Year = year;
 
@@ -476,7 +486,7 @@ namespace BitnuaVideoPlayer
             if (VM.Song != null)
             {
                 var path = VM.PicPathPerformer;
-                var person = VM.Song.Performer;
+                var person = VM.Song.Heb_Performer;
                 var dir = GetPicPath(path, person);
                 if (Directory.Exists(dir))
                 {
@@ -562,10 +572,10 @@ namespace BitnuaVideoPlayer
 
             if (VM.Song != null)
             {
-                AddDir(pics, VM.Pic_ShowCreator, VM.Song.Creator, VM.PicPathCreator);
-                AddDir(pics, VM.Pic_ShowWriter, VM.Song.Writer, VM.PicPathWriter);
-                AddDir(pics, VM.Pic_ShowComposer, VM.Song.Composer, VM.PicPathComposer);
-                AddDir(pics, VM.Pic_ShowPerformer, VM.Song.Performer, VM.PicPathPerformer);
+                AddDir(pics, VM.Pic_ShowCreator, VM.Song.Heb_Creator, VM.PicPathCreator);
+                AddDir(pics, VM.Pic_ShowWriter, VM.Song.Heb_Writer, VM.PicPathWriter);
+                AddDir(pics, VM.Pic_ShowComposer, VM.Song.Heb_Composer, VM.PicPathComposer);
+                AddDir(pics, VM.Pic_ShowPerformer, VM.Song.Heb_Performer, VM.PicPathPerformer);
             }
 
             if (addDefault && (pics.Count == 0 || VM.Pic_ShowDefault))
@@ -584,9 +594,9 @@ namespace BitnuaVideoPlayer
             {
                 if (VM.SelectedVideoMode == eVideoMode.Clip)
                 {
-                    if (!string.IsNullOrWhiteSpace(VM.VideoPathSinger) && !string.IsNullOrWhiteSpace(VM.Song.Performer) && isChecked(eSongClipTypes.SongClips))
+                    if (!string.IsNullOrWhiteSpace(VM.VideoPathSinger) && !string.IsNullOrWhiteSpace(VM.Song.Heb_Performer) && isChecked(eSongClipTypes.SongClips))
                     {
-                        var performerPath = Path.Combine(VM.VideoPathSinger, VM.Song.Performer);
+                        var performerPath = Path.Combine(VM.VideoPathSinger, VM.Song.Heb_Performer);
                         var preformerFiles = GetDirFiles(performerPath, $"*{VM.Song.Title}*", false);
                         if (preformerFiles != null && performerPath.Any())
                             videos.AddRange(preformerFiles.Select(f => new VideoSource(f)).Shuffle());
@@ -771,7 +781,6 @@ namespace BitnuaVideoPlayer
         public const string Type = "Type";
         public const string Year = "שנה";
         public const string Tab2 = "לשונית משנה";
-        public const string Performer = "מבצע";
         public const string LastPlayed = "Last Played";
         public const string LastMarked = "LastMarked";
         public const string TotalPlays = "TotalPlays";
@@ -798,13 +807,19 @@ namespace BitnuaVideoPlayer
         public const string id3_Year = "id3 Year";
         public const string id3_Genre = "id3 Genre";
         public const string id3_Comment = "id3_Comment";
-        public const string Composer = "לחן";
-        public const string Creator = "יוצר";
-        public const string Writer = "משורר";
         public const string Lyrics = "Notes";
         public const string Lyrics2 = "רשימות";
         public const string YouTubeSong = "YouTubeSong";
         public const string YouTubeDance = "YouTubeDance";
-    }
 
+        public const string Composer = "לחן";
+        public const string Creator = "יוצר";
+        public const string Writer = "משורר";
+        public const string Performer = "מבצע";
+
+        public const string Eng_Composer = "Music By";
+        public const string Eng_Creator = "Choreographer";
+        public const string Eng_Writer = "Lyrics By";
+        public const string Eng_Performer = "Performer";
+    }
 }

@@ -842,10 +842,22 @@ namespace BitnuaVideoPlayer.ViewModels
     public class Song
     {
         public string Title { get; set; }
-        public string Performer { get; set; }
-        public string Creator { get; set; }
-        public string Composer { get; set; }
-        public string Writer { get; set; }
+
+        public string Heb_Performer { get; set; }
+        public string Heb_Creator { get; set; }
+        public string Heb_Composer { get; set; }
+        public string Heb_Writer { get; set; }
+
+        public string Eng_Performer { get; set; }
+        public string Eng_Creator { get; set; }
+        public string Eng_Composer { get; set; }
+        public string Eng_Writer { get; set; }
+
+        public string Performer => App.Instance.VM.RTL ? Heb_Performer : Eng_Performer ?? Heb_Performer;
+        public string Creator => App.Instance.VM.RTL ? Heb_Creator : Eng_Creator ?? Heb_Creator;
+        public string Composer => App.Instance.VM.RTL ? Heb_Composer : Eng_Composer ?? Heb_Composer;
+        public string Writer => App.Instance.VM.RTL ? Heb_Writer : Eng_Writer ?? Heb_Writer;
+
         public int? Year { get; set; }
         public string HebTitle { get; set; }
         public string Lyrics { get; set; }
