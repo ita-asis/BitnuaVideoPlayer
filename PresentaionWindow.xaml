@@ -73,6 +73,8 @@
 
         <Grid x:Name="defualtLayout"
               Grid.Row="1"
+              Panel.ZIndex="0"
+              Margin="5,0"
               Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"
               Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
 

@@ -81,6 +81,7 @@
                 </StackPanel>
 
                 <UniformGrid Rows="{Binding SongInfoRows}" Columns="2" Margin="4,0" Grid.Row="1"
+                             Grid.IsSharedSizeScope="True"
                              x:Name="uniformGrid">
                     <UniformGrid.Resources>
                         <Style TargetType="{x:Type TextBlock}" x:Key="tbStlye">
@@ -90,70 +91,86 @@
                         </Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}"/>
                     </UniformGrid.Resources>
-                    <StackPanel Orientation="Horizontal">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
+                            <ColumnDefinition SharedSizeGroup="B"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
-                                <Setter Property="TextBlock.Text" Value="יוצר:" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RTL}" Value="False">
-                                        <Setter Property="TextBlock.Text" Value="Creator:"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                        <TextBlock Text="{Binding Song.Creator}"  FontWeight="Bold" Margin="10,0,25,0"
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                    <Setter Property="TextBlock.Text" Value="יוצר:" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RTL}" Value="False">
+                                            <Setter Property="TextBlock.Text" Value="Creator:"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="{Binding Song.Creator}"  FontWeight="Bold" Margin="10,0,25,0" Grid.Column="1"
                                    Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"/>
+                            <ColumnDefinition SharedSizeGroup="D"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
-                                <Setter Property="TextBlock.Text" Value="מבצע:" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RTL}" Value="False">
-                                        <Setter Property="TextBlock.Text" Value="Performer:"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                        <TextBlock Text="{Binding Song.Performer}"  FontWeight="Bold" Margin="10,0,25,0"
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                    <Setter Property="TextBlock.Text" Value="מבצע:" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RTL}" Value="False">
+                                            <Setter Property="TextBlock.Text" Value="Performer:"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="{Binding Song.Performer}"  FontWeight="Bold" Margin="10,0,25,0" Grid.Column="1"
                                    Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
+                            <ColumnDefinition SharedSizeGroup="B"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
-                                <Setter Property="TextBlock.Text" Value="לחן:" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RTL}" Value="False">
-                                        <Setter Property="TextBlock.Text" Value="Composer:"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                        <TextBlock Text="{Binding Song.Composer}"  FontWeight="Bold" Margin="10,0,25,0"
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                    <Setter Property="TextBlock.Text" Value="לחן:" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RTL}" Value="False">
+                                            <Setter Property="TextBlock.Text" Value="Composer:"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="{Binding Song.Composer}"  FontWeight="Bold" Margin="10,0,25,0" Grid.Column="1"
                                    Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"/>
+                            <ColumnDefinition SharedSizeGroup="D"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
-                                <Setter Property="TextBlock.Text" Value="משורר:" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RTL}" Value="False">
-                                        <Setter Property="TextBlock.Text" Value="Writer:"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                        <TextBlock Text="{Binding Song.Writer}"  FontWeight="Bold" Margin="10,0,25,0"
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                    <Setter Property="TextBlock.Text" Value="משורר:" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RTL}" Value="False">
+                                            <Setter Property="TextBlock.Text" Value="Writer:"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="{Binding Song.Writer}"  FontWeight="Bold" Margin="10,0,25,0" Grid.Column="1"
                            Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                    </StackPanel>
+                    </Grid>
                 </UniformGrid>
             </Grid>
 
