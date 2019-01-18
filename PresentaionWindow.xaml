@@ -197,21 +197,20 @@
                             <Image Source="{Binding LeftPicSource}"
                                />
                         </Viewbox>
-                        <Viewbox StretchDirection="DownOnly" Stretch="Uniform"
-                                 Grid.Row="1">
-                            <Label 
-                               HorizontalContentAlignment="Center"
-                               VerticalContentAlignment="Top"
-                               
-                               Background ="{Binding LeftPicTitle.BackColor, Converter={StaticResource colorCnv}}"
-                               Foreground ="{Binding LeftPicTitle.ForeColor, Converter={StaticResource colorCnv}}"
-                               Content    ="{Binding LeftPicTitle.Text}" 
-                               FontSize   ="{Binding LeftPicTitle.FontSize}" 
-                               FontFamily ="{Binding LeftPicTitle.FontFamily}" 
-                               />
-                        </Viewbox>
-
-
+                        <Grid Grid.Row="1"
+                              Background ="{Binding LeftPicTitle.BackColor, Converter={StaticResource colorCnv}}">
+                                <Viewbox StretchDirection="DownOnly" Stretch="Uniform">
+                                    <Label 
+                                        HorizontalContentAlignment="Center"
+                                        VerticalContentAlignment="Top"
+                                        
+                                        Foreground ="{Binding LeftPicTitle.ForeColor, Converter={StaticResource colorCnv}}"
+                                        Content    ="{Binding LeftPicTitle.Text}" 
+                                        FontSize   ="{Binding LeftPicTitle.FontSize}" 
+                                        FontFamily ="{Binding LeftPicTitle.FontFamily}" 
+                                        />
+                                </Viewbox>
+                            </Grid>
                     </Grid>
 
                     <!--LeftPanel - Lyrics-->

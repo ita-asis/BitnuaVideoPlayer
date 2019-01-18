@@ -10,10 +10,11 @@
         xmlns:UI="clr-namespace:BitnuaVideoPlayer.UI"
         Title="Bitnua Video Player"
         x:Name="mainWindow"
-        Height="640"
-        Width="{my:SettingBinding   rmtCtrl.Width}"
         Left="{my:SettingBinding    rmtCtrl.Left}"
-        Top="{my:SettingBinding     rmtCtrl.Top}" d:DesignWidth="300">
+        Top="{my:SettingBinding     rmtCtrl.Top}" 
+        Height="{my:SettingBinding   rmtCtrl.Height}"
+        SizeToContent="WidthAndHeight">
+    
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -40,38 +41,40 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <Viewbox StretchDirection="DownOnly" Stretch="Uniform">
-    <Grid d:DataContext="{StaticResource designVM}">
+    <Viewbox StretchDirection="DownOnly" Stretch="Uniform"
+             HorizontalAlignment="Left"
+             VerticalAlignment="Top">
+    <!--<Grid d:DataContext="{StaticResource designVM}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        </Grid.RowDefinitions>-->
+    <StackPanel d:DataContext="{StaticResource designVM}"
+                Width="330">
 
-        <WrapPanel >
+        <StackPanel VerticalAlignment="Top"
+                    Orientation="Horizontal">
             <RadioButton GroupName="layoutGrp" Margin="4" Content="Default" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"/>
             <RadioButton GroupName="layoutGrp" Margin="4" Content="Presentation" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Presentation}"/>
             <CheckBox Content="Hebrew?" Margin="4" IsChecked="{Binding RTL}"/>
             <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Two videos"   IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=TwoVideos}"/>-->
             <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Three Pictures" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=ThreePics}"/>-->
-        </WrapPanel>
-        <StackPanel VerticalAlignment="Top"
-                    HorizontalAlignment="Right" 
-                    Orientation="Horizontal">
-            <Button Padding="3" Margin="4,0"
+
+                <Button Padding="3" Margin="4,0"
                                 Click="btnRestorePresentaionWindow" Width="25">
-                <Image Source="Resources\restore.png" Stretch="Uniform"/>
-            </Button>
-            <Button Padding="3" Margin="4,0"
+                    <Image Source="Resources\restore.png" Stretch="Uniform"/>
+                </Button>
+                <Button Padding="3" Margin="4,0"
                     Click="btnShowPresentaionWindow" Width="25" >
-                <Image Source="Resources\export-arrow.png" Stretch="Uniform"/>
-            </Button>
-            <Button Padding="3" Margin="4,0"
+                    <Image Source="Resources\export-arrow.png" Stretch="Uniform"/>
+                </Button>
+                <Button Padding="3" Margin="4,0"
                     Click="btnHidePresentaionWindow" Width="25" >
-                <Image Source="Resources\close-button.png" Stretch="Uniform"/>
-            </Button>
-        </StackPanel>
+                    <Image Source="Resources\close-button.png" Stretch="Uniform"/>
+                </Button>
+            </StackPanel>
         <!--Default Layout-->
         <Grid Grid.Row="1"
               Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"
@@ -83,15 +86,62 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <WrapPanel Orientation="Horizontal">
+            <WrapPanel Orientation="Horizontal" Margin="4,0">
                 <Label Content="Show Client" Padding="4"/>
                 <ComboBox SelectedItem="{Binding CurrentClient}"
                           ItemsSource="{Binding ActiveClients}"
              
                           Padding="4"/>
             </WrapPanel>
-            <GroupBox Header="Left Side" 
+            <GroupBox Header="Main video" 
                       Grid.Row="1"
+                      Margin="4,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <WrapPanel >
+                        <RadioButton x:Name="rb_clip" GroupName="rightVideoRbs" Margin="4" Content="Song's Clips"  IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=Clip}"/>
+                        <RadioButton x:Name="rb_youTubeclip" GroupName="rightVideoRbs" Margin="4" Content="Song's Youtube"  IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=Youtube}"/>
+                        <RadioButton GroupName="rightVideoRbs" Margin="4" Content="Video Lib 1" IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=VideoDir1}"/>
+                        <RadioButton GroupName="rightVideoRbs" Margin="4" Content="Video Lib 2" IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=VideoDir2}"/>
+                    </WrapPanel>
+                    <WrapPanel Grid.Row="1" Visibility="{Binding ElementName=rb_clip, Path=IsChecked, Converter={StaticResource BoolToVis}}">
+                        <ItemsControl ItemsSource="{Binding ClipTypes}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="4" Content="{Binding Text}" IsChecked="{Binding IsChecked}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </WrapPanel>
+
+                    <GroupBox Header="Song's Youtube Videos"  Grid.Row="1" Visibility="{Binding ElementName=rb_youTubeclip, Path=IsChecked, Converter={StaticResource BoolToVis}}">
+                        <WrapPanel>
+                            <ItemsControl ItemsSource="{Binding SongYoutubeVideos}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <RadioButton GroupName="songYoutube" Margin="4" Content="{Binding Text}" IsChecked="{Binding IsChecked}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </WrapPanel>
+                    </GroupBox>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Left Side" 
+                      Grid.Row="2" 
                       Margin="4,0">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -139,13 +189,18 @@
                         </Grid>
                     </GroupBox>
                     <!--Pic Header fonts-->
-                    <GroupBox Grid.Row="2" Header="Pic Header" Visibility="{Binding ElementName=rb_picture, Path=IsChecked, Converter={StaticResource BoolToVis}}">
+                    <GroupBox 
+                        Grid.Row="2" 
+                        
+                        Header="Pic Header" 
+                        Visibility="{Binding ElementName=rb_picture, Path=IsChecked, Converter={StaticResource BoolToVis}}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <WrapPanel Visibility="{Binding ElementName=rb_picture, Path=IsChecked, Converter={StaticResource BoolToVis}}">
+                            <WrapPanel 
+                                Visibility="{Binding ElementName=rb_picture, Path=IsChecked, Converter={StaticResource BoolToVis}}">
                                 <CheckBox Margin="4" Content="Creator"   IsChecked="{Binding Pic_ShowCreator}" />
                                 <CheckBox Margin="4" Content="Performer" IsChecked="{Binding Pic_ShowPerformer}" />
                                 <CheckBox Margin="4" Content="Composer"  IsChecked="{Binding Pic_ShowComposer}" />
@@ -180,53 +235,6 @@
                                 </ComboBox>
                             </StackPanel>
                         </Grid>
-                    </GroupBox>
-                </Grid>
-            </GroupBox>
-            <GroupBox Header="Main video" 
-                      Grid.Row="2" 
-                      Margin="4,0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <WrapPanel >
-                        <RadioButton x:Name="rb_clip" GroupName="rightVideoRbs" Margin="4" Content="Song's Clips"  IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=Clip}"/>
-                        <RadioButton x:Name="rb_youTubeclip" GroupName="rightVideoRbs" Margin="4" Content="Song's Youtube"  IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=Youtube}"/>
-                        <RadioButton GroupName="rightVideoRbs" Margin="4" Content="Video Lib 1" IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=VideoDir1}"/>
-                        <RadioButton GroupName="rightVideoRbs" Margin="4" Content="Video Lib 2" IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=VideoDir2}"/>
-                    </WrapPanel>
-                    <WrapPanel Grid.Row="1" Visibility="{Binding ElementName=rb_clip, Path=IsChecked, Converter={StaticResource BoolToVis}}">
-                        <ItemsControl ItemsSource="{Binding ClipTypes}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <CheckBox Margin="4" Content="{Binding Text}" IsChecked="{Binding IsChecked}" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </WrapPanel>
-
-                    <GroupBox Header="Song's Youtube Videos"  Grid.Row="1" Visibility="{Binding ElementName=rb_youTubeclip, Path=IsChecked, Converter={StaticResource BoolToVis}}">
-                        <WrapPanel>
-                            <ItemsControl ItemsSource="{Binding SongYoutubeVideos}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <RadioButton GroupName="songYoutube" Margin="4" Content="{Binding Text}" IsChecked="{Binding IsChecked}"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </WrapPanel>
                     </GroupBox>
                 </Grid>
             </GroupBox>
@@ -279,6 +287,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
+                            
                             <Label Content="Song Title" Grid.Row="0" Grid.Column="0" />
                             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" >
                                 <Button Click="btnSongInfoFontPicker" 
@@ -799,7 +808,6 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
-                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <StackPanel VerticalAlignment="Top" 
@@ -823,15 +831,15 @@
                     <CheckBox Content="Show ?" IsChecked="{Binding Banner.IsVisible}" Margin="8,4"/>
 
                 <DockPanel LastChildFill="True" Margin="4">
-                    <TextBlock DockPanel.Dock="Left" Text="Text" Padding="4,0"/>
+                    <TextBlock DockPanel.Dock="Left" Text="Text" Padding="0,0,4,0"/>
                     <TextBox Text="{Binding Banner.Text}" Margin="4,0" Width="Auto"/>
                 </DockPanel>
                 </StackPanel>
 
                 <DockPanel LastChildFill="True" Margin="4"
                            Grid.Row="1">
-                    <TextBlock DockPanel.Dock="Left" Text="Pics Dir" Padding="4,0"/>
-                    <TextBox Text="{Binding Banner.PicsPath}" Margin="4,0" Width="Auto"/>
+                    <TextBlock DockPanel.Dock="Left" Text="Pics Dir" Padding="0,0,4,0"/>
+                    <TextBox Text="{Binding Banner.PicsPath}" Margin="4,0"/>
                 </DockPanel>
                 <StackPanel Grid.Row="2" Orientation="Horizontal">
                     <Label Content="Position"/>
@@ -890,7 +898,6 @@
         </GroupBox>
 
         <Label x:Name="VersionLbl" Grid.Row="3"/>
-    </Grid>
-        
+    </StackPanel>
     </Viewbox>
 </Window>

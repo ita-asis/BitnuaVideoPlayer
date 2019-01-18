@@ -31,14 +31,13 @@ namespace BitnuaVideoPlayer
     /// </summary>
     public partial class MainWindow : Window
     {
+        private MainWindowVM m_MainWindowVM;
+        private Canvas m_PresentationCanvas;
         public MainViewModel VM { get; set; }
 
-        public MainWindow()
+        private void Init()
         {
-            InitializeComponent();
-
             MouseDown += Window_MouseDown;
-
             VersionLbl.Content = GetVersion();
             AppUpdateManager.VersionUpdateProgressChanged += p => VersionLbl.Dispatcher.BeginInvoke(new Action(() => VersionLbl.Content = p >= 100 ? GetVersion() : $"Update in progress: {(p / 100d).ToString("P0")}"));
         }
@@ -50,13 +49,11 @@ namespace BitnuaVideoPlayer
             return string.Format("Version {0}.{1}.{2}", version.Major, version.Minor, version.Build);
         }
 
-
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
         }
-
 
         #region Font And Color pickers
         private void btnLeftPicHeaderFontPicker(object sender, RoutedEventArgs e) =>
@@ -132,7 +129,6 @@ namespace BitnuaVideoPlayer
             return color;
         }
         #endregion
-    
 
         private void addPresentationItemClick(object sender, RoutedEventArgs e)
         {
@@ -170,10 +166,6 @@ namespace BitnuaVideoPlayer
 
             //listItem.IsSelected = !listItem.IsSelected;
         }
-
-
-        private MainWindowVM m_MainWindowVM;
-        private Canvas m_PresentationCanvas;
 
         public MainWindowVM PVM => m_MainWindowVM ?? (m_MainWindowVM = new MainWindowVM());
 

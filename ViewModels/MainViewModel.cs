@@ -203,7 +203,7 @@ namespace BitnuaVideoPlayer
         }
 
 
-        private ePicMode m_SelectedPicMode;
+        private ePicMode m_SelectedPicMode = ePicMode.Pics;
         [JsonConverter(typeof(StringEnumConverter))]
         public ePicMode SelectedPicMode
         {
@@ -428,7 +428,7 @@ namespace BitnuaVideoPlayer
         public int DbUpdateDelay { get; set; } = 5000; // 5 sec default
 
         [JsonIgnore]
-        public IEnumerable<Tuple<string, string>> PicSources;
+        public IEnumerable<Tuple<string, Func<string>>> PicSources;
         [JsonIgnore]
         public IEnumerable<string> Flyerfiles;
 

@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using System.Windows.Navigation;
+using BitnuaVideoPlayer.Properties;
 
 namespace BitnuaVideoPlayer
 {
@@ -65,10 +66,14 @@ namespace BitnuaVideoPlayer
             InitUpdateManager();
             await InitAll();
 
-            MainWindow = m_MainWindow = new MainWindow();
-            m_MainWindow.DataContext = m_MainWindow.VM = VM;
-            m_MainWindow.Closed += M_MainWindow_Closed;
-            m_MainWindow.Topmost = true;
+            MainWindow = m_MainWindow = new MainWindow()
+            {
+                VM = VM,
+                DataContext = VM,
+                Topmost = true,
+                Height = Settings.Default.rmtCtrl.Height
+            };
+            MainWindow.Closed += M_MainWindow_Closed;
 
             m_PlayerWindow = new PresentaionWindow() { DataContext = VM };
             m_PlayerWindow.WindowStyle = WindowStyle.None;
@@ -561,27 +566,34 @@ namespace BitnuaVideoPlayer
                 {
                     using (var songPics = VM.PicSources.GetEnumerator())
                         while (songPics.MoveNext() && !token.IsCancellationRequested)
-                            yield return songPics.Current;
+                            yield return new Tuple<string, string>(songPics.Current.Item1, songPics.Current.Item2?.Invoke());
                 }
             }
         }
 
-        private static IEnumerable<Tuple<string, string>> GetAvaiableSongPics(MainViewModel VM, bool addDefault = true)
+        private static IEnumerable<Tuple<string, Func<string>>> GetAvaiableSongPics(MainViewModel VM, bool addDefault = true)
         {
-            var pics = new List<Tuple<string, string>>();
+            var pics = new List<Tuple<string, Func<string>>>();
 
             if (VM.Song != null)
             {
-                AddDir(pics, VM.Pic_ShowCreator, VM.Song.Heb_Creator, VM.PicPathCreator);
-                AddDir(pics, VM.Pic_ShowWriter, VM.Song.Heb_Writer, VM.PicPathWriter);
-                AddDir(pics, VM.Pic_ShowComposer, VM.Song.Heb_Composer, VM.PicPathComposer);
-                AddDir(pics, VM.Pic_ShowPerformer, VM.Song.Heb_Performer, VM.PicPathPerformer);
+                var dir = GetDir(VM.Pic_ShowCreator, VM.Song.Heb_Creator, VM.PicPathCreator);
+                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.Creator));
+
+                dir = GetDir(VM.Pic_ShowWriter, VM.Song.Heb_Writer, VM.PicPathWriter);
+                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.Writer));
+
+                dir = GetDir(VM.Pic_ShowComposer, VM.Song.Heb_Composer, VM.PicPathComposer);
+                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.Composer));
+
+                dir = GetDir(VM.Pic_ShowPerformer, VM.Song.Heb_Performer, VM.PicPathPerformer);
+                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.Performer));
             }
 
             if (addDefault && (pics.Count == 0 || VM.Pic_ShowDefault))
-                pics.Add(new Tuple<string, string>(VM.PicPathDefault, string.Empty));
+                pics.Add(new Tuple<string, Func<string>>(VM.PicPathDefault, null));
 
-            return pics.Select(dir => new Tuple<string, string>(PickRandomFile(dir.Item1), dir.Item2));
+            return pics.Select(dir => new Tuple<string, Func<string>>(PickRandomFile(dir.Item1), dir.Item2));
         }
 
         private static IEnumerable<VideoSource> GetAvaiableSongVideos(MainViewModel VM)
@@ -668,14 +680,17 @@ namespace BitnuaVideoPlayer
 
             return null;
         }
-        private static void AddDir(List<Tuple<string, string>> pics, bool showFlag, string person, string path)
+
+        private static string GetDir(bool showFlag, string person, string path)
         {
             if (showFlag && !string.IsNullOrWhiteSpace(person))
             {
                 var dir = GetPicPath(path, person);
                 if (Directory.Exists(dir))
-                    pics.Add(new Tuple<string, string>(dir, person));
+                    return dir;
             }
+
+            return null;
         }
 
         private static string GetPicPath(string dir, string person)
