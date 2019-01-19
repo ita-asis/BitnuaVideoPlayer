@@ -1,18 +1,10 @@
-﻿using Microsoft.WindowsAPICodePack.Shell;
-using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Interactivity;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Vlc.DotNet.Wpf;
 using SWC = System.Windows.Controls;
 namespace BitnuaVideoPlayer.UI.AttachedProps
 {

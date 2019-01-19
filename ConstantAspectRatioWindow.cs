@@ -27,6 +27,21 @@ namespace BitnuaVideoPlayer
             InitializeComponent();
             this.SourceInitialized += Window_SourceInitialized;
             Init();
+            Loaded += MainWindow_Loaded;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            var playerWindow = new PresentaionWindow() { DataContext = VM };
+            playerWindow.WindowStyle = WindowStyle.None;
+
+#if DEBUG
+            playerWindow.Topmost = false;
+#else
+            playerWindow.Topmost = true;
+#endif
+            App.Instance.m_PlayerWindow = playerWindow;
+            playerWindow.Show();
         }
 
         [StructLayout(LayoutKind.Sequential)]

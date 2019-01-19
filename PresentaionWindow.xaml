@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         mc:Ignorable="d"
         
-        xmlns:Vlc="clr-namespace:Vlc.DotNet.Wpf;assembly=Vlc.DotNet.Wpf"
+        xmlns:Vlc="clr-namespace:LibVLCSharp.WPF"
         xmlns:wpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         xmlns:my="clr-namespace:BitnuaVideoPlayer"
         xmlns:UI="clr-namespace:BitnuaVideoPlayer.UI"
@@ -18,41 +18,45 @@
         Left="{my:SettingBinding    prWindow.Left}"
         Top="{my:SettingBinding     prWindow.Top}">
     <Window.Resources>
-        <my:GridLengthConverter x:Key="gridLengthConverter" />
-        <my:ColorToSolidColorBrushValueConverter x:Key="colorCnv"/>
-        <my:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
-        <BooleanToVisibilityConverter x:Key="BoolToVis" />
-        <my:EnumBooleanConverter x:Key="enumToBool"/>
-        <my:StringToEnumConverter x:Key="stringToEnum"/>
-        <my:BoolToGridGridLengthConverter x:Key="bool2Grid" />
-        <my:BoolToGridRowHeightMultiConverter x:Key="bool2GridMulti" />
-        
-        <DataTemplate DataType="{x:Type my:PictureItem}">
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="UI/VlcPlayer/VideoViewStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <my:GridLengthConverter x:Key="gridLengthConverter" />
+            <my:ColorToSolidColorBrushValueConverter x:Key="colorCnv"/>
+            <my:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <BooleanToVisibilityConverter x:Key="BoolToVis" />
+            <my:EnumBooleanConverter x:Key="enumToBool"/>
+            <my:StringToEnumConverter x:Key="stringToEnum"/>
+            <my:BoolToGridGridLengthConverter x:Key="bool2Grid" />
+            <my:BoolToGridRowHeightMultiConverter x:Key="bool2GridMulti" />
+            
+            <DataTemplate DataType="{x:Type my:PictureItem}">
             <UI:PresentationCanvasItem>
                 <Viewbox StretchDirection="Both" Stretch="Fill">
                     <Image props:PicCtrlBehavior.ImageSource="{Binding Path}" />
                 </Viewbox>
             </UI:PresentationCanvasItem>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type my:VideoItem}">
-            <UI:PresentationCanvasItem>
-                <Vlc:VlcControl>
-                    <i:Interaction.Behaviors>
-                        <props:VideoCtrlBehavior Source="{Binding VideoSource}"/>
-                    </i:Interaction.Behaviors>
-                </Vlc:VlcControl>
-            </UI:PresentationCanvasItem>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type my:VideoListItem}">
-            <UI:PresentationCanvasItem>
-                <Vlc:VlcControl>
-                    <i:Interaction.Behaviors>
-                        <props:VideoDirPlayerBehaviour Videos="{Binding VideoSources}"/>
-                    </i:Interaction.Behaviors>
-                </Vlc:VlcControl>
-            </UI:PresentationCanvasItem>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type my:YoutubeVideoItem}">
+            <DataTemplate DataType="{x:Type my:VideoItem}">
+                <UI:PresentationCanvasItem>
+                    <Vlc:VideoView>
+                        <i:Interaction.Behaviors>
+                            <props:VideoCtrlBehavior Source="{Binding VideoSource}"/>
+                        </i:Interaction.Behaviors>
+                    </Vlc:VideoView>
+                </UI:PresentationCanvasItem>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type my:VideoListItem}">
+                <UI:PresentationCanvasItem>
+                    <Vlc:VideoView>
+                        <i:Interaction.Behaviors>
+                            <props:VideoDirPlayerBehaviour Videos="{Binding VideoSources}"/>
+                        </i:Interaction.Behaviors>
+                    </Vlc:VideoView>
+                </UI:PresentationCanvasItem>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type my:YoutubeVideoItem}">
             <UI:PresentationCanvasItem Background="Green">
                 <props:YoutubeWebBrowser IsEnabled="True" Margin="-8,-8,-12,-12">
                     <i:Interaction.Behaviors>
@@ -61,6 +65,7 @@
                 </props:YoutubeWebBrowser>
             </UI:PresentationCanvasItem>
         </DataTemplate>
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -68,8 +73,6 @@
             <RowDefinition />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
-
 
         <Grid x:Name="defualtLayout"
               Grid.Row="1"
@@ -250,11 +253,11 @@
                 <ContentControl Content="{Binding DefaultLayout_VideoItem}" Grid.Column="2" >
                     <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type my:VideoListItem}">
-                                <Vlc:VlcControl>
+                                <Vlc:VideoView>
                                     <i:Interaction.Behaviors>
                                         <props:VideoDirPlayerBehaviour Videos="{Binding VideoSources}"/>
                                     </i:Interaction.Behaviors>
-                                </Vlc:VlcControl>
+                                </Vlc:VideoView>
                         </DataTemplate>
                     </ContentControl.Resources>
                 </ContentControl>

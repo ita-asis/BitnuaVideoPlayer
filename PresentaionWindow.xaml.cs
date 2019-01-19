@@ -1,5 +1,6 @@
 ﻿using CefSharp;
 using CefSharp.Wpf;
+using LibVLCSharp.Shared;
 using System;
 using System.Drawing;
 using System.Windows;

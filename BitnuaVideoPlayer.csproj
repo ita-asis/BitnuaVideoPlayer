@@ -6,6 +6,10 @@
   <Import Project="packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props" Condition="Exists('packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+		None
+	</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{A0685475-5AFC-48F9-AD16-D14BCABF5AA3}</ProjectGuid>
@@ -13,7 +17,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BitnuaVideoPlayer</RootNamespace>
     <AssemblyName>BitnuaVideoPlayer</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -114,6 +118,10 @@
       <HintPath>packages\DnsClient.1.0.7\lib\net45\DnsClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="LibVLCSharp">
+      <HintPath>packages\LibVLCSharp.0.2.0\lib\net40\LibVLCSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.WindowsAPICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
       <Private>True</Private>
@@ -198,22 +206,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Vlc.DotNet.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=84529da31f4eb963, processorArchitecture=MSIL">
-      <HintPath>packages\Vlc.DotNet.Core.2.2.1\lib\net45\Vlc.DotNet.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Vlc.DotNet.Core.Interops, Version=2.2.1.0, Culture=neutral, PublicKeyToken=84529da31f4eb963, processorArchitecture=MSIL">
-      <HintPath>packages\Vlc.DotNet.Core.Interops.2.2.1\lib\net45\Vlc.DotNet.Core.Interops.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Vlc.DotNet.Forms, Version=2.2.1.0, Culture=neutral, PublicKeyToken=84529da31f4eb963, processorArchitecture=MSIL">
-      <HintPath>packages\Vlc.DotNet.Forms.2.2.1\lib\net45\Vlc.DotNet.Forms.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Vlc.DotNet.Wpf, Version=2.2.1.0, Culture=neutral, PublicKeyToken=84529da31f4eb963, processorArchitecture=MSIL">
-      <HintPath>packages\Vlc.DotNet.Wpf.2.2.1\lib\net45\Vlc.DotNet.Wpf.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -262,6 +254,8 @@
     <Compile Include="UI\SongInfoControl.xaml.cs">
       <DependentUpon>SongInfoControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\VlcPlayer\ForegroundWindow.xaml.cs" />
+    <Compile Include="UI\VlcPlayer\VideoView.cs" />
     <Compile Include="UserSettings.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
@@ -298,6 +292,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\VlcPlayer\ForegroundWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\VlcPlayer\VideoViewStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -332,7 +334,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Code\WPF Canvas DiagramDesigner\src\DiagramDesignerPart1\MoveResizeRotateWithAdorners\MoveResizeRotateWithAdorners.csproj">
@@ -385,12 +389,10 @@
     <Resource Include="BitnuaPlayer.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="packages\VideoLAN.LibVLC.Windows.3.0.0-alpha3\build\VideoLAN.LibVLC.Windows.targets" Condition="Exists('packages\VideoLAN.LibVLC.Windows.3.0.0-alpha3\build\VideoLAN.LibVLC.Windows.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\VideoLAN.LibVLC.Windows.3.0.0-alpha3\build\VideoLAN.LibVLC.Windows.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\VideoLAN.LibVLC.Windows.3.0.0-alpha3\build\VideoLAN.LibVLC.Windows.targets'))" />
     <Error Condition="!Exists('packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props'))" />
     <Error Condition="!Exists('packages\cef.redist.x64.3.3239.1723\build\cef.redist.x64.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\cef.redist.x64.3.3239.1723\build\cef.redist.x64.props'))" />
     <Error Condition="!Exists('packages\CefSharp.Common.63.0.3\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\CefSharp.Common.63.0.3\build\CefSharp.Common.props'))" />
@@ -398,10 +400,12 @@
     <Error Condition="!Exists('packages\CefSharp.Wpf.63.0.3\build\CefSharp.Wpf.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\CefSharp.Wpf.63.0.3\build\CefSharp.Wpf.props'))" />
     <Error Condition="!Exists('packages\CefSharp.Wpf.63.0.3\build\CefSharp.Wpf.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\CefSharp.Wpf.63.0.3\build\CefSharp.Wpf.targets'))" />
     <Error Condition="!Exists('packages\StrongNamer.0.0.7\build\StrongNamer.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\StrongNamer.0.0.7\build\StrongNamer.targets'))" />
+    <Error Condition="!Exists('packages\VideoLAN.LibVLC.Windows.3.0.5\build\VideoLAN.LibVLC.Windows.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\VideoLAN.LibVLC.Windows.3.0.5\build\VideoLAN.LibVLC.Windows.targets'))" />
   </Target>
   <Import Project="packages\CefSharp.Common.63.0.3\build\CefSharp.Common.targets" Condition="Exists('packages\CefSharp.Common.63.0.3\build\CefSharp.Common.targets')" />
   <Import Project="packages\CefSharp.Wpf.63.0.3\build\CefSharp.Wpf.targets" Condition="Exists('packages\CefSharp.Wpf.63.0.3\build\CefSharp.Wpf.targets')" />
   <Import Project="packages\StrongNamer.0.0.7\build\StrongNamer.targets" Condition="Exists('packages\StrongNamer.0.0.7\build\StrongNamer.targets')" />
+  <Import Project="packages\VideoLAN.LibVLC.Windows.3.0.5\build\VideoLAN.LibVLC.Windows.targets" Condition="Exists('packages\VideoLAN.LibVLC.Windows.3.0.5\build\VideoLAN.LibVLC.Windows.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

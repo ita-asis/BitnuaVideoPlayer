@@ -1,4 +1,6 @@
-﻿using Microsoft.WindowsAPICodePack.Shell;
+﻿using LibVLCSharp.Shared;
+using LibVLCSharp.WPF;
+using Microsoft.WindowsAPICodePack.Shell;
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using System;
 using System.Collections.Generic;
@@ -10,13 +12,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interactivity;
-using Vlc.DotNet.Wpf;
 
 namespace BitnuaVideoPlayer.UI.AttachedProps
 {
-    public class VideoCtrlBehavior : Behavior<VlcControl>
+    public class VideoCtrlBehavior : Behavior<VideoView>
     {
-        protected VlcControl PlayerCtrl => AssociatedObject;
+        protected VideoView PlayerCtrl => AssociatedObject;
         protected override void OnAttached()
         {
             RegisterEvents();
@@ -65,17 +66,8 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 
         private void InitPlayer()
         {
-            PlayerCtrl.MediaPlayer.VlcLibDirectoryNeeded += OnVlcControlNeedsLibDirectory;
-            PlayerCtrl.MediaPlayer.VlcMediaplayerOptions = new[] { "-I rc", "--rc-quiet" }; //"-I dummy","--dummy-quiet"
-            PlayerCtrl.MediaPlayer.EndInit();
-
-            PlayerCtrl.SizeChanged += (o, e) => PlayerCtrl.MediaPlayer.Video.AspectRatio = $"{e.NewSize.Width}:{e.NewSize.Height}";
-
-            // This can also be called before EndInit
-            //player.Log += (sender, args) =>
-            //{
-            //    System.Diagnostics.Debug.WriteLine(string.Format("libVlc : {0} {1} @ {2}", args.Level, args.Message, args.Module));
-            //};
+            PlayerCtrl.MediaPlayer = new MediaPlayer(App.Instance.LibVLC);
+            PlayerCtrl.SizeChanged += (o, e) => PlayerCtrl.MediaPlayer.AspectRatio = $"{e.NewSize.Width}:{e.NewSize.Height}";
             AutoPlay();
         }
 
@@ -87,15 +79,15 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             }
         }
 
-        private static void PlayerPlay(Vlc.DotNet.Forms.VlcControl player, VideoSource source)
+        private static void PlayerPlay(MediaPlayer player, VideoSource source)
         {
             if (player == null || string.IsNullOrEmpty(source.Path))
                 return;
 
             try
             {
-                player.Play(new Uri(source.Path));
-                MutePlayer(player);
+                player.Play(new Media(App.Instance.LibVLC, source.Path));
+
                 if (source.Time != null)
                 {
                     player.Time = source.Time.Value;
@@ -107,37 +99,16 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             }
         }
 
-        protected static void MutePlayer(Vlc.DotNet.Forms.VlcControl player)
-        {
-            if (player != null && !player.Audio.IsMute)
-            {
-                player.Audio.ToggleMute();
-            }
-        }
-
         private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behaviour = ((VideoCtrlBehavior)d);
             behaviour.Play();
         }
 
-        protected void Play(Vlc.DotNet.Forms.VlcControl player = null, VideoSource source = null)
+        protected void Play(MediaPlayer player = null, VideoSource source = null)
         {
             PlayerPlay(player ?? PlayerCtrl?.MediaPlayer, source ?? Source);
         }
-
-        private void OnVlcControlNeedsLibDirectory(object sender, Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs e)
-        {
-            var currentAssembly = Assembly.GetEntryAssembly();
-            var currentDirectory = new FileInfo(currentAssembly.Location).DirectoryName;
-            if (currentDirectory == null)
-                return;
-            if (IntPtr.Size == 4)
-                e.VlcLibDirectory = new DirectoryInfo(Path.Combine(currentDirectory, @"libvlc\win-x86\"));
-            else
-                e.VlcLibDirectory = new DirectoryInfo(Path.Combine(currentDirectory, @"libvlc\win-x64\"));
-        }
-
     }
 
     public class VideoDirPlayerBehaviour : VideoCtrlBehavior
@@ -173,7 +144,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         private int m_VideosCount;
         #endregion
 
-        protected Task Play(VlcControl player, int videoId)
+        protected Task Play(VideoView player, int videoId)
         {
             if (player == null)
                 return Task.CompletedTask;
@@ -184,7 +155,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         protected override void Stop()
         {
             base.Stop();
-            PlayerCtrl.MediaPlayer.VlcMediaPlayer.EndReached -= VlcMediaPlayer_EndReached;
+            PlayerCtrl.MediaPlayer.EndReached -= VlcMediaPlayer_EndReached;
         }
 
         private static async void OnVideosChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -202,15 +173,14 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             if (Videos == null || Videos.Count == 0)
                 return Task.CompletedTask;
 
-            PlayerCtrl.MediaPlayer.VlcMediaPlayer.EndReached += VlcMediaPlayer_EndReached;
+            PlayerCtrl.MediaPlayer.EndReached += VlcMediaPlayer_EndReached;
             m_VideosCount = Videos.Count;
             m_CurrVideo = 0;
             return Play(PlayerCtrl, m_CurrVideo);
         }
 
-        private async void VlcMediaPlayer_EndReached(object sender, Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs e)
+        private async void VlcMediaPlayer_EndReached(object sender, EventArgs e)
         {
-            var ctrl = sender as Vlc.DotNet.Core.VlcMediaPlayer;
             await Dispatcher.BeginInvoke((Action)(async () =>
             {
                 m_CurrVideo = ++m_CurrVideo % m_VideosCount;

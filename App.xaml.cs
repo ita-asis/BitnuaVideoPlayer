@@ -20,6 +20,10 @@ using System.Windows.Threading;
 using System.Xml.Linq;
 using System.Windows.Navigation;
 using BitnuaVideoPlayer.Properties;
+using LibVLCSharp.Shared;
+using System.Runtime.CompilerServices;
+using CefSharp;
+using System.Reflection;
 
 namespace BitnuaVideoPlayer
 {
@@ -49,18 +53,58 @@ namespace BitnuaVideoPlayer
 
         public MainViewModel VM { get; set; }
         public static App Instance { get; private set; }
+        public LibVLC LibVLC { get; internal set; }
 
         public App()
         {
             DispatcherUnhandledException += Current_DispatcherUnhandledException;
             Instance = this;
+            InitVLC();
+            
+            //Add Custom assembly resolver
+            AppDomain.CurrentDomain.AssemblyResolve += Resolver;
+
+            InitializeCefSharp();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void InitializeCefSharp()
+        {
+            var settings = new CefSettings();
+            
+            // Set BrowserSubProcessPath based on app bitness at runtime
+            settings.BrowserSubprocessPath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase,
+                                                   Environment.Is64BitProcess ? "x64" : "x86",
+                                                   "CefSharp.BrowserSubprocess.exe");
+
+            // Make sure you set performDependencyCheck false
+            Cef.Initialize(settings, performDependencyCheck: false, browserProcessHandler: null);
+        }
+
+        // Will attempt to load missing assembly from either x86 or x64 subdir
+        // Required by CefSharp to load the unmanaged dependencies when running using AnyCPU
+        private static Assembly Resolver(object sender, ResolveEventArgs args)
+        {
+            if (args.Name.StartsWith("CefSharp"))
+            {
+                string assemblyName = args.Name.Split(new[] { ',' }, 2)[0] + ".dll";
+                string archSpecificPath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase,
+                                                       Environment.Is64BitProcess ? "x64" : "x86",
+                                                       assemblyName);
+
+                return File.Exists(archSpecificPath)
+                           ? Assembly.LoadFile(archSpecificPath)
+                           : null;
+            }
+
+            return null;
         }
 
         protected override async void OnStartup(StartupEventArgs e)
         {
             // Verify license for this app
             VerifyLicense();
-
+            
             base.OnStartup(e);
 
             InitUpdateManager();
@@ -75,17 +119,13 @@ namespace BitnuaVideoPlayer
             };
             MainWindow.Closed += M_MainWindow_Closed;
 
-            m_PlayerWindow = new PresentaionWindow() { DataContext = VM };
-            m_PlayerWindow.WindowStyle = WindowStyle.None;
-
-#if DEBUG
-            m_PlayerWindow.Topmost = false;
-#else
-            m_PlayerWindow.Topmost = true;
-#endif
-
             m_MainWindow.Show();
-            m_PlayerWindow.Show();
+        }
+
+        private void InitVLC()
+        {
+            Core.Initialize();
+            LibVLC = new LibVLC("--noaudio");
         }
 
         private static void VerifyLicense()
