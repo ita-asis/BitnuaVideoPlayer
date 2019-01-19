@@ -166,10 +166,13 @@ namespace BitnuaVideoPlayer
             {
                 m_SongYoutubeVideos = value;
                 OnPropertyChanged(() => SongYoutubeVideos);
-                m_SongYoutubeVideos.CollectionChanged += (s, e) => items_CollectionChanged(s,e, (s1,e1) => OnPropertyChanged(() => SongYoutubeVideos));
-                items_CollectionChanged(null, 
-                                        new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, m_SongYoutubeVideos), 
-                                        (s1, e1) => OnPropertyChanged(() => SongYoutubeVideos));
+                if (m_SongYoutubeVideos != null)
+                {
+                    m_SongYoutubeVideos.CollectionChanged += (s, e) => items_CollectionChanged(s, e, (s1, e1) => OnPropertyChanged(() => SongYoutubeVideos));
+                    items_CollectionChanged(null,
+                                            new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, m_SongYoutubeVideos),
+                                            (s1, e1) => OnPropertyChanged(() => SongYoutubeVideos));
+                }
             }
         }
 
