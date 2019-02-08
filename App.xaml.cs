@@ -548,9 +548,13 @@ namespace BitnuaVideoPlayer
 
         private async Task StartLeftPicTask(CancellationToken token)
         {
+            VM.ArtistPicSource = null;
+            VM.LeftPicSource = null;
+            VM.LeftPicTitle = null;
+
             await Task.Delay(100);
 
-            using (var songPics = IterateInLoop(GetAvaiableSongPics(VM, false), token).GetEnumerator())
+            using (var songPics = IterateInLoop(GetAvaiableSongPics(VM), token).GetEnumerator())
             using (var leftPics = IterateNextLeftPic(VM, token).GetEnumerator())
             {
                 while (!token.IsCancellationRequested)
@@ -585,29 +589,46 @@ namespace BitnuaVideoPlayer
 
         private static IEnumerable<T> IterateInLoop<T>(IEnumerable<T> source, CancellationToken token)
         {
+            bool empty = true;
             while (!token.IsCancellationRequested)
             {
                 using (var items = source.GetEnumerator())
                     while (items.MoveNext() && !token.IsCancellationRequested)
+                    {
+                        empty = false;
                         yield return items.Current;
+                    }
+
+                if (empty)
+                    yield break;
             }
         }
         private static IEnumerable<Tuple<string, string>> IterateNextLeftPic(MainViewModel VM, CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
-                if (VM.SelectedPicMode == ViewModels.ePicMode.Flyer)
+                bool empty = true;
+                if (VM.SelectedPicMode == ePicMode.Flyer)
                 {
                     using (var flyerPics = VM.Flyerfiles.GetEnumerator())
                         while (flyerPics.MoveNext() && !token.IsCancellationRequested)
+                        {
+                            empty = false;
                             yield return new Tuple<string, string>(flyerPics.Current, null);
+                        }
                 }
                 else
                 {
                     using (var songPics = VM.PicSources.GetEnumerator())
                         while (songPics.MoveNext() && !token.IsCancellationRequested)
+                        {
+                            empty = false;
                             yield return new Tuple<string, string>(songPics.Current.Item1, songPics.Current.Item2?.Invoke());
+                        }
                 }
+
+                if (empty)
+                    yield break;
             }
         }
 
