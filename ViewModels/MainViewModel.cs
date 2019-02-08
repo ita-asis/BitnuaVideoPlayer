@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System;
 using System.Configuration;
 using System.ComponentModel;
@@ -81,8 +81,8 @@ namespace BitnuaVideoPlayer
             set
             {
                 m_RTL = value;
-                OnPropertyChanged(() => RTL);
-                OnPropertyChanged(() => Song);
+                OnPropertyChanged(nameof(RTL));
+                OnPropertyChanged(nameof(Song));
             }
         }
 
@@ -128,13 +128,13 @@ namespace BitnuaVideoPlayer
             set
             {
                 m_ClipTypes = value;
-                OnPropertyChanged(() => ClipTypes);
+                OnPropertyChanged(nameof(ClipTypes));
                 if (m_ClipTypes != null)
                 {
-                    m_ClipTypes.CollectionChanged += (s, e) => items_CollectionChanged(s, e, (s1, e1) => OnPropertyChanged(() => ClipTypes));
+                    m_ClipTypes.CollectionChanged += (s, e) => items_CollectionChanged(s, e, (s1, e1) => OnPropertyChanged(nameof(ClipTypes)));
                     items_CollectionChanged(null,
                                             new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, m_ClipTypes),
-                                            (s1, e1) => OnPropertyChanged(() => ClipTypes));
+                                            (s1, e1) => OnPropertyChanged(nameof(ClipTypes)));
                 }
             }
         }
@@ -165,23 +165,32 @@ namespace BitnuaVideoPlayer
             set
             {
                 m_SongYoutubeVideos = value;
-                OnPropertyChanged(() => SongYoutubeVideos);
+                OnPropertyChanged(nameof(SongYoutubeVideos));
                 if (m_SongYoutubeVideos != null)
                 {
-                    m_SongYoutubeVideos.CollectionChanged += (s, e) => items_CollectionChanged(s, e, (s1, e1) => OnPropertyChanged(() => SongYoutubeVideos));
+                    m_SongYoutubeVideos.CollectionChanged += (s, e) => items_CollectionChanged(s, e, (s1, e1) => OnPropertyChanged(nameof(SongYoutubeVideos)));
                     items_CollectionChanged(null,
                                             new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, m_SongYoutubeVideos),
-                                            (s1, e1) => OnPropertyChanged(() => SongYoutubeVideos));
+                                            (s1, e1) => OnPropertyChanged(nameof(SongYoutubeVideos)));
                 }
             }
         }
+
+        private bool m_IsShowClock;
+
+        public bool IsShowClock
+        {
+            get { return m_IsShowClock; }
+            set { m_IsShowClock = value; OnPropertyChanged(nameof(IsShowClock)); }
+        }
+
 
         private BannerVM m_Banner;
 
         public BannerVM Banner
         {
             get { return m_Banner ?? (m_Banner = new BannerVM()); }
-            set { m_Banner = value; OnPropertyChanged(() => Banner); }
+            set { m_Banner = value; OnPropertyChanged(nameof(Banner)); }
         }
 
         private ColoredTextVm m_Lyrics;
@@ -189,7 +198,7 @@ namespace BitnuaVideoPlayer
         public ColoredTextVm Lyrics
         {
             get { return m_Lyrics ?? (m_Lyrics = new ColoredTextVm()); }
-            set { m_Lyrics = value; OnPropertyChanged(() => Lyrics); }
+            set { m_Lyrics = value; OnPropertyChanged(nameof(Lyrics)); }
         }
 
         private Song m_Song;
@@ -200,8 +209,8 @@ namespace BitnuaVideoPlayer
             set
             {
                 m_Song = value;
-                OnPropertyChanged(() => Song);
-                OnPropertyChanged(() => SongInfoRows);
+                OnPropertyChanged(nameof(Song));
+                OnPropertyChanged(nameof(SongInfoRows));
             }
         }
 
@@ -211,7 +220,7 @@ namespace BitnuaVideoPlayer
         public ePicMode SelectedPicMode
         {
             get { return m_SelectedPicMode; }
-            set { m_SelectedPicMode = value; OnPropertyChanged(() => SelectedPicMode); }
+            set { m_SelectedPicMode = value; OnPropertyChanged(nameof(SelectedPicMode)); }
         }
 
         private eVideoMode m_SelectedVideoMode;
@@ -220,49 +229,49 @@ namespace BitnuaVideoPlayer
         public eVideoMode SelectedVideoMode
         {
             get { return m_SelectedVideoMode; }
-            set { m_SelectedVideoMode = value; OnPropertyChanged(() => SelectedVideoMode); }
+            set { m_SelectedVideoMode = value; OnPropertyChanged(nameof(SelectedVideoMode)); }
         }
 
         private bool m_Pic_ShowCreator;
         public bool Pic_ShowCreator
         {
             get { return m_Pic_ShowCreator; }
-            set { m_Pic_ShowCreator = value; OnPropertyChanged(() => Pic_ShowCreator); }
+            set { m_Pic_ShowCreator = value; OnPropertyChanged(nameof(Pic_ShowCreator)); }
         }
 
         private bool m_Pic_ShowPerformer;
         public bool Pic_ShowPerformer
         {
             get { return m_Pic_ShowPerformer; }
-            set { m_Pic_ShowPerformer = value; OnPropertyChanged(() => Pic_ShowPerformer); }
+            set { m_Pic_ShowPerformer = value; OnPropertyChanged(nameof(Pic_ShowPerformer)); }
         }
 
         private bool m_Pic_ShowComposer;
         public bool Pic_ShowComposer
         {
             get { return m_Pic_ShowComposer; }
-            set { m_Pic_ShowComposer = value; OnPropertyChanged(() => Pic_ShowComposer); }
+            set { m_Pic_ShowComposer = value; OnPropertyChanged(nameof(Pic_ShowComposer)); }
         }
 
         private bool m_Pic_ShowWriter;
         public bool Pic_ShowWriter
         {
             get { return m_Pic_ShowWriter; }
-            set { m_Pic_ShowWriter = value; OnPropertyChanged(() => Pic_ShowWriter); }
+            set { m_Pic_ShowWriter = value; OnPropertyChanged(nameof(Pic_ShowWriter)); }
         }
 
         private bool m_Pic_ShowDefault = true;
         public bool Pic_ShowDefault
         {
             get { return m_Pic_ShowDefault; }
-            set { m_Pic_ShowDefault = value; OnPropertyChanged(() => Pic_ShowDefault); }
+            set { m_Pic_ShowDefault = value; OnPropertyChanged(nameof(Pic_ShowDefault)); }
         }
 
         private bool m_ShowSongInfo = true;
         public bool ShowSongInfo
         {
             get { return m_ShowSongInfo; }
-            set { m_ShowSongInfo = value; OnPropertyChanged(() => ShowSongInfo); }
+            set { m_ShowSongInfo = value; OnPropertyChanged(nameof(ShowSongInfo)); }
         }
 
         private bool m_ShowSongInfoPic = true;
@@ -270,35 +279,35 @@ namespace BitnuaVideoPlayer
         public bool ShowSongInfoPic
         {
             get { return m_ShowSongInfoPic; }
-            set { m_ShowSongInfoPic = value; OnPropertyChanged(() => ShowSongInfoPic); }
+            set { m_ShowSongInfoPic = value; OnPropertyChanged(nameof(ShowSongInfoPic)); }
         }
 
         private bool m_ShowLeftPic = true;
         public bool ShowLeftPic
         {
             get { return m_ShowLeftPic; }
-            set { m_ShowLeftPic = value; OnPropertyChanged(() => ShowLeftPic); }
+            set { m_ShowLeftPic = value; OnPropertyChanged(nameof(ShowLeftPic)); }
         }
 
         private ColoredTextVm m_SongInfo01;
         public ColoredTextVm SongInfo01
         {
             get { return m_SongInfo01 ?? (m_SongInfo01 = new ColoredTextVm()); }
-            set { m_SongInfo01 = value; OnPropertyChanged(() => SongInfo01); }
+            set { m_SongInfo01 = value; OnPropertyChanged(nameof(SongInfo01)); }
         }
 
         private ColoredTextVm m_SongInfo02;
         public ColoredTextVm SongInfo02
         {
             get { return m_SongInfo02 ?? (m_SongInfo02 = new ColoredTextVm()); }
-            set { m_SongInfo02 = value; OnPropertyChanged(() => SongInfo02); }
+            set { m_SongInfo02 = value; OnPropertyChanged(nameof(SongInfo02)); }
         }
 
         private double m_TopPanelHeight;
         public double TopPanelHeight
         {
             get { return m_TopPanelHeight; }
-            set { m_TopPanelHeight = value; OnPropertyChanged(() => TopPanelHeight); }
+            set { m_TopPanelHeight = value; OnPropertyChanged(nameof(TopPanelHeight)); }
         }
 
         #region DefaultLayout
@@ -308,7 +317,7 @@ namespace BitnuaVideoPlayer
         public bool DefaultLayout_SongInfoShowOnTop
         {
             get { return m_DefaultLayout_SongInfoShowOnTop; }
-            set { m_DefaultLayout_SongInfoShowOnTop = value; OnPropertyChanged(() => DefaultLayout_SongInfoShowOnTop); }
+            set { m_DefaultLayout_SongInfoShowOnTop = value; OnPropertyChanged(nameof(DefaultLayout_SongInfoShowOnTop)); }
         }
 
 
@@ -316,14 +325,14 @@ namespace BitnuaVideoPlayer
         public double DefaultLayout_LeftWidth
         {
             get { return m_DefaultLayout_LeftWidth; }
-            set { m_DefaultLayout_LeftWidth = value; OnPropertyChanged(() => DefaultLayout_LeftWidth); }
+            set { m_DefaultLayout_LeftWidth = value; OnPropertyChanged(nameof(DefaultLayout_LeftWidth)); }
         }
 
         private double m_DefaultLayout_SongInfoHeight;
         public double DefaultLayout_SongInfoHeight
         {
             get { return m_DefaultLayout_SongInfoHeight; }
-            set { m_DefaultLayout_SongInfoHeight = value; OnPropertyChanged(() => DefaultLayout_SongInfoHeight); }
+            set { m_DefaultLayout_SongInfoHeight = value; OnPropertyChanged(nameof(DefaultLayout_SongInfoHeight)); }
         }
 
         private VideoListItem m_DefaultLayout_VideoItem;
@@ -331,7 +340,7 @@ namespace BitnuaVideoPlayer
         public VideoListItem DefaultLayout_VideoItem
         {
             get { return m_DefaultLayout_VideoItem ?? (m_DefaultLayout_VideoItem = new VideoListItem()); }
-            set { m_DefaultLayout_VideoItem = value; OnPropertyChanged(() => DefaultLayout_VideoItem); }
+            set { m_DefaultLayout_VideoItem = value; OnPropertyChanged(nameof(DefaultLayout_VideoItem)); }
         }
       
         #endregion
@@ -362,7 +371,7 @@ namespace BitnuaVideoPlayer
                         m_LastLayoutData = DefaultLayout_VideoItem;
                         DefaultLayout_VideoItem = null;
                     }
-                    OnPropertyChanged(() => SelectedLayout);
+                    OnPropertyChanged(nameof(SelectedLayout));
                 }
 
             }
@@ -373,7 +382,7 @@ namespace BitnuaVideoPlayer
         public string PicStretch
         {
             get { return m_PicStretch; }
-            set { m_PicStretch = value; OnPropertyChanged(() => PicStretch); }
+            set { m_PicStretch = value; OnPropertyChanged(nameof(PicStretch)); }
         }
 
 
@@ -382,7 +391,7 @@ namespace BitnuaVideoPlayer
         public TextVM LeftPicTitle
         {
             get { return m_LeftPicTitle ?? (m_LeftPicTitle = new TextVM()); }
-            set { m_LeftPicTitle = value; OnPropertyChanged(() => LeftPicTitle); }
+            set { m_LeftPicTitle = value; OnPropertyChanged(nameof(LeftPicTitle)); }
         }
 
         private string m_LeftPicSource;
@@ -390,7 +399,7 @@ namespace BitnuaVideoPlayer
         public string LeftPicSource
         {
             get { return m_LeftPicSource; }
-            set { m_LeftPicSource = value; OnPropertyChanged(() => LeftPicSource); }
+            set { m_LeftPicSource = value; OnPropertyChanged(nameof(LeftPicSource)); }
         }
 
         private string m_ArtistPicSource;
@@ -398,7 +407,7 @@ namespace BitnuaVideoPlayer
         public string ArtistPicSource
         {
             get { return m_ArtistPicSource; }
-            set { m_ArtistPicSource = value; OnPropertyChanged(() => ArtistPicSource); }
+            set { m_ArtistPicSource = value; OnPropertyChanged(nameof(ArtistPicSource)); }
         }
 
         private ClientInfo m_CurrentClient;
@@ -407,7 +416,7 @@ namespace BitnuaVideoPlayer
         public ClientInfo CurrentClient
         {
             get { return m_CurrentClient; }
-            set { m_CurrentClient = value; OnPropertyChanged(() => CurrentClient); }
+            set { m_CurrentClient = value; OnPropertyChanged(nameof(CurrentClient)); }
         }
 
         private List<ClientInfo> m_ActiveClients;
@@ -415,14 +424,14 @@ namespace BitnuaVideoPlayer
         public List<ClientInfo> ActiveClients
         {
             get { return m_ActiveClients; }
-            set { m_ActiveClients = value; OnPropertyChanged(() => ActiveClients); }
+            set { m_ActiveClients = value; OnPropertyChanged(nameof(ActiveClients)); }
         }
 
         private PresentationModeViewModel m_PresentationVM;
         public PresentationModeViewModel PresentationVM
         {
             get { return m_PresentationVM ?? (m_PresentationVM = new PresentationModeViewModel()); }
-            set { m_PresentationVM = value; OnPropertyChanged(() => PresentationVM); }
+            set { m_PresentationVM = value; OnPropertyChanged(nameof(PresentationVM)); }
         }
 
 
@@ -453,7 +462,7 @@ namespace BitnuaVideoPlayer
                 {
                     m_PresentationItems = value;
                 }
-                OnPropertyChanged(() => PresentationItems);
+                OnPropertyChanged(nameof(PresentationItems));
             }
         }
 
@@ -465,7 +474,7 @@ namespace BitnuaVideoPlayer
             set
             {
                 m_PresentationItems_Curr = m_PresentationItems = value ?? new ObservableCollection<PresentationItem>();
-                OnPropertyChanged(() => PresentationItems);
+                OnPropertyChanged(nameof(PresentationItems));
             }
         }
 
@@ -538,7 +547,7 @@ namespace BitnuaVideoPlayer
         public string Stretch
         {
             get { return m_Stretch; }
-            set { m_Stretch = value; OnPropertyChanged(() => Stretch); }
+            set { m_Stretch = value; OnPropertyChanged(nameof(Stretch)); }
         }
     }
 
@@ -551,7 +560,7 @@ namespace BitnuaVideoPlayer
         public VideoSource VideoSource
         {
             get { return m_VideoSource; }
-            set { m_VideoSource = value; OnPropertyChanged(() => VideoSource); }
+            set { m_VideoSource = value; OnPropertyChanged(nameof(VideoSource)); }
         }
 
     }
@@ -597,7 +606,7 @@ namespace BitnuaVideoPlayer
         public List<VideoSource> VideoSources
         {
             get { return m_VideoSources; }
-            set { m_VideoSources = value; OnPropertyChanged(() => VideoSources); }
+            set { m_VideoSources = value; OnPropertyChanged(nameof(VideoSources)); }
         }
         private static List<VideoSource> ReadVideos(string path)
         {
@@ -647,7 +656,7 @@ namespace BitnuaVideoPlayer
         public string VideoId
         {
             get { return m_VideoId; }
-            set { m_VideoId = value; OnPropertyChanged(() => VideoId); }
+            set { m_VideoId = value; OnPropertyChanged(nameof(VideoId)); }
         }
 
     }
@@ -670,7 +679,7 @@ namespace BitnuaVideoPlayer
         public YoutubeVideoSource VideoSource
         {
             get { return m_VideoSource; }
-            set { m_VideoSource = value; OnPropertyChanged(() => VideoSource); }
+            set { m_VideoSource = value; OnPropertyChanged(nameof(VideoSource)); }
         }
     }
 
@@ -707,7 +716,7 @@ namespace BitnuaVideoPlayer
         public bool IsChecked
         {
             get { return m_IsChecked; }
-            set { m_IsChecked = value; OnPropertyChanged(() => IsChecked); }
+            set { m_IsChecked = value; OnPropertyChanged(nameof(IsChecked)); }
         }
 
         private string m_Text;
@@ -715,7 +724,7 @@ namespace BitnuaVideoPlayer
         public string Text
         {
             get { return m_Text; }
-            set { m_Text = value; OnPropertyChanged(() => Text); }
+            set { m_Text = value; OnPropertyChanged(nameof(Text)); }
         }
 
     }
@@ -731,7 +740,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public int Speed
         {
             get { return m_Speed; }
-            set { m_Speed = value; OnPropertyChanged(() => Speed); }
+            set { m_Speed = value; OnPropertyChanged(nameof(Speed)); }
         }
 
         private FlowDirection m_Direction = FlowDirection.LeftToRight;
@@ -739,7 +748,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public FlowDirection Direction
         {
             get { return m_Direction; }
-            set { m_Direction = value; OnPropertyChanged(() => Direction); }
+            set { m_Direction = value; OnPropertyChanged(nameof(Direction)); }
         }
 
         private bool m_IsVisible;
@@ -747,7 +756,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public bool IsVisible
         {
             get { return m_IsVisible; }
-            set { m_IsVisible = value; OnPropertyChanged(() => IsVisible); }
+            set { m_IsVisible = value; OnPropertyChanged(nameof(IsVisible)); }
         }
 
         private bool m_ShowOnTop;
@@ -755,7 +764,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public bool ShowOnTop
         {
             get { return m_ShowOnTop; }
-            set { m_ShowOnTop = value; OnPropertyChanged(() => ShowOnTop); }
+            set { m_ShowOnTop = value; OnPropertyChanged(nameof(ShowOnTop)); }
         }
 
         private double m_Height = 60d;
@@ -763,7 +772,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public double Height
         {
             get { return m_Height; }
-            set { m_Height = value; OnPropertyChanged(() => Height); }
+            set { m_Height = value; OnPropertyChanged(nameof(Height)); }
         }
 
 
@@ -772,7 +781,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public string PicsPath
         {
             get { return m_PicsPath; }
-            set { m_PicsPath = value; OnPropertyChanged(() => PicsPath); }
+            set { m_PicsPath = value; OnPropertyChanged(nameof(PicsPath)); }
         }
 
         private ObservableCollection<PictureItem> m_Pics;
@@ -780,7 +789,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public ObservableCollection<PictureItem> Pics
         {
             get { return m_Pics; }
-            set { m_Pics = value; OnPropertyChanged(() => Pics); }
+            set { m_Pics = value; OnPropertyChanged(nameof(Pics)); }
         }
 
 
@@ -794,7 +803,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public Color BackColor
         {
             get { return m_BackColor; }
-            set { m_BackColor = value; OnPropertyChanged(() => BackColor); }
+            set { m_BackColor = value; OnPropertyChanged(nameof(BackColor)); }
         }
 
         private Color m_ForeColor = Color.Black;
@@ -803,7 +812,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public Color ForeColor
         {
             get { return m_ForeColor; }
-            set { m_ForeColor = value; OnPropertyChanged(() => ForeColor); }
+            set { m_ForeColor = value; OnPropertyChanged(nameof(ForeColor)); }
         }
 
         private Font m_Font = new Font("Times New Roman",
@@ -819,10 +828,10 @@ namespace BitnuaVideoPlayer.ViewModels
             set
             {
                 m_Font = value;
-                OnPropertyChanged(() => Font);
-                OnPropertyChanged(() => FontFamily);
-                OnPropertyChanged(() => FontSize);
-                OnPropertyChanged(() => IsBold);
+                OnPropertyChanged(nameof(Font));
+                OnPropertyChanged(nameof(FontFamily));
+                OnPropertyChanged(nameof(FontSize));
+                OnPropertyChanged(nameof(IsBold));
             }
         }
 
@@ -844,7 +853,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public virtual string Text
         {
             get { return m_Text; }
-            set { m_Text = value; OnPropertyChanged(() => Text); }
+            set { m_Text = value; OnPropertyChanged(nameof(Text)); }
         }
     }
 

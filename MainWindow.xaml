@@ -94,6 +94,9 @@
              
                           Padding="4"/>
             </WrapPanel>
+			<CheckBox IsChecked="{Binding IsShowClock}" Content="Show Clock ?" 
+                          VerticalAlignment="Center"
+                          Margin="6,0"/>
             <GroupBox Header="Main video" 
                       Grid.Row="1"
                       Margin="4,0">

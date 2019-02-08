@@ -14,7 +14,7 @@ namespace BitnuaVideoPlayer
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => this.OnPropertyChanged(propertyName, PropertyChanged);
-        protected virtual void OnPropertyChanged<T>(Expression<Func<T>> selectorExpression) => this.OnPropertyChanged(selectorExpression, PropertyChanged);
+        //protected virtual void OnPropertyChanged<T>(Expression<Func<T>> selectorExpression) => this.OnPropertyChanged(selectorExpression, PropertyChanged);
     }
 
     public static class ViewModelBaseEx

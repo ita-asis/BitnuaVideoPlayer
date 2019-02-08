@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="BitnuaVideoPlayer.UI.MyPopup"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BitnuaVideoPlayer.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             FlowDirection="LeftToRight"
+             x:Name="root">
+    <UserControl.Template>
+        <ControlTemplate >
+            <Canvas Background="Transparent" x:Name="PART_canvas">
+                <Grid Width="50" Height="50" 
+                      Canvas.Top="0"
+                      Canvas.Left="0"
+                      MinWidth="50" MinHeight="50"
+                      x:Name="PART_grid">
+                    <ContentPresenter Content="{TemplateBinding ContentControl.Content}"/>
+                    <Thumb Width="0" Height="0" x:Name="PART_moveThumb" 
+                       Panel.ZIndex="1"
+                       DragDelta="onDragMoveDelta"/>
+                    <Thumb HorizontalAlignment="Right" 
+                           VerticalAlignment="Bottom" 
+                           x:Name="PART_resizeThumb" 
+                           Visibility="Hidden"
+                           Width="10" Height="10"
+                           Panel.ZIndex="2"
+                           Cursor="SizeNWSE"
+                           DragDelta="onDragResizeDelta"/>
+                </Grid>
+            </Canvas>
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>

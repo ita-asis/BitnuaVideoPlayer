@@ -292,6 +292,20 @@
                                     <i:Interaction.Behaviors>
                                         <props:VideoDirPlayerBehaviour Videos="{Binding VideoSources}"/>
                                     </i:Interaction.Behaviors>
+                                    <UI:MyPopup IsOpen="{Binding IsShowClock}" Panel.ZIndex="5"
+                    Grid.RowSpan="3">
+                                        <Border BorderThickness="1" Background="#424242"
+                    CornerRadius="8">
+                                            <Viewbox>
+                                                <!--{Binding CurrDate, StringFormat='{}{0:h:mm:ss}'}-->
+                                                <TextBlock Text="22:02:11"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Foreground="WhiteSmoke"
+                                       Padding="8,2"/>
+                                            </Viewbox>
+                                        </Border>
+                                    </UI:MyPopup>
                                 </Vlc:VideoView>
                         </DataTemplate>
                     </ContentControl.Resources>
@@ -350,8 +364,6 @@
                     </ItemsControl.ItemContainerStyle>
                 </ItemsControl>
             </Viewbox>
-
-
         </Grid>
       
         <Grid x:Name="statusGrid" Height="{Binding Banner.Height}"
@@ -363,6 +375,7 @@
             <UI:BannerControl Height="{Binding Banner.Height}"/>
         </Grid>
 
+        
     </Grid>
         
 </Window>

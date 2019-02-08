@@ -1,4 +1,4 @@
-﻿using BitnuaVideoPlayer.ViewModels;
+using BitnuaVideoPlayer.ViewModels;
 using CefSharp;
 using MongoDB.Driver;
 using System;
@@ -177,7 +177,7 @@ namespace BitnuaVideoPlayer
             public PresentationItem SelectedPresentationItem
             {
                 get { return m_SelectedPresentationItem; }
-                set { m_SelectedPresentationItem = value; OnPropertyChanged(() => SelectedPresentationItem); }
+                set { m_SelectedPresentationItem = value; OnPropertyChanged(nameof(SelectedPresentationItem)); }
             }
         }
 
