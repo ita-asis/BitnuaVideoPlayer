@@ -323,7 +323,10 @@ namespace BitnuaVideoPlayer
         private void presentaionItemCBChecked(object sender, RoutedEventArgs e)
         {
             if (btnPresentationPath != null && persentaionItemPath != null)
-                btnPresentationPath.IsEnabled = persentaionItemPath.IsEnabled = ((ePresentationKinds)presentaionItemCB.SelectedValue) != ePresentationKinds.AmpsLive;
+            {
+                bool isEnabled = ((ePresentationKinds)presentaionItemCB.SelectedValue) != ePresentationKinds.AmpsLive && ((ePresentationKinds)presentaionItemCB.SelectedValue) != ePresentationKinds.AmpsLiveWithSongInfo;
+                btnPresentationPath.IsEnabled = persentaionItemPath.IsEnabled = isEnabled;
+            }
         }
 
         private void presentaionItemCBContextChanged(object sender, DependencyPropertyChangedEventArgs e) => presentaionItemCBChecked(null, null);

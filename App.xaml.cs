@@ -65,6 +65,12 @@ namespace BitnuaVideoPlayer
             AppDomain.CurrentDomain.AssemblyResolve += Resolver;
 
             InitializeCefSharp();
+
+            // Setup Quick Converter.
+            // Add the System namespace so we can use primitive types (i.e. int, etc.).
+            QuickConverter.EquationTokenizer.AddNamespace(typeof(object));
+            // Add the System.Windows namespace so we can use Visibility.Collapsed, etc.
+            QuickConverter.EquationTokenizer.AddNamespace(typeof(System.Windows.Visibility));
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -280,14 +286,14 @@ namespace BitnuaVideoPlayer
         {
             if (e.PropertyName == nameof(VM.SelectedLayout))
             {
-                if (VM.SelectedLayout == eLayoutModes.Default)
-                {
-                    await UpdateVM();
-                }
-                else if (VM.SelectedLayout == eLayoutModes.Presentation)
-                {
-                    m_PicLoopToken?.Cancel();
-                }
+                await UpdateVM();
+                //if (VM.SelectedLayout == eLayoutModes.Default)
+                //{
+                //}
+                //else if (VM.SelectedLayout == eLayoutModes.Presentation)
+                //{
+                //    //m_PicLoopToken?.Cancel();
+                //}
             }
             else if (e.PropertyName == nameof(VM.CurrentClient))
             {
@@ -412,7 +418,7 @@ namespace BitnuaVideoPlayer
                 if (VM.CurrentClient == m_BitnuaClient)
                     await UpdateVM(song);
 
-                await DB_Plays.InsertOneAsync(new PlayEntry() { Song = song, Client = m_BitnuaClient });
+                await DB_Plays?.InsertOneAsync(new PlayEntry() { Song = song, Client = m_BitnuaClient });
             }
             catch (Exception)
             {
@@ -437,11 +443,11 @@ namespace BitnuaVideoPlayer
             }
 
             m_PicLoopToken = new CancellationTokenSource();
+            var t = Task.Run(() => StartLeftPicTask(m_PicLoopToken.Token));
             var songVideos = GetAvaiableSongVideos(VM).Shuffle(s_Random).ToList();
             if (VM.SelectedLayout == eLayoutModes.Default)
             {
                 VM.DefaultLayout_VideoItem.VideoSources = songVideos;
-                var t = Task.Run(() => StartLeftPicTask(m_PicLoopToken.Token));
             }
             else
             {
@@ -550,7 +556,7 @@ namespace BitnuaVideoPlayer
         {
             VM.ArtistPicSource = null;
             VM.LeftPicSource = null;
-            VM.LeftPicTitle = null;
+            VM.LeftPicTitle.Text = null;
 
             await Task.Delay(100);
 

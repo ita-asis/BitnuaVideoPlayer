@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         mc:Ignorable="d"
 
+        xmlns:qc="http://QuickConverter.CodePlex.com/"
         xmlns:my="clr-namespace:BitnuaVideoPlayer"
         xmlns:UI="clr-namespace:BitnuaVideoPlayer.UI"
         Title="Bitnua Video Player"
@@ -58,7 +59,7 @@
                     Orientation="Horizontal">
             <RadioButton GroupName="layoutGrp" Margin="4" Content="Default" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"/>
             <RadioButton GroupName="layoutGrp" Margin="4" Content="Presentation" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Presentation}"/>
-            <CheckBox Content="Hebrew?" Margin="4" IsChecked="{Binding RTL}"/>
+                <CheckBox Content="English ?" Margin="4" IsChecked="{Binding RTL, Converter={qc:QuickConverter '!$P', ConvertBack='!$value'}}"/>
             <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Two videos"   IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=TwoVideos}"/>-->
             <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Three Pictures" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=ThreePics}"/>-->
 

@@ -170,6 +170,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\squirrel.windows.1.8.0\lib\Net45\NuGet.Squirrel.dll</HintPath>
     </Reference>
+    <Reference Include="QuickConverter, Version=1.2.5.0, Culture=neutral, PublicKeyToken=9c892aa7bc2af2cf, processorArchitecture=MSIL">
+      <HintPath>packages\QuickConverter.1.2.5\lib\net40\QuickConverter.dll</HintPath>
+    </Reference>
     <Reference Include="SharpCompress, Version=0.17.1.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <HintPath>packages\SharpCompress.0.17.1\lib\net45\SharpCompress.dll</HintPath>
       <Private>True</Private>

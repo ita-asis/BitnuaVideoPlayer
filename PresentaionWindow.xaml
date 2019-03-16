@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         mc:Ignorable="d"
-        
+        x:Name="root"
         xmlns:Vlc="clr-namespace:LibVLCSharp.WPF"
         xmlns:wpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         xmlns:my="clr-namespace:BitnuaVideoPlayer"
@@ -38,6 +38,40 @@
                 </Viewbox>
             </UI:PresentationCanvasItem>
         </DataTemplate>
+            <DataTemplate DataType="{x:Type my:AmpsPresentationItem}">
+                <UI:PresentationCanvasItem>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="4*"/>
+                            <RowDefinition>
+                                <RowDefinition.Style>
+                                    <Style TargetType="RowDefinition">
+                                        <Setter Property="Height" Value="1*" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ShowSongInfo}" Value="False">
+                                                <Setter Property="Height" Value="0" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </RowDefinition.Style>
+                            </RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Vlc:VideoView>
+                            <i:Interaction.Behaviors>
+                                <props:VideoDirPlayerBehaviour Videos="{Binding VideoSources}"/>
+                            </i:Interaction.Behaviors>
+                        </Vlc:VideoView>
+
+                        <!--Song Info-->
+                        <Grid Grid.Row="1"
+                              Height="{Binding DefaultLayout_SongInfoHeight, Mode=TwoWay, Converter={StaticResource gridLengthConverter}}"
+                              MaxHeight="{Binding DefaultLayout_SongInfoHeight, Converter={StaticResource gridLengthConverter}}"
+                              Visibility="{Binding ShowSongInfo, Converter={StaticResource BoolToVis}}">
+                            <UI:SongInfoControl DataContext="{Binding DataContext, ElementName=root}"/>
+                        </Grid>
+                    </Grid>
+                </UI:PresentationCanvasItem>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type my:VideoItem}">
                 <UI:PresentationCanvasItem>
                     <Vlc:VideoView>
@@ -279,7 +313,6 @@
                     
                     <UI:SongInfoControl />
                 </Grid>
-
             </Grid>
         </Grid>
         <Grid x:Name="presentationLayout"
@@ -295,6 +328,7 @@
                         <ItemsPanelTemplate>
                             <Canvas  IsItemsHost="True"
                                      ClipToBounds="True"
+                                     x:Name="presentaionCanvas"
                                      Width="640"
                                      Height="360"
                                      SnapsToDevicePixels="True"/>

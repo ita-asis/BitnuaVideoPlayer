@@ -503,6 +503,8 @@ namespace BitnuaVideoPlayer
             {
                 case ePresentationKinds.AmpsLive:
                     return new AmpsPresentationItem();
+                case ePresentationKinds.AmpsLiveWithSongInfo:
+                    return new AmpsPresentationItem() { ShowSongInfo = true };
                 case ePresentationKinds.Picture:
                     return new PictureItem() { Path = path };
                 case ePresentationKinds.PictureList:
@@ -557,7 +559,10 @@ namespace BitnuaVideoPlayer
     public class AmpsPresentationItem : VideoListItem
     {
         public override ePresentationKinds Kind => ePresentationKinds.AmpsLive;
+
+        public bool ShowSongInfo { get; set; }
     }
+
 
     public class VideoListItem : PresentationItem
     {
@@ -672,6 +677,7 @@ namespace BitnuaVideoPlayer
     public enum ePresentationKinds
     {
         AmpsLive,
+        AmpsLiveWithSongInfo,
         Picture,
         PictureList,
         Video,
