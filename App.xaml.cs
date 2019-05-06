@@ -57,20 +57,29 @@ namespace BitnuaVideoPlayer
 
         public App()
         {
-            DispatcherUnhandledException += Current_DispatcherUnhandledException;
-            Instance = this;
-            InitVLC();
-            
-            //Add Custom assembly resolver
-            AppDomain.CurrentDomain.AssemblyResolve += Resolver;
+            try
+            {
+                DispatcherUnhandledException += Current_DispatcherUnhandledException;
+                Instance = this;
+                InitVLC();
 
-            InitializeCefSharp();
+                //Add Custom assembly resolver
+                AppDomain.CurrentDomain.AssemblyResolve += Resolver;
 
-            // Setup Quick Converter.
-            // Add the System namespace so we can use primitive types (i.e. int, etc.).
-            QuickConverter.EquationTokenizer.AddNamespace(typeof(object));
-            // Add the System.Windows namespace so we can use Visibility.Collapsed, etc.
-            QuickConverter.EquationTokenizer.AddNamespace(typeof(System.Windows.Visibility));
+                InitializeCefSharp();
+
+                // Setup Quick Converter.
+                // Add the System namespace so we can use primitive types (i.e. int, etc.).
+                QuickConverter.EquationTokenizer.AddNamespace(typeof(object));
+                // Add the System.Windows namespace so we can use Visibility.Collapsed, etc.
+                QuickConverter.EquationTokenizer.AddNamespace(typeof(System.Windows.Visibility));
+            }
+            catch (Exception ex)
+            {
+                string log = LogException(ex);
+                File.WriteAllText("crashReport.txt", log);
+                throw;
+            }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

@@ -862,10 +862,10 @@ namespace BitnuaVideoPlayer.ViewModels
         public string Eng_Composer { get; set; }
         public string Eng_Writer { get; set; }
 
-        public string Performer => App.Instance.VM.RTL ? Heb_Performer : Eng_Performer ?? Heb_Performer;
-        public string Creator => App.Instance.VM.RTL ? Heb_Creator : Eng_Creator ?? Heb_Creator;
-        public string Composer => App.Instance.VM.RTL ? Heb_Composer : Eng_Composer ?? Heb_Composer;
-        public string Writer => App.Instance.VM.RTL ? Heb_Writer : Eng_Writer ?? Heb_Writer;
+        public string Performer => App.Instance.VM.RTL ? Heb_Performer : (!string.IsNullOrEmpty(Eng_Performer) ? Eng_Performer : Heb_Performer);
+        public string Creator => App.Instance.VM.RTL ? Heb_Creator : (!string.IsNullOrEmpty(Eng_Creator) ? Eng_Creator : Heb_Creator);
+        public string Composer => App.Instance.VM.RTL ? Heb_Composer : (!string.IsNullOrEmpty(Eng_Composer) ? Eng_Composer : Heb_Composer);
+        public string Writer => App.Instance.VM.RTL ? Heb_Writer : (!string.IsNullOrEmpty(Eng_Writer) ? Eng_Writer : Heb_Writer);
 
         public int? Year { get; set; }
         public string HebTitle { get; set; }
