@@ -44,7 +44,7 @@
                         </Style>
 
                     </StackPanel.Resources>
-                    <TextBlock VerticalAlignment="Bottom" 
+                    <TextBlock VerticalAlignment="Center" 
                                HorizontalAlignment="Left"
                                FlowDirection="LeftToRight">
                         <!--<TextBlock.Style>
@@ -65,19 +65,29 @@
                                 </Style.Triggers>
                             </Style>
                         </TextBlock.Style>-->
-                        <TextBlock.Text>
+                        <!--<TextBlock.Text>
                             <MultiBinding StringFormat="{}{0}     {1}">
                                 <Binding Path="Song.Title"/>
                                 <Binding Path="Song.HebTitle"/>
                             </MultiBinding>
-                        </TextBlock.Text>
+                        </TextBlock.Text>-->
+                        
                     </TextBlock>
-                    <TextBlock VerticalAlignment="Bottom" 
+                    
+                    <TextBlock VerticalAlignment="Center" 
+                               HorizontalAlignment="Left"
+                               FlowDirection="LeftToRight"
+                               Text="{Binding Song.Title}" Padding="0,0,6,0"/>
+                    <TextBlock VerticalAlignment="Center" 
                        Margin="4,0" 
                        Text="{Binding Song.Year,StringFormat=({0})}"
                        FontWeight="Normal"
                        FontSize="{Binding SongInfo01.FontSize, Converter={StaticResource doubleMultiplyConv}, ConverterParameter=0.7}"
                        Visibility="{Binding Song.Year, Converter={StaticResource NullToVisibilityConverter}}"/>
+                    <TextBlock VerticalAlignment="Center" 
+                               HorizontalAlignment="Left"
+                               FlowDirection="LeftToRight"
+                               Text="{Binding Song.HebTitle}" Padding="6,0,0,0"/>
                 </StackPanel>
 
                 <UniformGrid Rows="{Binding SongInfoRows}" Columns="2" Margin="4,0" Grid.Row="1"

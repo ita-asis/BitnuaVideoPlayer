@@ -87,13 +87,13 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>bitnuaVpKey.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>appSigingCert.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>868C970DED49C028E875F2004CAB370A6A485709</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>B51E4656237F858798CEE8C3B7A4B6D13E98A642</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>BitnuaVideoPlayer_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>appSigingCert.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
@@ -102,6 +102,9 @@
     <ApplicationIcon>BitnuaPlayer.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ColorFont">
+      <HintPath>packages\ColorFont.dll</HintPath>
+    </Reference>
     <Reference Include="DeltaCompressionDotNet, Version=1.1.0.0, Culture=neutral, PublicKeyToken=1d14d6e5194e7f4a, processorArchitecture=MSIL">
       <HintPath>packages\DeltaCompressionDotNet.1.1.0\lib\net20\DeltaCompressionDotNet.dll</HintPath>
       <Private>True</Private>
@@ -322,6 +325,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="appSigingCert.pfx" />
     <None Include="BitnuaVideoPlayer_TemporaryKey.pfx" />
     <None Include="bitnuaVpKey.snk" />
     <None Include="conf.json" />
@@ -345,10 +349,6 @@
     <ProjectReference Include="..\..\..\Code\WPF Canvas DiagramDesigner\src\DiagramDesignerPart1\MoveResizeRotateWithAdorners\MoveResizeRotateWithAdorners.csproj">
       <Project>{7b1d1e85-7f7b-47a8-8d5d-47ba75b29a97}</Project>
       <Name>MoveResizeRotateWithAdorners</Name>
-    </ProjectReference>
-    <ProjectReference Include="D:\Downloads\ColorFont\ColorFont\ColorFont.csproj">
-      <Project>{c51deeda-b581-401b-870b-dbb7d10119bf}</Project>
-      <Name>ColorFont</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -416,4 +416,13 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="myAssemblyInfo" />
+    </GetAssemblyIdentity>
+    <Message Text="Building nuget package..." />
+    <Exec Command="nuget pack BitnuaVideoPlayer.nuspec -Version %(myAssemblyInfo.Version) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
+    <Exec Command="squirrel --releasify $(OutDir)BitnuaVideoPlayer.$([System.Version]::Parse(%(myAssemblyInfo.Version)).ToString(3)).nupkg -n &quot;/a /f .\appSigingCert.pfx /p &quot;&quot;6d4GM7vEWcyA63gA&quot;&quot; /fd sha256 /tr http://timestamp.digicert.com /td sha256&quot;" />
+    <Message Text="Building nuget package - Done" />
+  </Target>
 </Project>

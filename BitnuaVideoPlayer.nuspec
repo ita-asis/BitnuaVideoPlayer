@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>BitnuaVideoPlayer</id>
+	<!-- version will be replaced by MSBuild -->
+    <version>0.0.0.0</version>
+    <title></title>
+    <authors>Itamar Asis</authors>
+    <owners>Itamar Asis</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Bitnua Video Player</description>
+  </metadata>
+  <files>
+    <file src="libvlc\*" target="lib\net45\libvlc" exclude="*.nupkg;*.vshost.*"/>
+	<file src="x64\*.*" target="lib\net45\x64" exclude="*.nupkg;*.vshost.*"/>
+	<file src="x86\*.*" target="lib\net45\x86" exclude="*.nupkg;*.vshost.*"/>
+	<file src="*.*" target="lib\net45" exclude="*.nupkg;*.vshost.*"/>
+  </files>
+</package>

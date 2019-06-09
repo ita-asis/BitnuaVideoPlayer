@@ -235,7 +235,8 @@
                                />
                         </Viewbox>
                         <Grid Grid.Row="1"
-                              Background ="{Binding LeftPicTitle.BackColor, Converter={StaticResource colorCnv}}">
+                              Background ="{Binding LeftPicTitle.BackColor, Converter={StaticResource colorCnv}}"
+                              Visibility="{Binding LeftPicTitle.Text, Converter={StaticResource NullToVisibilityConverter}}">
                                 <Viewbox StretchDirection="DownOnly" Stretch="Uniform">
                                     <Label 
                                         HorizontalContentAlignment="Center"
