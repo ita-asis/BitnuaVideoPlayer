@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
@@ -28,7 +27,29 @@ namespace BitnuaVideoPlayer.UI
 
         // Using a DependencyProperty as the backing store for IsOpen.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsOpenProperty =
-            DependencyProperty.Register("IsOpen", typeof(bool), typeof(MyPopup), new PropertyMetadata(false));
+            DependencyProperty.Register("IsOpen", typeof(bool), typeof(MyPopup), new PropertyMetadata(propertyChanged));
+
+        private static void propertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is MyPopup popup)
+            {
+                if (e.Property == IsOpenProperty)
+                    popup.updateVisibility();
+                else if (e.Property == XProperty)
+                    popup.X = (double)e.NewValue;
+                else if (e.Property == YProperty)
+                    popup.Y = (double)e.NewValue;
+                else if (e.Property == ClockHeightProperty)
+                    popup.ClockHeight = (double)e.NewValue;
+                else if (e.Property == ClockWidthProperty)
+                    popup.ClockWidth = (double)e.NewValue;
+            }
+        }
+
+        private void updateVisibility()
+        {
+            this.Visibility = this.IsOpen ? Visibility.Visible : Visibility.Hidden;
+        }
 
         public MyPopup()
         {
@@ -46,26 +67,75 @@ namespace BitnuaVideoPlayer.UI
             resizeThumb = this.GetTemplateChild("PART_resizeThumb") as Thumb;
             grid = this.GetTemplateChild("PART_grid") as Grid;
             canvas = this.GetTemplateChild("PART_canvas") as Canvas;
-
+            updateVisibility();
         }
 
-        private double X
+        public double X
         {
             get { return (double)grid.GetValue(Canvas.LeftProperty); }
-            set { grid.SetValue(Canvas.LeftProperty, value); }
+            set
+            {
+                SetValue(XProperty, value);
+                grid.SetValue(Canvas.LeftProperty, value);
+            }
         }
-        private double Y
+
+        public double Y
         {
             get { return (double)grid.GetValue(Canvas.TopProperty); }
-            set { grid.SetValue(Canvas.TopProperty, value); }
+            set
+            {
+                SetValue(YProperty, value);
+                grid.SetValue(Canvas.TopProperty, value);
+            }
         }
+
+        public double ClockWidth
+        {
+            get { return (double)grid.GetValue(Canvas.WidthProperty); }
+            set
+            {
+                SetValue(ClockWidthProperty, value);
+                grid.SetValue(Canvas.WidthProperty, value);
+            }
+        }
+
+        public double ClockHeight
+        {
+            get { return (double)grid.GetValue(Canvas.HeightProperty); }
+            set
+            {
+                SetValue(ClockHeightProperty, value);
+                grid.SetValue(Canvas.HeightProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty XProperty =
+            DependencyProperty.Register("X", typeof(double), typeof(MyPopup),
+                new FrameworkPropertyMetadata(0.0, 
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | 
+                    FrameworkPropertyMetadataOptions.AffectsRender, propertyChanged));
+        public static readonly DependencyProperty YProperty =
+            DependencyProperty.Register("Y", typeof(double), typeof(MyPopup),
+                new FrameworkPropertyMetadata(0.0,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault |
+                    FrameworkPropertyMetadataOptions.AffectsRender, propertyChanged));
+        public static readonly DependencyProperty ClockHeightProperty =
+            DependencyProperty.Register("ClockHeight", typeof(double), typeof(MyPopup),
+                new FrameworkPropertyMetadata(0.0,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault |
+                    FrameworkPropertyMetadataOptions.AffectsRender, propertyChanged));
+        public static readonly DependencyProperty ClockWidthProperty =
+            DependencyProperty.Register("ClockWidth", typeof(double), typeof(MyPopup),
+                new FrameworkPropertyMetadata(0.0,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault |
+                    FrameworkPropertyMetadataOptions.AffectsRender, propertyChanged));
 
         private void onDragMoveDelta(object sender, DragDeltaEventArgs e)
         {
             var p = new Point(X + e.HorizontalChange, Y + e.VerticalChange);
-
-                Y = p.Y;
-                X = p.X;
+            Y = p.Y;
+            X = p.X;
         }
 
         private void onDragResizeDelta(object sender, DragDeltaEventArgs e)
@@ -74,8 +144,8 @@ namespace BitnuaVideoPlayer.UI
             double xadjust = grid.Width + e.HorizontalChange;
             if ((xadjust >= grid.MinWidth) && (yadjust >= grid.MinHeight))
             {
-                grid.Width = xadjust;
-                grid.Height = yadjust;
+                ClockWidth = xadjust;
+                ClockHeight = yadjust;
             }
         }
     }

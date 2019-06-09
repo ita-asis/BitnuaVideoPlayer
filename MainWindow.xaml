@@ -85,20 +85,22 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <WrapPanel Orientation="Horizontal" Margin="4,0">
                 <Label Content="Show Client" Padding="4"/>
                 <ComboBox SelectedItem="{Binding CurrentClient}"
                           ItemsSource="{Binding ActiveClients}"
-             
                           Padding="4"/>
             </WrapPanel>
-			<CheckBox IsChecked="{Binding IsShowClock}" Content="Show Clock ?" 
-                          VerticalAlignment="Center"
-                          Margin="6,0"/>
-            <GroupBox Header="Main video" 
+			<CheckBox IsChecked="{Binding Clock.IsShow}" 
+                      Content="Show Clock ?" 
                       Grid.Row="1"
+                      VerticalAlignment="Center"
+                      Margin="6,0"/>
+            <GroupBox Header="Main video" 
+                      Grid.Row="2"
                       Margin="4,0">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -145,7 +147,7 @@
                 </Grid>
             </GroupBox>
             <GroupBox Header="Left Side" 
-                      Grid.Row="2" 
+                      Grid.Row="3" 
                       Margin="4,0">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -243,7 +245,7 @@
                 </Grid>
             </GroupBox>
             <GroupBox Header="Song info" 
-                      Grid.Row="3" 
+                      Grid.Row="4" 
                       Margin="4,0">
                 <Grid>
                     <Grid.ColumnDefinitions>

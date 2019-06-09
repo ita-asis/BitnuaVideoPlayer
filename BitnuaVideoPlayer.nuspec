@@ -11,9 +11,9 @@
     <description>Bitnua Video Player</description>
   </metadata>
   <files>
-    <file src="libvlc\*" target="lib\net45\libvlc" exclude="*.nupkg;*.vshost.*"/>
-	<file src="x64\*.*" target="lib\net45\x64" exclude="*.nupkg;*.vshost.*"/>
-	<file src="x86\*.*" target="lib\net45\x86" exclude="*.nupkg;*.vshost.*"/>
+    <file src="libvlc\**\*.*" target="lib\net45\libvlc" exclude="*.nupkg;*.vshost.*"/>
+	<file src="x64\**\*.*" target="lib\net45\x64" exclude="*.nupkg;*.vshost.*"/>
+	<file src="x86\**\*.*" target="lib\net45\x86" exclude="*.nupkg;*.vshost.*"/>
 	<file src="*.*" target="lib\net45" exclude="*.nupkg;*.vshost.*"/>
   </files>
 </package>

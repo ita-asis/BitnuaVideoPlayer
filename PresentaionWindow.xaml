@@ -107,7 +107,26 @@
             <RowDefinition />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
+        <UI:MyPopup IsOpen="{Binding Clock.IsShow}" 
+                    ClockHeight="{Binding Clock.Height}"
+                    ClockWidth="{Binding Clock.Width}"
+                    X="{Binding Clock.X}"
+                    Y="{Binding Clock.Y}"
+                    Panel.ZIndex="5"
+                    Grid.RowSpan="2">
+            <Border BorderThickness="1" Background="#424242"
+                    CornerRadius="8">
+                <Viewbox>
+                    <!--{Binding CurrDate, StringFormat='{}{0:h:mm:ss}'}-->
+                    <TextBlock Text="22:02:11"
+                               FontSize="20"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Foreground="WhiteSmoke"
+                               Padding="8,2"/>
+                </Viewbox>
+            </Border>
+        </UI:MyPopup>
         <Grid x:Name="defualtLayout"
               Grid.Row="1"
               Panel.ZIndex="0"
@@ -292,20 +311,6 @@
                                     <i:Interaction.Behaviors>
                                         <props:VideoDirPlayerBehaviour Videos="{Binding VideoSources}"/>
                                     </i:Interaction.Behaviors>
-                                    <UI:MyPopup IsOpen="{Binding IsShowClock}" Panel.ZIndex="5"
-                    Grid.RowSpan="3">
-                                        <Border BorderThickness="1" Background="#424242"
-                    CornerRadius="8">
-                                            <Viewbox>
-                                                <!--{Binding CurrDate, StringFormat='{}{0:h:mm:ss}'}-->
-                                                <TextBlock Text="22:02:11"
-                                       VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"
-                                       Foreground="WhiteSmoke"
-                                       Padding="8,2"/>
-                                            </Viewbox>
-                                        </Border>
-                                    </UI:MyPopup>
                                 </Vlc:VideoView>
                         </DataTemplate>
                     </ContentControl.Resources>

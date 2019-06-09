@@ -176,12 +176,50 @@ namespace BitnuaVideoPlayer
             }
         }
 
-        private bool m_IsShowClock;
-
-        public bool IsShowClock
+        private ClockInfo m_Clock = new ClockInfo();
+        public ClockInfo Clock
         {
-            get { return m_IsShowClock; }
-            set { m_IsShowClock = value; OnPropertyChanged(nameof(IsShowClock)); }
+            get { return m_Clock; }
+            set { m_Clock = value; OnPropertyChanged(nameof(Clock)); }
+        }
+
+
+        public class ClockInfo: ViewModelBase
+        {
+            private bool m_IsShow;
+            public bool IsShow
+            {
+                get { return m_IsShow; }
+                set { m_IsShow = value; OnPropertyChanged(nameof(IsShow)); }
+            }
+
+            private double m_X;
+            public double X
+            {
+                get { return m_X; }
+                set { m_X = value; OnPropertyChanged(nameof(X)); }
+            }
+
+            private double m_Y;
+            public double Y
+            {
+                get { return m_Y; }
+                set { m_Y = value; OnPropertyChanged(nameof(Y)); }
+            }
+
+            private double m_Width;
+            public double Width
+            {
+                get { return m_Width; }
+                set { m_Width = value; OnPropertyChanged(nameof(Width)); }
+            }
+
+            private double m_Height;
+            public double Height
+            {
+                get { return m_Height; }
+                set { m_Height = value; OnPropertyChanged(nameof(Height)); }
+            }
         }
 
 
