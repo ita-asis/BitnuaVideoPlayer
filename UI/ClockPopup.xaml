@@ -10,7 +10,8 @@
              x:Name="root">
     <UserControl.Template>
         <ControlTemplate >
-            <Canvas Background="Transparent" x:Name="PART_canvas">
+            <Canvas Background="Transparent" x:Name="PART_canvas"
+                    PreviewMouseLeftButtonDown="PART_canvas_PreviewMouseLeftButtonDown">
                 <Grid Width="50" Height="50" 
                       Canvas.Top="0"
                       Canvas.Left="0"

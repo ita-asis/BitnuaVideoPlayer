@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace BitnuaVideoPlayer.UI
 {
@@ -147,6 +149,43 @@ namespace BitnuaVideoPlayer.UI
                 ClockWidth = xadjust;
                 ClockHeight = yadjust;
             }
+        }
+
+        private void PART_canvas_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var mpoint = e.GetPosition(this);
+
+            // check out of clock bounds
+            if (mpoint.X < this.X ||
+                mpoint.Y < this.Y ||
+                mpoint.X > this.X + this.ClockWidth ||
+                mpoint.Y > this.Y + this.ClockHeight)
+            {
+                e.Handled = true;
+                var parent = this.FindParentOfType<Window>();
+                //Copy over event arg members and raise it
+                MouseButtonEventArgs newarg = new MouseButtonEventArgs(e.MouseDevice, e.Timestamp,
+                                                  e.ChangedButton, e.StylusDevice);
+                newarg.RoutedEvent = ListViewItem.MouseDownEvent;
+                newarg.Source = sender;
+                parent.RaiseEvent(newarg);
+            }
+        }
+    }
+
+    public static class Ex
+    {
+        public static T FindParentOfType<T>(this DependencyObject child) where T : DependencyObject
+        {
+            DependencyObject parentDepObj = child;
+            do
+            {
+                parentDepObj = VisualTreeHelper.GetParent(parentDepObj);
+                T parent = parentDepObj as T;
+                if (parent != null) return parent;
+            }
+            while (parentDepObj != null);
+            return null;
         }
     }
 }
