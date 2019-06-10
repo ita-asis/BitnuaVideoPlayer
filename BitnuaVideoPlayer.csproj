@@ -244,6 +244,7 @@
     <Compile Include="UI\ClockPopup.xaml.cs">
       <DependentUpon>ClockPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Converters\BitmapImageConverter.cs" />
     <Compile Include="UI\Converters\BoolToGridRowHeightConverter.cs" />
     <Compile Include="UI\Converters\DoubleMultiplyConverter.cs" />
     <Compile Include="UI\PresentationCanvasItem.xaml.cs">

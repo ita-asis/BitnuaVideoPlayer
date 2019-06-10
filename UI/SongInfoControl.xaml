@@ -12,13 +12,15 @@
         <my:DoubleMultiplyConverter x:Key="doubleMultiplyConv"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <my:BoolToGridGridLengthConverter x:Key="bool2Grid" />
+        <my:BitmapImageConverter x:Key="BitmapImageConverter"/>
         <my:Bool2ValueConverter x:Key="bool2FlowDirection" TrueValue="{x:Static FlowDirection.RightToLeft}" FalseValue="{x:Static FlowDirection.LeftToRight}"/>
     </UserControl.Resources>
     <Grid Background="{Binding SongInfo01.BackColor,Converter={StaticResource colorCnv}}"
           FlowDirection="{Binding RTL, Converter={StaticResource bool2FlowDirection}}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="{Binding ShowSongInfoPic, Converter={StaticResource bool2Grid}}"/>
+            <ColumnDefinition Width="9*"/>
+            <ColumnDefinition Width="{Binding ShowSongInfoPic, Converter={StaticResource bool2Grid}, ConverterParameter=2*}"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
         <Viewbox Grid.Column="0" Stretch="Fill" StretchDirection="Both"
@@ -195,6 +197,23 @@
                    Stretch="Uniform"
                    />
         <!--</Border>-->
-
+        <Viewbox Grid.Column="2" Stretch="Fill" StretchDirection="Both" Margin="4,0">
+            <!--<StackPanel Orientation="Vertical" Margin="4,0" >-->
+            <Image Width="20" VerticalAlignment="Center" Source="{Binding LogoImage, Converter={StaticResource BitmapImageConverter}, ConverterParameter=128}"/>
+            <!--Source="{Binding CurrentDanceType.Image}"-->
+                    <!--Source="C:\AMPS\תמונה1.png"-->
+                    <!--<Image.Source>
+                        <BitmapImage DecodePixelWidth="20" UriSource="{Binding LogoImage}" />
+                    </Image.Source>-->
+                <!--</Image>-->
+                <!--Text="{Binding CurrentDanceType.Title}"-->
+                <!--Text="מעגלים"-->
+                <!--<TextBlock FontSize="16" 
+                           Padding="2"
+                           Text="{Binding CurrentDanceType.Title}"
+                           HorizontalAlignment="Center"
+                           />-->
+            <!--</StackPanel>-->
+        </Viewbox>
     </Grid>
 </UserControl>

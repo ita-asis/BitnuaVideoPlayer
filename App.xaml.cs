@@ -427,7 +427,8 @@ namespace BitnuaVideoPlayer
                 if (VM.CurrentClient == m_BitnuaClient)
                     await UpdateVM(song);
 
-                await DB_Plays?.InsertOneAsync(new PlayEntry() { Song = song, Client = m_BitnuaClient });
+                if (DB_Plays != null)
+                    await DB_Plays.InsertOneAsync(new PlayEntry() { Song = song, Client = m_BitnuaClient });
             }
             catch (Exception)
             {

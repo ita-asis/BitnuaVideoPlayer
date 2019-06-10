@@ -103,6 +103,7 @@ namespace BitnuaVideoPlayer
             }
         }
 
+        public string LogoImage { get; set; }
         public string VideoPath1 { get; set; }
         public string VideoPath2 { get; set; }
         public string VideoPathSinger { get; set; }
@@ -421,8 +422,7 @@ namespace BitnuaVideoPlayer
         {
             get { return m_PicStretch; }
             set { m_PicStretch = value; OnPropertyChanged(nameof(PicStretch)); }
-        }
-
+        }    
 
         private TextVM m_LeftPicTitle;
 
