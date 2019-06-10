@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -56,9 +57,6 @@ namespace BitnuaVideoPlayer.UI
         public MyPopup()
         {
             InitializeComponent();
-            MouseDown += (s, e) => moveThumb.RaiseEvent(e);
-            MouseEnter += (s, e) => resizeThumb.Visibility = Visibility.Visible;
-            MouseLeave += (s, e) => resizeThumb.Visibility = Visibility.Hidden;
         }
 
         public override void OnApplyTemplate()
@@ -67,9 +65,24 @@ namespace BitnuaVideoPlayer.UI
 
             moveThumb = this.GetTemplateChild("PART_moveThumb") as Thumb;
             resizeThumb = this.GetTemplateChild("PART_resizeThumb") as Thumb;
-            grid = this.GetTemplateChild("PART_grid") as Grid;
             canvas = this.GetTemplateChild("PART_canvas") as Canvas;
+            grid = this.GetTemplateChild("PART_grid") as Grid;
+
+            grid.MouseDown += gridMouseDown;
+            grid.MouseEnter += (s, e) => resizeThumb.Visibility = Visibility.Visible;
+            grid.MouseLeave += (s, e) => resizeThumb.Visibility = Visibility.Hidden;
             updateVisibility();
+        }
+
+        private void gridMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var newarg = new MouseButtonEventArgs(e.MouseDevice, e.Timestamp,e.ChangedButton, e.StylusDevice)
+            {
+                RoutedEvent = ListViewItem.MouseDownEvent,
+                Source = sender
+            };
+            moveThumb.RaiseEvent(newarg);
+            e.Handled = true;
         }
 
         public double X
@@ -136,6 +149,11 @@ namespace BitnuaVideoPlayer.UI
         private void onDragMoveDelta(object sender, DragDeltaEventArgs e)
         {
             var p = new Point(X + e.HorizontalChange, Y + e.VerticalChange);
+            var rect = new Rect(p.X, p.Y, ClockWidth, ClockHeight);
+
+            if (IsRectOutOfCanvas(rect))
+                return;
+
             Y = p.Y;
             X = p.X;
         }
@@ -144,32 +162,32 @@ namespace BitnuaVideoPlayer.UI
         {
             double yadjust = grid.Height + e.VerticalChange;
             double xadjust = grid.Width + e.HorizontalChange;
-            if ((xadjust >= grid.MinWidth) && (yadjust >= grid.MinHeight))
+
+            if (!(xadjust >= grid.MinWidth) && (yadjust >= grid.MinHeight)  || xadjust < 0 || yadjust < 0)
+                return;
+            else
             {
-                ClockWidth = xadjust;
-                ClockHeight = yadjust;
+                var rect = new Rect(X, Y, xadjust, yadjust);
+                if (IsRectOutOfCanvas(rect))
+                    return;
             }
+
+            ClockWidth = xadjust;
+            ClockHeight = yadjust;
         }
 
-        private void PART_canvas_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private bool IsRectOutOfCanvas(Rect rect)
         {
-            var mpoint = e.GetPosition(this);
-
-            // check out of clock bounds
-            if (mpoint.X < this.X ||
-                mpoint.Y < this.Y ||
-                mpoint.X > this.X + this.ClockWidth ||
-                mpoint.Y > this.Y + this.ClockHeight)
+            // check out of canvas bounds
+            if (rect.TopLeft.X < 0 ||
+                rect.TopLeft.Y < 0 ||
+                rect.BottomRight.X > canvas.ActualWidth ||
+                rect.BottomRight.Y > canvas.ActualHeight)
             {
-                e.Handled = true;
-                var parent = this.FindParentOfType<Window>();
-                //Copy over event arg members and raise it
-                MouseButtonEventArgs newarg = new MouseButtonEventArgs(e.MouseDevice, e.Timestamp,
-                                                  e.ChangedButton, e.StylusDevice);
-                newarg.RoutedEvent = ListViewItem.MouseDownEvent;
-                newarg.Source = sender;
-                parent.RaiseEvent(newarg);
+                return true;
             }
+
+            return false;
         }
     }
 

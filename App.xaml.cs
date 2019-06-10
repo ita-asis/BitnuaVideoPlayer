@@ -50,6 +50,7 @@ namespace BitnuaVideoPlayer
         private CancellationTokenSource m_WatchCloudDBToken;
         private ClientInfo m_BitnuaClient;
         private Song m_Song;
+        private CancellationTokenSource m_CancelClock;
 
         public MainViewModel VM { get; set; }
         public static App Instance { get; private set; }
@@ -174,6 +175,8 @@ namespace BitnuaVideoPlayer
 
             m_PicLoopToken?.Cancel();
             m_WatchCloudDBToken?.Cancel();
+            m_CancelClock?.Cancel();
+
             BitnuaVideoPlayer.Properties.Settings.Default.Save();
             var vmJson = JsonConvert.SerializeObject(VM, Formatting.Indented);
             UserSettings.Set(c_MainVmSettingKey, vmJson);
@@ -197,6 +200,8 @@ namespace BitnuaVideoPlayer
 
             if (!Directory.Exists(VM.WatchDir))
                 throw new DirectoryNotFoundException($"Amps dir not found in {VM.WatchDir}");
+
+            initClock();
 
             m_FileSysWatcher = new FileSystemWatcher()
                 {
@@ -227,6 +232,22 @@ namespace BitnuaVideoPlayer
                  });
             }
 #pragma warning restore
+        }
+
+        private void initClock()
+        {
+            m_CancelClock = new CancellationTokenSource();
+            UpdateTime();
+        }
+        private void UpdateTime()
+        { 
+            Task.Run(() =>
+            {
+                VM.CurrDate = DateTime.Now;
+                Task.Delay(1000, m_CancelClock.Token);
+                UpdateTime();
+            }, m_CancelClock.Token);
+
         }
 
         public static async Task CheckConnectionLoop(CancellationToken token)

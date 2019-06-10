@@ -472,10 +472,17 @@ namespace BitnuaVideoPlayer
             set { m_PresentationVM = value; OnPropertyChanged(nameof(PresentationVM)); }
         }
 
-
-
         public int LeftPicDelay { get; set; }
         public int DbUpdateDelay { get; set; } = 5000; // 5 sec default
+
+
+        private DateTime m_CurrDate;
+        [JsonIgnore]
+        public DateTime CurrDate
+        {
+            get { return m_CurrDate; }
+            set { m_CurrDate = value; OnPropertyChanged(nameof(CurrDate)); }
+        }
 
         [JsonIgnore]
         public IEnumerable<Tuple<string, Func<string>>> PicSources;
