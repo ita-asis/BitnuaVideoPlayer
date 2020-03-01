@@ -118,7 +118,7 @@
                     CornerRadius="8">
                 <Viewbox>
                     <!--{Binding CurrDate, StringFormat='{}{0:h:mm:ss}'}-->
-                    <TextBlock Text="{Binding CurrDate, StringFormat='{}{0:hh:mm:ss}'}"
+                    <TextBlock Text="{Binding CurrDate, StringFormat='{}{0:HH:mm:ss}'}"
                                FontSize="20"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Center"
