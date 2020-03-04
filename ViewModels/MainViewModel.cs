@@ -314,11 +314,17 @@ namespace BitnuaVideoPlayer
         }
 
         private bool m_ShowSongInfoPic = true;
-
         public bool ShowSongInfoPic
         {
             get { return m_ShowSongInfoPic; }
             set { m_ShowSongInfoPic = value; OnPropertyChanged(nameof(ShowSongInfoPic)); }
+        }
+
+        private bool m_ShowType = true;
+        public bool ShowType
+        {
+            get { return m_ShowType; }
+            set { m_ShowType = value; OnPropertyChanged(nameof(ShowType)); }
         }
 
         private bool m_ShowLeftPic = true;
@@ -333,6 +339,13 @@ namespace BitnuaVideoPlayer
         {
             get { return m_SongInfo01 ?? (m_SongInfo01 = new ColoredTextVm()); }
             set { m_SongInfo01 = value; OnPropertyChanged(nameof(SongInfo01)); }
+        }
+
+        private ColoredTextVm m_TypeBar;
+        public ColoredTextVm TypeBar
+        {
+            get { return m_TypeBar ?? (m_TypeBar = new ColoredTextVm()); }
+            set { m_TypeBar = value; OnPropertyChanged(nameof(TypeBar)); }
         }
 
         private ColoredTextVm m_SongInfo02;
@@ -372,6 +385,13 @@ namespace BitnuaVideoPlayer
         {
             get { return m_DefaultLayout_SongInfoHeight; }
             set { m_DefaultLayout_SongInfoHeight = value; OnPropertyChanged(nameof(DefaultLayout_SongInfoHeight)); }
+        }
+
+        private double m_DefaultLayout_SongInfoTypeBarHeight;
+        public double DefaultLayout_SongInfoTypeBarHeight
+        {
+            get { return m_DefaultLayout_SongInfoTypeBarHeight; }
+            set { m_DefaultLayout_SongInfoTypeBarHeight = value; OnPropertyChanged(nameof(DefaultLayout_SongInfoTypeBarHeight)); }
         }
 
         private VideoListItem m_DefaultLayout_VideoItem;
@@ -926,6 +946,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public string Lyrics { get; set; }
         public string YouTubeSong { get; set; }
         public string YouTubeDance { get; set; }
+        public string Type { get; set; }
     }
 
     public enum ePicMode

@@ -334,8 +334,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="appSigingCert.pfx" />
-    <None Include="BitnuaVideoPlayer_TemporaryKey.pfx" />
-    <None Include="bitnuaVpKey.snk" />
     <None Include="conf.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

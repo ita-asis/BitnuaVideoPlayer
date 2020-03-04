@@ -382,6 +382,8 @@ namespace BitnuaVideoPlayer
                 song.Title = field.Value;
             if (fields.TryGetValue(Fields.Heb_Title, out field))
                 song.HebTitle = field.Value;
+            if (fields.TryGetValue(Fields.Type, out field))
+                song.Type = field.Value;
             if (fields.TryGetValue(Fields.Performer, out field))
                 song.Heb_Performer = field.Value;
             if (fields.TryGetValue(Fields.Eng_Performer, out field))
