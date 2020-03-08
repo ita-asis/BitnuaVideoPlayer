@@ -65,14 +65,23 @@ namespace BitnuaVideoPlayer
         private void btnLeftPicHeaderForeColorPicker(object sender, RoutedEventArgs e) =>
             VM.LeftPicTitle.ForeColor = PickColor(VM.LeftPicTitle.ForeColor);
 
-        private void btnSongInfoTypeFontPicker(object sender, RoutedEventArgs e) =>
-            VM.TypeBar.Font = PickFont(VM.TypeBar.Font);
+        private void btnSongInfoTypeFontPicker(object sender, RoutedEventArgs e)
+        {
+            VM.SelectedTypeFormat.Format.Font = PickFont(VM.SelectedTypeFormat.Format.Font);
+            VM.RefreshTypeBar();
+        }
 
-        private void btnSongInfoTypeBackColorPicker(object sender, RoutedEventArgs e) =>
-            VM.TypeBar.BackColor = PickColor(VM.TypeBar.BackColor);
-        
-        private void btnSongInfoTypeForeColorPicker(object sender, RoutedEventArgs e) =>
-            VM.TypeBar.ForeColor = PickColor(VM.TypeBar.ForeColor);
+        private void btnSongInfoTypeBackColorPicker(object sender, RoutedEventArgs e)
+        {
+            VM.SelectedTypeFormat.Format.BackColor = PickColor(VM.SelectedTypeFormat.Format.BackColor);
+            VM.RefreshTypeBar();
+        }
+
+        private void btnSongInfoTypeForeColorPicker(object sender, RoutedEventArgs e)
+        {
+            VM.SelectedTypeFormat.Format.ForeColor = PickColor(VM.SelectedTypeFormat.Format.ForeColor);
+            VM.RefreshTypeBar();
+        }
 
         private void btnLyricsFontPicker(object sender, RoutedEventArgs e) =>
             VM.Lyrics.Font = PickFont(VM.Lyrics.Font);

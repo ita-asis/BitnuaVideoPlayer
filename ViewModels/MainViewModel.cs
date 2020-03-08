@@ -250,6 +250,7 @@ namespace BitnuaVideoPlayer
                 m_Song = value;
                 OnPropertyChanged(nameof(Song));
                 OnPropertyChanged(nameof(SongInfoRows));
+                OnPropertyChanged(nameof(TypeBar));
             }
         }
 
@@ -341,12 +342,58 @@ namespace BitnuaVideoPlayer
             set { m_SongInfo01 = value; OnPropertyChanged(nameof(SongInfo01)); }
         }
 
-        private ColoredTextVm m_TypeBar;
-        public ColoredTextVm TypeBar
+        public class TypeFormat
         {
-            get { return m_TypeBar ?? (m_TypeBar = new ColoredTextVm()); }
-            set { m_TypeBar = value; OnPropertyChanged(nameof(TypeBar)); }
+            public string Type { get; set; }
+            public ColoredTextVm Format { get; set; } = new ColoredTextVm();
         }
+
+        public TypeFormat DefaultTypeFormat { get; set; } = new TypeFormat() { Type = "Default" };
+
+        private TypeFormat[] __TypesFormat;
+        [JsonProperty("TypesFormats")]
+        private TypeFormat[] _TypesFormats
+        {
+            get
+            {
+                return __TypesFormat ?? (__TypesFormat = new TypeFormat[] {
+                    new TypeFormat() { Type = "מעגלים" },
+                    new TypeFormat() { Type = "זוגות" },
+                    new TypeFormat() { Type = "שורות" }
+                });
+            }
+            set { __TypesFormat = value; OnPropertyChanged(nameof(TypesFormats)); OnPropertyChanged(nameof(TypeBar)); }
+        }
+
+        private TypeFormat[] m_TypesFormat;
+        [JsonIgnore]
+        public TypeFormat[] TypesFormats
+        {
+            get
+            {
+                if (m_TypesFormat != null)
+                    return m_TypesFormat;
+
+                m_TypesFormat = new TypeFormat[_TypesFormats.Length + 1];
+                m_TypesFormat[0] = DefaultTypeFormat;
+                _TypesFormats.CopyTo(m_TypesFormat, 1);
+
+                return m_TypesFormat;
+            }
+        }
+
+        private TypeFormat m_SelectedTypeFormat;
+        [JsonIgnore]
+        public TypeFormat SelectedTypeFormat
+        {
+            get { return m_SelectedTypeFormat ?? (m_SelectedTypeFormat = TypesFormats.FirstOrDefault()); }
+            set { m_SelectedTypeFormat = value; OnPropertyChanged(nameof(SelectedTypeFormat)); }
+        }
+
+        [JsonIgnore]
+        public ColoredTextVm TypeBar => (TypesFormats.FirstOrDefault(f => f.Type == Song?.Type) ?? DefaultTypeFormat).Format;
+
+        public void RefreshTypeBar() => OnPropertyChanged(nameof(TypeBar));
 
         private ColoredTextVm m_SongInfo02;
         public ColoredTextVm SongInfo02

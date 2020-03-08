@@ -182,12 +182,14 @@
                         Style="{StaticResource colorBtn}"
                         DataContext="{Binding Lyrics.ForeColor}"
                         Margin="4,0"
+                        BorderThickness="2"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"/>
                                 <Button Click="btnLyricsBackColorPicker" 
                         Style="{StaticResource colorBtn}"
                         DataContext="{Binding Lyrics.BackColor}"
                         Margin="4,0"
+                        BorderThickness="2"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"/>
                             </StackPanel>
@@ -225,12 +227,14 @@
                                     Style="{StaticResource colorBtn}"
                                     DataContext="{Binding LeftPicTitle.ForeColor}"
                                     Margin="4,0"
+                                    BorderThickness="2"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top"/>
                                 <Button Click="btnLeftPicHeaderBackColorPicker" 
                                     Style="{StaticResource colorBtn}"
                                     DataContext="{Binding LeftPicTitle.BackColor}"
                                     Margin="4,0"
+                                    BorderThickness="2"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top"/>
                                 <ComboBox Text="{Binding PicStretch}">
@@ -248,6 +252,10 @@
                       Grid.Row="4" 
                       Margin="4,0">
                 <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="Auto"/>
@@ -269,14 +277,12 @@
                             <Image Source="Resources\close-button.png" Stretch="Uniform"/>
                         </Button>
                     </StackPanel>
-
-                    <StackPanel>
-                        <WrapPanel Orientation="Horizontal">
-                            <CheckBox Content="Show ?" IsChecked="{Binding ShowSongInfo}" Margin="8,4"/>
-                            <CheckBox Content="Show pic ?" IsChecked="{Binding ShowSongInfoPic}" Margin="8,4"/>
-                            <CheckBox Content="Show type ?" IsChecked="{Binding ShowType}" Margin="8,4"/>
-                        </WrapPanel>
-
+                    <WrapPanel Orientation="Horizontal">
+                        <CheckBox Content="Show ?" IsChecked="{Binding ShowSongInfo}" Margin="8,4"/>
+                        <CheckBox Content="Show pic ?" IsChecked="{Binding ShowSongInfoPic}" Margin="8,4"/>
+                        <CheckBox Content="Show type ?" IsChecked="{Binding ShowType}" Margin="8,4"/>
+                    </WrapPanel>
+                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Position"/>
                             <RadioButton x:Name="rb_SongInfoPosButtom" Content="Buttom"  Margin="4,0,4,0" IsChecked="True" VerticalAlignment="Center" />
@@ -309,12 +315,18 @@
                                     Style="{StaticResource colorBtn}"
                                     DataContext="{Binding SongInfo01.ForeColor}"
                                     Margin="4,0"
+                                    BorderThickness="2"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top"/>
                             </StackPanel>
                         
                             <Label Content="Song Type" Grid.Row="2" Grid.Column="0"/>
                             <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
+                                <ComboBox Margin="4,0,4,1"
+                                          ItemsSource="{Binding TypesFormats}" 
+                                          DisplayMemberPath="Type"
+                                          SelectedItem="{Binding SelectedTypeFormat}"/>
+                                
                                 <Button Click="btnSongInfoTypeFontPicker" 
                                         Content="Font"
                                         Margin="4,0,4,1"
@@ -324,14 +336,16 @@
                                         VerticalAlignment="Bottom"/>
                                 <Button Click="btnSongInfoTypeForeColorPicker" 
                                         Style="{StaticResource colorBtn}"
-                                        DataContext="{Binding TypeBar.ForeColor}"
+                                        DataContext="{Binding SelectedTypeFormat.Format.ForeColor}"
                                         Margin="4,0"
                                         HorizontalAlignment="Left"
+                                        BorderThickness="2"
                                         VerticalAlignment="Top" Width="23"/>
                                 <Button Click="btnSongInfoTypeBackColorPicker" 
                                         Style="{StaticResource colorBtn}"
-                                        DataContext="{Binding TypeBar.BackColor}"
+                                        DataContext="{Binding SelectedTypeFormat.Format.BackColor}"
                                         Margin="4,0"
+                                        BorderThickness="2"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Top" Width="23"/>
 
@@ -350,6 +364,7 @@
                                         Style="{StaticResource colorBtn}"
                                         DataContext="{Binding SongInfo02.ForeColor}"
                                         Margin="4,0"
+                                        BorderThickness="2"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Top" Width="23"/>
 
@@ -362,6 +377,7 @@
                                 Style="{StaticResource colorBtn}"
                                 DataContext="{Binding SongInfo01.BackColor}"
                                 Margin="4,0"
+                                BorderThickness="2"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"/>
 
@@ -915,12 +931,14 @@
                         Style="{StaticResource colorBtn}"
                         DataContext="{Binding Banner.ForeColor}"
                         Margin="4,0"
+                        BorderThickness="2"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"/>
                     <Button Click="btnBannerBackColorPicker" 
                         Style="{StaticResource colorBtn}"
                         DataContext="{Binding Banner.BackColor}"
                         Margin="4,0"
+                        BorderThickness="2"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"/>
 
