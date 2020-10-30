@@ -204,15 +204,15 @@ namespace BitnuaVideoPlayer
             initClock();
 
             m_FileSysWatcher = new FileSystemWatcher()
-                {
-                    Path = VM.WatchDir,
-                    NotifyFilter = NotifyFilters.LastWrite,
-                    Filter = "*.*",
-                    EnableRaisingEvents = true
-                };
-                m_FileSysWatcher.Changed += new FileSystemEventHandler(OnWatchDirChanged);
-                RegisterBannerPicsChanged();
-                await ShowLastSong();
+            {
+                Path = VM.WatchDir,
+                NotifyFilter = NotifyFilters.LastWrite,
+                Filter = "*.*",
+                EnableRaisingEvents = true
+            };
+            m_FileSysWatcher.Changed += new FileSystemEventHandler(OnWatchDirChanged);
+            RegisterBannerPicsChanged();
+            await ShowLastSong();
 
 
             if (CheckForInternetConnection())
@@ -593,20 +593,31 @@ namespace BitnuaVideoPlayer
 
             await Task.Delay(100);
 
+
+            VM.RTL = !(VM.ShowEng && VM.Song.HasEng && !VM.Song.HasHeb);
+
             using (var songPics = IterateInLoop(GetAvaiableSongPics(VM), token).GetEnumerator())
             using (var leftPics = IterateNextLeftPic(VM, token).GetEnumerator())
             {
+                int ticks = 0;
                 while (!token.IsCancellationRequested)
                 {
                     var st = DateTime.UtcNow.Ticks;
                     try
                     {
-                        if (VM.Song != null && (VM.SelectedPicMode != ViewModels.ePicMode.Lyrics))
+                        if (VM.Song != null)
                         {
+
+                            if (VM.ShowEng && VM.ShowHeb && ticks % VM.LangTicks == 0 && VM.Song.HasEng && VM.Song.HasHeb)
+                            {
+                                VM.RTL = !VM.RTL;
+                            }
+
                             if (songPics.MoveNext())
                                 VM.ArtistPicSource = songPics.Current.Item1;
 
-                            if (leftPics.MoveNext())
+
+                            if (VM.SelectedPicMode != ViewModels.ePicMode.Lyrics && leftPics.MoveNext())
                             {
                                 var fileNTitle = leftPics.Current;
                                 VM.LeftPicSource = fileNTitle.Item1;
@@ -622,6 +633,7 @@ namespace BitnuaVideoPlayer
                     catch (Exception)
                     {
                     }
+                    ticks++;
                 }
             }
         }

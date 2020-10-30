@@ -86,6 +86,46 @@ namespace BitnuaVideoPlayer
             }
         }
 
+        private bool m_ShowEng = false;
+
+        public bool ShowEng
+        {
+            get { return m_ShowEng; }
+            set
+            {
+                if (value || ShowHeb)
+                {
+                    m_ShowEng = value;
+                    if (!value && Song.HasHeb)
+                        m_RTL = true;
+                }
+
+                OnPropertyChanged(nameof(ShowEng));
+                OnPropertyChanged(nameof(RTL));
+                OnPropertyChanged(nameof(Song));
+            }
+        }
+
+        private bool m_ShowHeb = true;
+        public bool ShowHeb
+        {
+            get { return m_ShowHeb; }
+            set
+            {
+                if (value || ShowEng)
+                {
+                    m_ShowHeb = value;
+                    if (!value && Song.HasEng)
+                        m_RTL = false;
+                }
+
+                OnPropertyChanged(nameof(ShowHeb));
+                OnPropertyChanged(nameof(RTL));
+                OnPropertyChanged(nameof(Song));
+            }
+        }
+
+
         public int SongInfoRows
         {
             get
@@ -551,6 +591,8 @@ namespace BitnuaVideoPlayer
             set { m_CurrDate = value; OnPropertyChanged(nameof(CurrDate)); }
         }
 
+        public int LangTicks { get; set; } = 3;
+
         [JsonIgnore]
         public IEnumerable<Tuple<string, Func<string>>> PicSources;
         [JsonIgnore]
@@ -987,6 +1029,10 @@ namespace BitnuaVideoPlayer.ViewModels
         public string Creator => App.Instance.VM.RTL ? Heb_Creator : (!string.IsNullOrEmpty(Eng_Creator) ? Eng_Creator : Heb_Creator);
         public string Composer => App.Instance.VM.RTL ? Heb_Composer : (!string.IsNullOrEmpty(Eng_Composer) ? Eng_Composer : Heb_Composer);
         public string Writer => App.Instance.VM.RTL ? Heb_Writer : (!string.IsNullOrEmpty(Eng_Writer) ? Eng_Writer : Heb_Writer);
+
+        public bool HasEng => !string.IsNullOrEmpty(Eng_Performer) || !string.IsNullOrEmpty(Eng_Creator) || !string.IsNullOrEmpty(Eng_Composer) || !string.IsNullOrEmpty(Eng_Writer);
+        public bool HasHeb => !string.IsNullOrEmpty(Heb_Performer) || !string.IsNullOrEmpty(Heb_Creator) || !string.IsNullOrEmpty(Heb_Composer) || !string.IsNullOrEmpty(Heb_Writer);
+
 
         public int? Year { get; set; }
         public string HebTitle { get; set; }

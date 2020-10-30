@@ -38,8 +38,7 @@
                           Visibility="{Binding ShowType, Converter={StaticResource BoolToVis}}"/>
         </Grid>
         <Grid Background="{Binding SongInfo01.BackColor,Converter={StaticResource colorCnv}}"
-              Panel.ZIndex="0"
-              FlowDirection="{Binding RTL, Converter={StaticResource bool2FlowDirection}}">
+              Panel.ZIndex="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="9*"/>
                 <ColumnDefinition Width="{Binding ShowSongInfoPic, Converter={StaticResource bool2Grid}, ConverterParameter=2*}"/>
@@ -112,6 +111,7 @@
                         </Grid.ColumnDefinitions>
                         <Grid.Resources>
                             <Style TargetType="{x:Type TextBlock}" >
+                                <Setter Property="FlowDirection" Value="LeftToRight" />
                                 <Setter Property="FontSize" Value="{Binding SongInfo01.FontSize}" />
                                 <Setter Property="FontFamily" Value="{Binding SongInfo01.FontFamily}" />
                                 <Setter Property="Foreground" Value="{Binding SongInfo01.ForeColor,Converter={StaticResource colorCnv}}" />
@@ -124,36 +124,7 @@
                             </Style>
 
                         </Grid.Resources>
-                        <!--<TextBlock VerticalAlignment="Center" 
-                                   HorizontalAlignment="Left"
-                                   FlowDirection="LeftToRight">-->
-                        <!--<TextBlock.Style>
-                                <Style>
-                                    <Setter Property="TextBlock.Text">
-                                        <Setter.Value>
-                                            <MultiBinding StringFormat="{}{0}     {1}">
-                                                <Binding Path="Song.HebTitle"/>
-                                                <Binding Path="Song.Title"/>
-                                            </MultiBinding>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RTL}" Value="False">
-                                            <Setter Property="TextBlock.Text" Value="{Binding Song.Title}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>-->
-                        <!--<TextBlock.Text>
-                                <MultiBinding StringFormat="{}{0}     {1}">
-                                    <Binding Path="Song.Title"/>
-                                    <Binding Path="Song.HebTitle"/>
-                                </MultiBinding>
-                            </TextBlock.Text>-->
-
-                        <!--</TextBlock>-->
-
+                     
                         <TextBlock VerticalAlignment="Center" 
                                    HorizontalAlignment="Left"
                                    Text="{Binding Song.Title}" Padding="0,0,6,0"/>
@@ -170,98 +141,185 @@
                                    Text="{Binding Song.HebTitle}" Padding="6,0,0,0"/>
                     </Grid>
 
-                    <UniformGrid Rows="{Binding SongInfoRows}" Columns="2" Margin="4,0" Grid.Row="1"
-                                 Grid.IsSharedSizeScope="True"
-                                 x:Name="uniformGrid">
-                        <UniformGrid.Resources>
+
+                    <Grid Margin="4,0" Grid.Row="1">
+                        <Grid.Resources>
                             <Style TargetType="{x:Type TextBlock}" x:Key="tbStlye">
                                 <Setter Property="FontSize" Value="{Binding SongInfo02.FontSize}" />
                                 <Setter Property="FontFamily" Value="{Binding SongInfo02.FontFamily}" />
                                 <Setter Property="Foreground" Value="{Binding SongInfo02.ForeColor,Converter={StaticResource colorCnv}}" />
+                                <Setter Property="Margin" Value="0,0,10,0"/>
                             </Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}"/>
-                        </UniformGrid.Resources>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
-                                <ColumnDefinition SharedSizeGroup="B"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}">
-                                <TextBlock.Style>
-                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
-                                        <Setter Property="TextBlock.Text" Value="יוצר:" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RTL}" Value="False">
-                                                <Setter Property="TextBlock.Text" Value="Creator:"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            <TextBlock Text="{Binding Song.Creator}"  FontWeight="Bold" Margin="10,0,25,0" Grid.Column="1"
-                                       Visibility="{Binding Song.Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="C"/>
-                                <ColumnDefinition SharedSizeGroup="D"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}">
-                                <TextBlock.Style>
-                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
-                                        <Setter Property="TextBlock.Text" Value="מבצע:" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RTL}" Value="False">
-                                                <Setter Property="TextBlock.Text" Value="Performer:"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            <TextBlock Text="{Binding Song.Performer}"  FontWeight="Bold" Margin="10,0,25,0" Grid.Column="1"
-                                       Visibility="{Binding Song.Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
-                                <ColumnDefinition SharedSizeGroup="B"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}">
-                                <TextBlock.Style>
-                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
-                                        <Setter Property="TextBlock.Text" Value="לחן:" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RTL}" Value="False">
-                                                <Setter Property="TextBlock.Text" Value="Composer:"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            <TextBlock Text="{Binding Song.Composer}"  FontWeight="Bold" Margin="10,0,25,0" Grid.Column="1"
-                                       Visibility="{Binding Song.Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="C"/>
-                                <ColumnDefinition SharedSizeGroup="D"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}">
-                                <TextBlock.Style>
-                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
-                                        <Setter Property="TextBlock.Text" Value="משורר:" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RTL}" Value="False">
-                                                <Setter Property="TextBlock.Text" Value="Writer:"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            <TextBlock Text="{Binding Song.Writer}"  FontWeight="Bold" Margin="10,0,25,0" Grid.Column="1"
-                               Visibility="{Binding Song.Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        </Grid>
-                    </UniformGrid>
+                        </Grid.Resources>
+
+                        <UniformGrid Rows="{Binding SongInfoRows}" Columns="2" 
+                                     Grid.IsSharedSizeScope="True"
+                                     FlowDirection="RightToLeft">
+                            <UniformGrid.Style>
+                                <Style TargetType="{x:Type UniformGrid}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RTL}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RTL}" Value="False">
+                                            <Setter Property="Visibility" Value="Hidden"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </UniformGrid.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
+                                    <ColumnDefinition SharedSizeGroup="B"/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Visibility="{Binding Song.Heb_Creator, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                            <Setter Property="TextBlock.Text" Value="יוצר:" />
+                                            
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Song.Heb_Creator}"  FontWeight="Bold"  Grid.Column="1"
+                                           Visibility="{Binding Song.Heb_Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="C"/>
+                                    <ColumnDefinition SharedSizeGroup="D"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Visibility="{Binding Song.Heb_Performer, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                            <Setter Property="TextBlock.Text" Value="מבצע:" />
+                                            
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Song.Heb_Performer}"  FontWeight="Bold"  Grid.Column="1"
+                                           Visibility="{Binding Song.Heb_Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
+                                    <ColumnDefinition SharedSizeGroup="B"/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Visibility="{Binding Song.Heb_Composer, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                            <Setter Property="TextBlock.Text" Value="לחן:" />
+                                            
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Song.Heb_Composer}"  FontWeight="Bold"  Grid.Column="1"
+                                           Visibility="{Binding Song.Heb_Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="C"/>
+                                    <ColumnDefinition SharedSizeGroup="D"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Visibility="{Binding Song.Heb_Writer, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                            <Setter Property="TextBlock.Text" Value="משורר:" />
+                                            
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Song.Heb_Writer}"  FontWeight="Bold"  Grid.Column="1"
+                                   Visibility="{Binding Song.Heb_Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            </Grid>
+                        </UniformGrid>
+                        <UniformGrid Rows="{Binding SongInfoRows}" Columns="2" 
+                                     Grid.IsSharedSizeScope="True"
+                                     FlowDirection="LeftToRight">
+                            <UniformGrid.Style>
+                                <Style TargetType="{x:Type UniformGrid}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RTL}" Value="True">
+                                            <Setter Property="Visibility" Value="Hidden"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RTL}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </UniformGrid.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
+                                    <ColumnDefinition SharedSizeGroup="B"/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Visibility="{Binding Song.Eng_Creator, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                            <Setter Property="TextBlock.Text" Value="Creator:"/>
+                                            
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Song.Eng_Creator}"  FontWeight="Bold"  Grid.Column="1"
+                                           Visibility="{Binding Song.Eng_Creator, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="C"/>
+                                    <ColumnDefinition SharedSizeGroup="D"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Visibility="{Binding Song.Eng_Performer, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                            <Setter Property="TextBlock.Text" Value="Performer:"/>
+                                            
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Song.Eng_Performer}"  FontWeight="Bold"  Grid.Column="1"
+                                           Visibility="{Binding Song.Eng_Performer, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
+                                    <ColumnDefinition SharedSizeGroup="B"/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Visibility="{Binding Song.Eng_Composer, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                            <Setter Property="TextBlock.Text" Value="Composer:"/>
+                                            
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Song.Eng_Composer}"  FontWeight="Bold"  Grid.Column="1"
+                                           Visibility="{Binding Song.Eng_Composer, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="C"/>
+                                    <ColumnDefinition SharedSizeGroup="D"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Visibility="{Binding Song.Eng_Writer, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource tbStlye}">
+                                            <Setter Property="TextBlock.Text" Value="Writer:"/>
+                                            
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Song.Eng_Writer}"  FontWeight="Bold"  Grid.Column="1"
+                                   Visibility="{Binding Song.Eng_Writer, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            </Grid>
+                        </UniformGrid>
+
+                    </Grid>
+
                 </Grid>
 
             </Viewbox>

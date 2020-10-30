@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         mc:Ignorable="d"
 
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:qc="http://QuickConverter.CodePlex.com/"
         xmlns:my="clr-namespace:BitnuaVideoPlayer"
         xmlns:UI="clr-namespace:BitnuaVideoPlayer.UI"
@@ -52,31 +53,31 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>-->
-    <StackPanel d:DataContext="{StaticResource designVM}"
-                Width="330">
+    <StackPanel d:DataContext="{StaticResource designVM}" Width="330">
+            <DockPanel VerticalAlignment="Top">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton GroupName="layoutGrp" Margin="4" Content="Default" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"/>
+                    <RadioButton GroupName="layoutGrp" Margin="4" Content="Presentation" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Presentation}"/>
+                    <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Two videos"   IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=TwoVideos}"/>-->
+                    <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Three Pictures" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=ThreePics}"/>-->
+                </StackPanel>
 
-        <StackPanel VerticalAlignment="Top"
-                    Orientation="Horizontal">
-            <RadioButton GroupName="layoutGrp" Margin="4" Content="Default" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"/>
-            <RadioButton GroupName="layoutGrp" Margin="4" Content="Presentation" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Presentation}"/>
-                <CheckBox Content="English ?" Margin="4" IsChecked="{Binding RTL, Converter={qc:QuickConverter '!$P', ConvertBack='!$value'}}"/>
-            <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Two videos"   IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=TwoVideos}"/>-->
-            <!--<RadioButton GroupName="layoutGrp" Margin="4" Content="Three Pictures" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=ThreePics}"/>-->
-
-                <Button Padding="3" Margin="4,0"
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0,2,0,0">
+                    <Button Padding="3" Margin="4,0"
                                 Click="btnRestorePresentaionWindow" Width="25">
-                    <Image Source="Resources\restore.png" Stretch="Uniform"/>
-                </Button>
-                <Button Padding="3" Margin="4,0"
+                        <Image Source="Resources\restore.png" Stretch="Uniform"/>
+                    </Button>
+                    <Button Padding="3" Margin="4,0"
                     Click="btnShowPresentaionWindow" Width="25" >
-                    <Image Source="Resources\export-arrow.png" Stretch="Uniform"/>
-                </Button>
-                <Button Padding="3" Margin="4,0"
+                        <Image Source="Resources\export-arrow.png" Stretch="Uniform"/>
+                    </Button>
+                    <Button Padding="3" Margin="4,0"
                     Click="btnHidePresentaionWindow" Width="25" >
-                    <Image Source="Resources\close-button.png" Stretch="Uniform"/>
-                </Button>
-            </StackPanel>
-        <!--Default Layout-->
+                        <Image Source="Resources\close-button.png" Stretch="Uniform"/>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+            <!--Default Layout-->
         <Grid Grid.Row="1"
               Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"
               Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
@@ -88,15 +89,66 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <WrapPanel Orientation="Horizontal" Margin="4,0">
-                <Label Content="Show Client" Padding="4"/>
-                <ComboBox SelectedItem="{Binding CurrentClient}"
+            <DockPanel Margin="4,0">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Client" Padding="2" Margin="2"
+                               HorizontalAlignment="Left"/>
+                        <ComboBox SelectedItem="{Binding CurrentClient}"
                           ItemsSource="{Binding ActiveClients}"
-                          Padding="4"/>
-            </WrapPanel>
+                          Padding="4" Margin="2"/>
+
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" DockPanel.Dock="Right"  
+                                Orientation="Horizontal" Margin="0,4">
+                        <ListBox SelectionMode="Multiple" >
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}">LightGreen</SolidColorBrush>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border Name="Border" Padding="2" Margin="2,0" SnapsToDevicePixels="true">
+                                                    <ContentPresenter />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="true">
+                                                        <Setter TargetName="Border" Property="Background"
+                                            Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                                <Style TargetType="{x:Type Label}">
+                                    <Style.Setters>
+                                        <Setter Property="Padding" Value="4"/>
+                                        <Setter Property="FontSize" Value="10"/>
+                                    </Style.Setters>
+                                </Style>
+                            </ListBox.Resources>
+                            <ListBoxItem IsSelected="{Binding ShowEng}" >
+                                <Label Content="English" />
+                            </ListBoxItem>
+                            <ListBoxItem IsSelected="{Binding ShowHeb}">
+                                <Label Content="עברית"/>
+                            </ListBoxItem>
+                        </ListBox>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Switch:" Margin="4"/>
+                            <xctk:IntegerUpDown Value="{Binding LangTicks}" Margin="0,4" Minimum="1" ClipValueToMinMax="True"/>
+                        </StackPanel>
+                    </StackPanel>
+             </DockPanel>
 			<CheckBox IsChecked="{Binding Clock.IsShow}" 
                       Content="Show Clock ?" 
                       Grid.Row="1"
+                      HorizontalAlignment="Right"
                       VerticalAlignment="Center"
                       Margin="6,0"/>
             <GroupBox Header="Main video" 
@@ -302,8 +354,8 @@
                             </Grid.ColumnDefinitions>
 
                             
-                            <Label Content="Song Title" Grid.Row="0" Grid.Column="0" />
-                            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" >
+                            <Label Content="Song Title" Grid.Row="1" Grid.Column="0" />
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
                                 <Button Click="btnSongInfoFontPicker" 
                                     Content="Font"
                                     Margin="4,0,4,1"
@@ -320,8 +372,8 @@
                                     VerticalAlignment="Top"/>
                             </StackPanel>
                         
-                            <Label Content="Song Type" Grid.Row="2" Grid.Column="0"/>
-                            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
+                            <Label Content="Song Type" Grid.Row="3" Grid.Column="0"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1">
                                 <ComboBox Margin="4,0,4,1"
                                           ItemsSource="{Binding TypesFormats}" 
                                           DisplayMemberPath="Type"
@@ -351,8 +403,8 @@
 
                             </StackPanel>
 
-                                <Label Content="Song Details" Grid.Row="1" Grid.Column="0"/>
-                                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+                                <Label Content="Song Details" Grid.Row="2" Grid.Column="0"/>
+                                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
                                     <Button Click="btnSongInfo2FontPicker" 
                                         Content="Font"
                                         Margin="4,0,4,1"
@@ -371,9 +423,9 @@
                             </StackPanel>
 
 
-                            <Label Content="Background" Grid.Row="3" Grid.Column="0"/>
+                            <Label Content="Background" Grid.Row="0" Grid.Column="0"/>
                             <Button Click="btnSongInfoBackColorPicker" 
-                                Grid.Row="3" Grid.Column="1"
+                                Grid.Row="0" Grid.Column="1"
                                 Style="{StaticResource colorBtn}"
                                 DataContext="{Binding SongInfo01.BackColor}"
                                 Margin="4,0"
@@ -877,7 +929,7 @@
                     </Button>
                 </StackPanel>
                 <StackPanel>
-                    <CheckBox Content="Show ?" IsChecked="{Binding Banner.IsVisible}" Margin="8,4"/>
+                    <CheckBox Content="Show ?" IsChecked="{Binding Banner.IsVisible}" Margin="8,4" HorizontalAlignment="Left"/>
 
                 <DockPanel LastChildFill="True" Margin="4">
                     <TextBlock DockPanel.Dock="Left" Text="Text" Padding="0,0,4,0"/>

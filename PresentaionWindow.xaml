@@ -372,6 +372,7 @@
         </Grid>
       
         <Grid x:Name="statusGrid" Height="{Binding Banner.Height}"
+              Margin="5,0"
               Visibility="{Binding Banner.IsVisible, Converter={StaticResource BoolToVis}}">
             <CheckBox Visibility="Collapsed" IsChecked="{Binding Banner.ShowOnTop}" 
                       Checked="bannerShowOnTopChecked"
