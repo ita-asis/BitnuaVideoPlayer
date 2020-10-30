@@ -87,13 +87,13 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>appSigingCert.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>appSigningCert.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>B51E4656237F858798CEE8C3B7A4B6D13E98A642</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>7A5B1ADC5202AE679E66BA1604B995CFB7ECEAC3</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>appSigingCert.pfx</ManifestKeyFile>
+    <ManifestKeyFile>appSigningCert.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
@@ -348,7 +348,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="appSigingCert.pfx" />
+    <None Include="appSigingCert_old.pfx" />
+    <None Include="appSigningCert.pfx" />
     <None Include="conf.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

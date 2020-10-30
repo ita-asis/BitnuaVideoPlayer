@@ -1,18 +1,18 @@
 {
   "ClientName": "itamar_Test2",
-  "WatchDir": "\\\\192.168.1.120\\c\\AMPS\\vmmplay",
+  "WatchDir": "\\\\192.168.1.8\\c\\AMPS\\vmmplay",
   "VideoPath1": null,
   "VideoPath2": null,
-  "VideoPathSinger": "\\\\192.168.1.120\\c\\AMPS\\vmm\\videoClip\\זמרים",
-  "VideoPathEvent": "\\\\192.168.1.120\\c\\AMPS\\vmm\\videoClip\\אירוע",
-  "VideoPathDance": "\\\\192.168.1.120\\c\\AMPS\\vmm\\videoClip\\ריקודים",
-  "VideoPathDefault": "\\\\192.168.1.120\\c\\AMPS\\vmm\\videoClip\\Default",
-  "FlayerDir": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\flayer",
-  "PicPathPerformer": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\מבצע",
-  "PicPathCreator": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\יוצר",
-  "PicPathComposer": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\לחן",
-  "PicPathWriter": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\משורר",
-  "PicPathDefault": "\\\\192.168.1.120\\c\\AMPS\\vmm\\Pictures\\Default",
+  "VideoPathSinger": "\\\\192.168.1.8\\c\\AMPS\\vmm\\videoClip\\זמרים",
+  "VideoPathEvent": "\\\\192.168.1.8\\c\\AMPS\\vmm\\videoClip\\אירוע",
+  "VideoPathDance": "\\\\192.168.1.8\\c\\AMPS\\vmm\\videoClip\\ריקודים",
+  "VideoPathDefault": "\\\\192.168.1.8\\c\\AMPS\\vmm\\videoClip\\Default",
+  "FlayerDir": "\\\\192.168.1.8\\c\\AMPS\\vmm\\Pictures\\flayer",
+  "PicPathPerformer": "\\\\192.168.1.8\\c\\AMPS\\vmm\\Pictures\\מבצע",
+  "PicPathCreator": "\\\\192.168.1.8\\c\\AMPS\\vmm\\Pictures\\יוצר",
+  "PicPathComposer": "\\\\192.168.1.8\\c\\AMPS\\vmm\\Pictures\\לחן",
+  "PicPathWriter": "\\\\192.168.1.8\\c\\AMPS\\vmm\\Pictures\\משורר",
+  "PicPathDefault": "\\\\192.168.1.8\\c\\AMPS\\vmm\\Pictures\\Default",
   "Banner": {
     "Speed": 5,
     "Text": "שלום Banner Text Here ...",
@@ -61,7 +61,7 @@
       {
         "Kind": "Video",
         "VideoSource": {
-          "Path": "\\\\192.168.1.120\\c\\AMPS\\vmm\\VideoClip\\זמרים\\Sting\\Sting.mpg",
+          "Path": "\\\\192.168.1.8\\c\\AMPS\\vmm\\VideoClip\\זמרים\\Sting\\Sting.mpg",
           "Time": null
         },
         "X": 270.0,
@@ -74,7 +74,7 @@
       {
         "Kind": "Video",
         "VideoSource": {
-          "Path": "\\\\192.168.1.120\\c\\AMPS\\vmm\\VideoClip\\זמרים\\A-WA\\A-WA.mpg",
+          "Path": "\\\\192.168.1.8\\c\\AMPS\\vmm\\VideoClip\\זמרים\\A-WA\\A-WA.mpg",
           "Time": null
         },
         "X": 0.0,

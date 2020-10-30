@@ -23,6 +23,7 @@ using BitnuaVideoPlayer.Properties;
 using LibVLCSharp.Shared;
 using System.Runtime.CompilerServices;
 using CefSharp;
+using CefSharp.Wpf;
 using System.Reflection;
 
 namespace BitnuaVideoPlayer

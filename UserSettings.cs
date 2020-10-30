@@ -25,7 +25,7 @@ namespace BitnuaVideoPlayer
 
         private void checkUpgrade()
         {
-            const string strongAppName = "BitnuaVideoPlayer.exe_StrongName_lgujmbe4zuxqp45onbgara1o5b41v3jb";
+            const string strongAppName = "BitnuaVideoPlayer.exe_StrongName_gk2xgavz500agttsd00dk41nkzspmeqy";
 
             string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BitnuaVideoPlayer", strongAppName);
             string currConf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;

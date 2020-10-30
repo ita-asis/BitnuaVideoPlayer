@@ -96,7 +96,7 @@ namespace BitnuaVideoPlayer
                 if (value || ShowHeb)
                 {
                     m_ShowEng = value;
-                    if (!value && Song.HasHeb)
+                    if (!value && (Song == null || Song.HasHeb))
                         m_RTL = true;
                 }
 
@@ -115,7 +115,7 @@ namespace BitnuaVideoPlayer
                 if (value || ShowEng)
                 {
                     m_ShowHeb = value;
-                    if (!value && Song.HasEng)
+                    if (!value && (Song == null || Song.HasEng))
                         m_RTL = false;
                 }
 
