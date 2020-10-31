@@ -259,14 +259,16 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <WrapPanel 
+                            <UniformGrid 
                                 Visibility="{Binding ElementName=rb_picture, Path=IsChecked, Converter={StaticResource BoolToVis}}">
-                                <CheckBox Margin="4" Content="Creator"   IsChecked="{Binding Pic_ShowCreator}" />
-                                <CheckBox Margin="4" Content="Performer" IsChecked="{Binding Pic_ShowPerformer}" />
-                                <CheckBox Margin="4" Content="Composer"  IsChecked="{Binding Pic_ShowComposer}" />
-                                <CheckBox Margin="4" Content="Writer"    IsChecked="{Binding Pic_ShowWriter}" />
-                                <CheckBox Margin="4" Content="Default"   IsChecked="{Binding Pic_ShowDefault}" />
-                            </WrapPanel>
+                                <CheckBox Content="Creator"   IsChecked="{Binding Pic_ShowCreator}" />
+                                <CheckBox Content="Performer" IsChecked="{Binding Pic_ShowPerformer}" />
+                                <CheckBox Content="Composer"  IsChecked="{Binding Pic_ShowComposer}" />
+                                <CheckBox Content="Writer"    IsChecked="{Binding Pic_ShowWriter}" />
+                                <CheckBox Content="Name"      IsChecked="{Binding Pic_ShowSongName}" />
+                                <CheckBox Content="Event"     IsChecked="{Binding Pic_ShowEvent}" />
+                                <CheckBox Content="Default"   IsChecked="{Binding Pic_ShowDefault}" />
+                            </UniformGrid>
                             <StackPanel Orientation="Horizontal" Grid.Row="1">
                                 <Button Click="btnLeftPicHeaderFontPicker" 
                                     Content="Font"

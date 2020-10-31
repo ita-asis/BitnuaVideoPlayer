@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -335,6 +336,8 @@ namespace BitnuaVideoPlayer
                      e.PropertyName == nameof(VM.Pic_ShowPerformer) ||
                      e.PropertyName == nameof(VM.Pic_ShowWriter) ||
                      e.PropertyName == nameof(VM.Pic_ShowDefault) ||
+                     e.PropertyName == nameof(VM.Pic_ShowSongName) ||
+                     e.PropertyName == nameof(VM.Pic_ShowEvent) ||
                      e.PropertyName == nameof(VM.ClipTypes) ||
                      e.PropertyName == nameof(VM.SongYoutubeVideos) ||
                      e.PropertyName == nameof(VM.SelectedVideoMode) ||
@@ -411,6 +414,9 @@ namespace BitnuaVideoPlayer
             else if (fields.TryGetValue(Fields.Lyrics2, out field) && !string.IsNullOrWhiteSpace(field.Value))
                 song.Lyrics = field.Value;
 
+
+            if (fields.TryGetValue(Fields.EventName, out field) && !string.IsNullOrWhiteSpace(field.Value))
+                song.EventName = field.Value;
             if (fields.TryGetValue(Fields.YouTubeSong, out field) && !string.IsNullOrWhiteSpace(field.Value))
                 song.YouTubeSong = field.Value;
             if (fields.TryGetValue(Fields.YouTubeDance, out field) && !string.IsNullOrWhiteSpace(field.Value))
@@ -701,6 +707,12 @@ namespace BitnuaVideoPlayer
 
                 dir = GetDir(VM.Pic_ShowPerformer, VM.Song.Heb_Performer, VM.PicPathPerformer);
                 if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.Performer));
+
+                dir = GetDir(VM.Pic_ShowEvent, VM.Song.EventName, VM.PicPathEventName);
+                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.EventName));
+
+                dir = GetDir(VM.Pic_ShowSongName, VM.Song.HebTitle, VM.PicPathSongName);
+                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.HebTitle));
             }
 
             if (addDefault && (pics.Count == 0 || VM.Pic_ShowDefault))
@@ -939,6 +951,8 @@ namespace BitnuaVideoPlayer
         public const string Lyrics2 = "רשימות";
         public const string YouTubeSong = "YouTubeSong";
         public const string YouTubeDance = "YouTubeDance";
+        public const string EventName = "אירועים";
+
 
         public const string Composer = "לחן";
         public const string Creator = "יוצר";

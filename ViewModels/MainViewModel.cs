@@ -156,6 +156,8 @@ namespace BitnuaVideoPlayer
         public string PicPathCreator { get; set; }
         public string PicPathComposer { get; set; }
         public string PicPathWriter { get; set; }
+        public string PicPathEventName { get; set; }
+        public string PicPathSongName { get; set; }
         public string PicPathDefault { get; set; }
 
         private ObservableCollection<ClipCollectionCBItem> m_ClipTypes;
@@ -346,6 +348,23 @@ namespace BitnuaVideoPlayer
             get { return m_Pic_ShowDefault; }
             set { m_Pic_ShowDefault = value; OnPropertyChanged(nameof(Pic_ShowDefault)); }
         }
+
+        private bool m_Pic_ShowEvent;
+        public bool Pic_ShowEvent
+        {
+            get { return m_Pic_ShowEvent; }
+            set { m_Pic_ShowEvent = value; OnPropertyChanged(nameof(Pic_ShowEvent)); }
+        }
+
+
+        private bool m_Pic_ShowSongName;
+        public bool Pic_ShowSongName
+        {
+            get { return m_Pic_ShowSongName; }
+            set { m_Pic_ShowSongName = value; OnPropertyChanged(nameof(Pic_ShowSongName)); }
+        }
+
+
 
         private bool m_ShowSongInfo = true;
         public bool ShowSongInfo
@@ -1037,6 +1056,7 @@ namespace BitnuaVideoPlayer.ViewModels
         public int? Year { get; set; }
         public string HebTitle { get; set; }
         public string Lyrics { get; set; }
+        public string EventName { get; set; }
         public string YouTubeSong { get; set; }
         public string YouTubeDance { get; set; }
         public string Type { get; set; }
