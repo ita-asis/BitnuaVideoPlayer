@@ -38,7 +38,8 @@
                           Visibility="{Binding ShowType, Converter={StaticResource BoolToVis}}"/>
         </Grid>
         <Grid Background="{Binding SongInfo01.BackColor,Converter={StaticResource colorCnv}}"
-              Panel.ZIndex="0">
+              Panel.ZIndex="0"
+              FlowDirection="{Binding RTL, Converter={StaticResource bool2FlowDirection}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="9*"/>
                 <ColumnDefinition Width="{Binding ShowSongInfoPic, Converter={StaticResource bool2Grid}, ConverterParameter=2*}"/>
