@@ -443,8 +443,17 @@
       <Output TaskParameter="Assemblies" ItemName="myAssemblyInfo" />
     </GetAssemblyIdentity>
     <Message Text="Building nuget package..." />
-    <Exec Command="nuget pack BitnuaVideoPlayer.nuspec -Version %(myAssemblyInfo.Version) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
-    <Exec Command="squirrel --releasify $(OutDir)BitnuaVideoPlayer.$([System.Version]::Parse(%(myAssemblyInfo.Version)).ToString(3)).nupkg -n &quot;/a /f .\appSigningCert.pfx /p &quot;&quot;nicecti&quot;&quot; /fd sha256 /tr http://timestamp.digicert.com /td sha256&quot;" />
+    <Exec Command="nuget pack BitnuaVideoPlayer.nuspec -Version %(myAssemblyInfo.Version) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" ConsoleToMsBuild="true">
+		  <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfNuget" />
+	</Exec>
+	<Exec Command="squirrel --releasify $(OutDir)BitnuaVideoPlayer.$([System.Version]::Parse(%(myAssemblyInfo.Version)).ToString(3)).nupkg -n &quot;/a /f .\appSigningCert.pfx /p &quot;&quot;nicecti&quot;&quot; /fd sha256 /tr http://timestamp.digicert.com /td sha256&quot;" ConsoleToMsBuild="true">
+		  <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfSquirrel" />
+	</Exec>
+	<Message Text="----------------------------------------"/>
+	<Message Text="@(OutputOfNuget)"/>
+	<Message Text="----------------------------------------"/>
+	<Message Text="@(OutputOfSquirrel)"/>
+	<Message Text="----------------------------------------"/>
     <Message Text="Building nuget package - Done" />
   </Target>
 </Project>
