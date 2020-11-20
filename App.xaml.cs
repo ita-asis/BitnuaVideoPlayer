@@ -349,7 +349,7 @@ namespace BitnuaVideoPlayer
 
         private async Task InitMongoDb()
         {
-            var url = new MongoUrl("mongodb://svc_bitnua:zIGloC1lGQ3uw24d@ds247141.mlab.com:47141/bitnua_vplayer");
+            var url = new MongoUrl("mongodb+srv://svc_bitnua:zIGloC1lGQ3uw24d@bitnua-vplayer.b4rhw.mongodb.net/bitnua_vplayer?retryWrites=true&w=majority");
             m_MongoClient = new MongoClient(url);
             
             var db = m_MongoClient.GetDatabase("bitnua_vplayer");
