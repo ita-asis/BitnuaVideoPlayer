@@ -62,6 +62,21 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         public static readonly DependencyProperty SourceProperty =
             DependencyProperty.Register("Source", typeof(VideoSource), typeof(VideoCtrlBehavior), new PropertyMetadata(default(VideoSource), OnSourceChanged));
 
+        public bool MuteSound
+        {
+            get
+            {
+                return (bool)GetValue(MuteSoundProperty);
+            }
+            set
+            {
+                SetValue(MuteSoundProperty, value);
+            }
+        }
+
+        // Using a DependencyProperty as the backing store for Source.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MuteSoundProperty =
+            DependencyProperty.Register("MuteSound", typeof(bool), typeof(VideoCtrlBehavior), new PropertyMetadata(default(bool), OnMuteSoundChanged));
 
 
         private void InitPlayer()
@@ -79,15 +94,19 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             }
         }
 
-        private static void PlayerPlay(MediaPlayer player, VideoSource source)
+        private void PlayerPlay(MediaPlayer player, VideoSource source)
         {
             if (player == null || string.IsNullOrEmpty(source.Path))
                 return;
 
             try
             {
-                player.Play(new Media(App.Instance.LibVLC, source.Path));
+                var media = new Media(App.Instance.LibVLC, source.Path);
 
+
+                if (MuteSound)
+                    media.AddOption(":no-audio");
+                player.Play(media);
                 if (source.Time != null)
                 {
                     player.Time = source.Time.Value;
@@ -105,10 +124,22 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             behaviour.Play();
         }
 
+        private static void OnMuteSoundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behaviour = ((VideoCtrlBehavior)d);
+
+            if (behaviour.MuteSound)
+                behaviour.PlayerCtrl?.MediaPlayer.SetAudioTrack(-1);
+            else
+                behaviour.PlayerCtrl?.MediaPlayer.SetAudioTrack(1);
+        }
+
         protected void Play(MediaPlayer player = null, VideoSource source = null)
         {
             PlayerPlay(player ?? PlayerCtrl?.MediaPlayer, source ?? Source);
         }
+
+        
     }
 
     public class VideoDirPlayerBehaviour : VideoCtrlBehavior

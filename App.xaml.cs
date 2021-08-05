@@ -143,7 +143,8 @@ namespace BitnuaVideoPlayer
         private void InitVLC()
         {
             Core.Initialize();
-            LibVLC = new LibVLC("--noaudio");
+            //LibVLC = new LibVLC("--noaudio");
+            LibVLC = new LibVLC();
         }
 
         private static void VerifyLicense()
@@ -182,7 +183,9 @@ namespace BitnuaVideoPlayer
             BitnuaVideoPlayer.Properties.Settings.Default.Save();
             var vmJson = JsonConvert.SerializeObject(VM, Formatting.Indented);
             UserSettings.Set(c_MainVmSettingKey, vmJson);
-            DeInitMongoDb();
+
+            if (!VM.OfflineMode)
+                DeInitMongoDb();
         }
 
         private void InitUpdateManager()
@@ -200,23 +203,35 @@ namespace BitnuaVideoPlayer
             VM.PropertyChanged += VM_PropertyChanged;
             VM.CurrentClient = m_BitnuaClient = new ClientInfo() { Name = VM.ClientName };
 
-            if (!Directory.Exists(VM.WatchDir))
-                throw new DirectoryNotFoundException($"Amps dir not found in {VM.WatchDir}");
-
             initClock();
 
-            m_FileSysWatcher = new FileSystemWatcher()
+            if (!Directory.Exists(VM.WatchDir))
             {
-                Path = VM.WatchDir,
-                NotifyFilter = NotifyFilters.LastWrite,
-                Filter = "*.*",
-                EnableRaisingEvents = true
-            };
-            m_FileSysWatcher.Changed += new FileSystemEventHandler(OnWatchDirChanged);
+#if DEBUG == false
+                throw new DirectoryNotFoundException($"Amps dir not found in {VM.WatchDir}");
+#endif
+            }
+            else
+            {
+                m_FileSysWatcher = new FileSystemWatcher()
+                {
+                    Path = VM.WatchDir,
+                    NotifyFilter = NotifyFilters.LastWrite,
+                    Filter = "*.*",
+                    EnableRaisingEvents = true
+                };
+                m_FileSysWatcher.Changed += new FileSystemEventHandler(OnWatchDirChanged);
+            }
+
             RegisterBannerPicsChanged();
             await ShowLastSong();
 
+            if (!VM.OfflineMode)
+                await ConnectDb();
+        }
 
+        private async Task ConnectDb()
+        {
             if (CheckForInternetConnection())
             {
                 await InitMongoDb();
@@ -226,12 +241,12 @@ namespace BitnuaVideoPlayer
                 m_WatchCloudDBToken = new CancellationTokenSource();
 #pragma warning disable 
                 CheckConnectionLoop(m_WatchCloudDBToken.Token).ContinueWith(t =>
-                 {
-                     if (t.IsCompleted)
-                         return InitMongoDb();
-                     else
-                         return Task.FromCanceled(m_WatchCloudDBToken.Token);
-                 });
+                {
+                    if (t.IsCompleted)
+                        return InitMongoDb();
+                    else
+                        return Task.FromCanceled(m_WatchCloudDBToken.Token);
+                });
             }
 #pragma warning restore
         }
@@ -302,6 +317,9 @@ namespace BitnuaVideoPlayer
 
         private async Task ShowLastSong()
         {
+            if (!Directory.Exists(VM.WatchDir))
+                return;
+
             var directory = new DirectoryInfo(VM.WatchDir);
             var lastFile = (from f in directory.GetFiles("*.xml")
                             orderby f.LastWriteTimeUtc descending
@@ -629,9 +647,9 @@ namespace BitnuaVideoPlayer
                                 var fileNTitle = leftPics.Current;
                                 VM.LeftPicSource = fileNTitle.Item1;
                                 VM.LeftPicTitle.Text = fileNTitle.Item2;
-#if DEBUG
-                                Console.WriteLine($"{TimeSpan.FromTicks(DateTime.UtcNow.Ticks - st)}: {fileNTitle.Item2}");
-#endif
+//#if DEBUG
+//                                Console.WriteLine($"{TimeSpan.FromTicks(DateTime.UtcNow.Ticks - st)}: {fileNTitle.Item2}");
+//#endif
                             }
 
                             await Task.Delay(Math.Max(VM.LeftPicDelay, 3000), token).ConfigureAwait(false);

@@ -90,14 +90,16 @@
             </Grid.RowDefinitions>
 
             <DockPanel Margin="4,0">
-                    <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Vertical" Visibility="{Binding OnlineMode, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="Client" Padding="2" Margin="2"
                                HorizontalAlignment="Left"/>
                         <ComboBox SelectedItem="{Binding CurrentClient}"
                           ItemsSource="{Binding ActiveClients}"
                           Padding="4" Margin="2"/>
-
                     </StackPanel>
+                    <TextBlock Visibility="{Binding OfflineMode, Converter={StaticResource BoolToVis}}"
+                            Text="Offline mode" Padding="2" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" DockPanel.Dock="Right"  
                                 Orientation="Horizontal" Margin="0,4">
                         <ListBox SelectionMode="Multiple" >
@@ -145,12 +147,31 @@
                         </StackPanel>
                     </StackPanel>
              </DockPanel>
-			<CheckBox IsChecked="{Binding Clock.IsShow}" 
+                <DockPanel  Grid.Row="1" Margin="6,0">
+			    <CheckBox IsChecked="{Binding Clock.IsShow}" 
                       Content="Show Clock ?" 
-                      Grid.Row="1"
-                      HorizontalAlignment="Right"
+                      DockPanel.Dock="Left"
                       VerticalAlignment="Center"
                       Margin="6,0"/>
+                    <ToggleButton IsChecked="{Binding MuteSound, Mode=TwoWay}" 
+                                  HorizontalAlignment="Right"
+                                  DockPanel.Dock="Right">
+                        <Image Width="34" Height="34">
+                            <Image.Style>
+                                <Style TargetType="{x:Type Image}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding MuteSound}" Value="true">
+                                            <Setter Property="Source" Value="Resources/sound-off.png"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding MuteSound}" Value="false">
+                                            <Setter Property="Source" Value="Resources/sound-on.png"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </ToggleButton>
+                </DockPanel>
             <GroupBox Header="Main video" 
                       Grid.Row="2"
                       Margin="4,0">

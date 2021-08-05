@@ -394,6 +394,14 @@ namespace BitnuaVideoPlayer
             set { m_ShowLeftPic = value; OnPropertyChanged(nameof(ShowLeftPic)); }
         }
 
+
+        private bool m_MuteSound = true;
+        public bool MuteSound
+        {
+            get { return m_MuteSound; }
+            set { m_MuteSound = value; OnPropertyChanged(nameof(MuteSound)); }
+        }
+
         private ColoredTextVm m_SongInfo01;
         public ColoredTextVm SongInfo01
         {
@@ -611,6 +619,10 @@ namespace BitnuaVideoPlayer
         }
 
         public int LangTicks { get; set; } = 3;
+        public bool OfflineMode { get; set; } = false;
+
+        [JsonIgnore]
+        public bool OnlineMode => !OfflineMode;
 
         [JsonIgnore]
         public IEnumerable<Tuple<string, Func<string>>> PicSources;

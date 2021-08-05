@@ -7,7 +7,6 @@
         mc:Ignorable="d"
         x:Name="root"
         xmlns:Vlc="clr-namespace:LibVLCSharp.WPF"
-        xmlns:wpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         xmlns:my="clr-namespace:BitnuaVideoPlayer"
         xmlns:UI="clr-namespace:BitnuaVideoPlayer.UI"
         xmlns:props="clr-namespace:BitnuaVideoPlayer.UI.AttachedProps"
@@ -309,7 +308,7 @@
                         <DataTemplate DataType="{x:Type my:VideoListItem}">
                                 <Vlc:VideoView>
                                     <i:Interaction.Behaviors>
-                                        <props:VideoDirPlayerBehaviour Videos="{Binding VideoSources}"/>
+                                        <props:VideoDirPlayerBehaviour Videos="{Binding VideoSources}"  MuteSound="{Binding DataContext.MuteSound, ElementName=root}"/>
                                     </i:Interaction.Behaviors>
                                 </Vlc:VideoView>
                         </DataTemplate>
