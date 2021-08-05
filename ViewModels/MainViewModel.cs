@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 using System.Drawing;
 using System;
 using System.Configuration;
@@ -40,15 +42,6 @@ namespace BitnuaVideoPlayer
                             new ClipCollectionCBItem() { Text = "Performer", Type = eSongClipTypes.SongClips, IsChecked = true},
                             new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.Dance},
                             new ClipCollectionCBItem() { Text = "Event", Type = eSongClipTypes.Event},
-                        };
-                    }
-
-                    if (vm.SongYoutubeVideos == null || vm.SongYoutubeVideos.Count != 2)
-                    {
-                        vm.SongYoutubeVideos = new ObservableCollection<ClipCollectionCBItem>()
-                        {
-                            new ClipCollectionCBItem() { Text = "Clip" , Type = eSongClipTypes.YouTubeClip, IsChecked = true},
-                            new ClipCollectionCBItem() { Text = "Dance", Type = eSongClipTypes.YouTubeDance },
                         };
                     }
                 }
@@ -144,6 +137,9 @@ namespace BitnuaVideoPlayer
         }
 
         public string LogoImage { get; set; }
+
+        public bool ShouldSerializeVideoPath1() => false;
+        public bool ShouldSerializeVideoPath2() => false;
         public string VideoPath1 { get; set; }
         public string VideoPath2 { get; set; }
         public string VideoPathSinger { get; set; }
@@ -196,28 +192,6 @@ namespace BitnuaVideoPlayer
             }
         }
 
-
-        private ObservableCollection<ClipCollectionCBItem> m_SongYoutubeVideos;
-
-        public ObservableCollection<ClipCollectionCBItem> SongYoutubeVideos
-        {
-            get
-            {
-                return m_SongYoutubeVideos;
-            }
-            set
-            {
-                m_SongYoutubeVideos = value;
-                OnPropertyChanged(nameof(SongYoutubeVideos));
-                if (m_SongYoutubeVideos != null)
-                {
-                    m_SongYoutubeVideos.CollectionChanged += (s, e) => items_CollectionChanged(s, e, (s1, e1) => OnPropertyChanged(nameof(SongYoutubeVideos)));
-                    items_CollectionChanged(null,
-                                            new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, m_SongYoutubeVideos),
-                                            (s1, e1) => OnPropertyChanged(nameof(SongYoutubeVideos)));
-                }
-            }
-        }
 
         private ClockInfo m_Clock = new ClockInfo();
         public ClockInfo Clock
@@ -303,15 +277,6 @@ namespace BitnuaVideoPlayer
         {
             get { return m_SelectedPicMode; }
             set { m_SelectedPicMode = value; OnPropertyChanged(nameof(SelectedPicMode)); }
-        }
-
-        private eVideoMode m_SelectedVideoMode;
-
-        [JsonConverter(typeof(StringEnumConverter))]
-        public eVideoMode SelectedVideoMode
-        {
-            get { return m_SelectedVideoMode; }
-            set { m_SelectedVideoMode = value; OnPropertyChanged(nameof(SelectedVideoMode)); }
         }
 
         private bool m_Pic_ShowCreator;
@@ -630,6 +595,115 @@ namespace BitnuaVideoPlayer
         public IEnumerable<string> Flyerfiles;
 
 
+        private VideoMode m_VideoMode_Clip = new VideoMode("Clip", readOnly: true);
+        private VideoMode m_VideoMode_Youtube_Dance = new VideoMode("YouTube Dance", readOnly: true);
+        private VideoMode m_VideoMode_Youtube_Clip = new VideoMode("YouTube Clip", readOnly: true);
+
+
+        private VideoMode[] __VideoModes;
+        [JsonProperty("VideoModes")]
+        private VideoMode[] _VideoModes
+        {
+            get
+            {
+                if (m_VideoModes != null)
+                {
+                    var modes = m_VideoModes.Where(mode => mode.Text != null && !IsStaticVideoMode(mode));
+                    __VideoModes = modes.ToArray();
+                }
+
+                return __VideoModes ?? (__VideoModes = new VideoMode[] {
+                    new VideoMode("Video lib 1", VideoPath1),
+                    new VideoMode("Video lib 2", VideoPath2),
+                });
+            }
+            set { __VideoModes = value; OnPropertyChanged(nameof(VideoModes)); }
+        }
+
+        private ObservableCollection<VideoMode> m_VideoModes;
+        [JsonIgnore]
+        public ObservableCollection<VideoMode> VideoModes
+        {
+            get
+            {
+                if (m_VideoModes != null)
+                    return m_VideoModes;
+
+                var modes = new VideoMode[_VideoModes.Length + 3];
+                _VideoModes.CopyTo(modes, 1);
+                modes[0] = m_VideoMode_Clip;
+                modes[modes.Length - 2] = m_VideoMode_Youtube_Clip;
+                modes[modes.Length - 1] = m_VideoMode_Youtube_Dance;
+
+                m_VideoModes = new ObservableCollection<VideoMode>(modes);
+                return m_VideoModes;
+            }
+        }
+
+        [JsonProperty("SelectedVideoMode")]
+        private string _SelectedVideoMode
+        {
+            get
+            {
+                return SelectedVideoMode.Text;
+            }
+            set
+            {
+                var mode = default(VideoMode);
+                switch (value)
+                {
+                    case "VideoDir1":
+                        mode = VideoModes.FirstOrDefault(x=> x.Text == "Video lib 1");
+                        break;
+                    case "VideoDir2":
+                        mode = VideoModes.FirstOrDefault(x=> x.Text == "Video lib 2");
+                        break;
+                    case "Youtube":
+                        mode = m_VideoMode_Youtube_Clip;
+                        break;
+                    default:
+                        mode = VideoModes.FirstOrDefault(x=> x.Text == value);
+                        break;
+                }
+
+                SelectedVideoMode = mode;
+            }
+        }
+
+        private VideoMode m_SelectedVideoMode;
+        [JsonIgnore]
+        public VideoMode SelectedVideoMode
+        {
+            get { return m_SelectedVideoMode; }
+            set
+            {
+                m_SelectedVideoMode = value;
+                OnPropertyChanged(nameof(SelectedVideoMode));
+            }
+        }
+
+        public bool IsStaticVideoMode(VideoMode mode) => IsVideoModeClip(mode) || IsVideoModeYoutubeClip(mode) || IsVideoModeYoutubeDance(mode);
+        public bool IsVideoModeClip(VideoMode mode = null)
+        {
+            if (mode == null)
+                mode = SelectedVideoMode;
+
+            return mode == m_VideoMode_Clip;
+        }
+        public bool IsVideoModeYoutubeDance(VideoMode mode = null)
+        {
+            if (mode == null)
+                mode = SelectedVideoMode;
+
+            return mode == m_VideoMode_Youtube_Dance;
+        }
+        public bool IsVideoModeYoutubeClip(VideoMode mode = null)
+        {
+            if (mode == null)
+                mode = SelectedVideoMode;
+
+            return mode == m_VideoMode_Youtube_Clip;
+        }
     }
 
     public class PresentationModeViewModel : ViewModelBase
@@ -1081,12 +1155,72 @@ namespace BitnuaVideoPlayer.ViewModels
         Flyer
     }
 
-    public enum eVideoMode
+
+
+    public class VideoMode: ViewModelBase
     {
-        Clip,
-        VideoDir1,
-        VideoDir2,
-        Youtube
+        private static int c_id = 0;
+
+        [JsonIgnore]
+        public readonly int Id;
+
+        [JsonIgnore]
+        public readonly bool m_IsEditable;
+
+        [JsonIgnore]
+        public bool IsEditable => m_IsEditable;
+
+        private string m_Text;
+        public string Text
+        {
+            get { return m_Text; }
+            set { m_Text = value; OnPropertyChanged(nameof(Text)); }
+        }
+
+        private string m_Source;
+        public string Source
+        {
+            get { return m_Source; }
+            set { m_Source = value; OnPropertyChanged(nameof(Source)); }
+        }
+
+
+        public VideoMode()
+        {
+            this.Id = ++VideoMode.c_id;
+            this.m_IsEditable = true;
+        }
+        public VideoMode(string text, string source = null, bool readOnly = false)
+        {
+            this.Text = text;
+            this.Source = source;
+            this.Id = ++VideoMode.c_id;
+            this.m_IsEditable = !readOnly;
+    }
+
+        public static bool operator ==(VideoMode lhs, VideoMode rhs)
+        {
+            if (lhs is null)
+            {
+                return rhs is null;
+            }
+            else
+            {
+                if (rhs is null)
+                    return false;
+                else
+                    return lhs.GetHashCode() == rhs.GetHashCode();
+            }
+        }
+
+        public static bool operator !=(VideoMode lhs, VideoMode rhs) => !(lhs == rhs);
+
+        public override int GetHashCode()
+        {
+            return Id;
+        }
+
+
     }
 
     public enum eLayoutModes

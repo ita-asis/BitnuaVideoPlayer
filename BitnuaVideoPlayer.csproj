@@ -70,8 +70,7 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>BitnuaVideoPlayer.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
@@ -244,6 +243,7 @@
     <Compile Include="PresentaionWindow.xaml.cs">
       <DependentUpon>PresentaionWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="program.cs" />
     <Compile Include="SettingBindingExtension.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\AttachedProps\DelayExecuter.cs" />
@@ -418,6 +418,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\sound-on.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\settings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\pen.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

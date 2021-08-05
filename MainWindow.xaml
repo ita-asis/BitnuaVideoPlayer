@@ -15,8 +15,8 @@
         Left="{my:SettingBinding    rmtCtrl.Left}"
         Top="{my:SettingBinding     rmtCtrl.Top}" 
         Height="{my:SettingBinding   rmtCtrl.Height}"
-        SizeToContent="WidthAndHeight">
-    
+        Width="{my:SettingBinding   rmtCtrl.Width}"
+        SizeToContent="WidthAndHeight" ResizeMode="CanMinimize">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -43,17 +43,17 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <Viewbox StretchDirection="DownOnly" Stretch="Uniform"
-             HorizontalAlignment="Left"
-             VerticalAlignment="Top">
-    <!--<Grid d:DataContext="{StaticResource designVM}">
+    <Grid VerticalAlignment="Top" HorizontalAlignment="Left">
+        <!--StretchDirection="Both" Stretch="Uniform"
+             VerticalAlignment="Top" HorizontalAlignment="Left"-->
+        <!--<Grid d:DataContext="{StaticResource designVM}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>-->
-    <StackPanel d:DataContext="{StaticResource designVM}" Width="330">
+        <StackPanel d:DataContext="{StaticResource designVM}" Width="330">
             <DockPanel VerticalAlignment="Top">
                 <StackPanel Orientation="Horizontal">
                     <RadioButton GroupName="layoutGrp" Margin="4" Content="Default" IsChecked="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"/>
@@ -78,18 +78,18 @@
                 </StackPanel>
             </DockPanel>
             <!--Default Layout-->
-        <Grid Grid.Row="1"
+            <Grid Grid.Row="1"
               Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"
               Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <DockPanel Margin="4,0">
+                <DockPanel Margin="4,0">
                     <StackPanel Orientation="Vertical" Visibility="{Binding OnlineMode, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="Client" Padding="2" Margin="2"
                                HorizontalAlignment="Left"/>
@@ -100,8 +100,8 @@
                     <TextBlock Visibility="{Binding OfflineMode, Converter={StaticResource BoolToVis}}"
                             Text="Offline mode" Padding="2" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" DockPanel.Dock="Right"  
-                                Orientation="Horizontal" Margin="0,4">
+                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" DockPanel.Dock="Right"  
+                                Orientation="Horizontal" Margin="0,4,0,0">
                         <ListBox SelectionMode="Multiple" >
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -146,17 +146,17 @@
                             <xctk:IntegerUpDown Value="{Binding LangTicks}" Margin="0,4" Minimum="1" ClipValueToMinMax="True"/>
                         </StackPanel>
                     </StackPanel>
-             </DockPanel>
+                </DockPanel>
                 <DockPanel  Grid.Row="1" Margin="6,0">
-			    <CheckBox IsChecked="{Binding Clock.IsShow}" 
+                    <CheckBox IsChecked="{Binding Clock.IsShow}" 
                       Content="Show Clock ?" 
                       DockPanel.Dock="Left"
                       VerticalAlignment="Center"
                       Margin="6,0"/>
                     <ToggleButton IsChecked="{Binding MuteSound, Mode=TwoWay}" 
-                                  HorizontalAlignment="Right"
-                                  DockPanel.Dock="Right">
-                        <Image Width="34" Height="34">
+                                  HorizontalAlignment="Right" ToolTip="Sound On/Off"
+                                  DockPanel.Dock="Right" Width="34" Height="34">
+                        <Image Margin="2">
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
                                     <Style.Triggers>
@@ -172,251 +172,290 @@
                         </Image>
                     </ToggleButton>
                 </DockPanel>
-            <GroupBox Header="Main video" 
-                      Grid.Row="2"
-                      Margin="4,0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <WrapPanel >
-                        <RadioButton x:Name="rb_clip" GroupName="rightVideoRbs" Margin="4" Content="Song's Clips"  IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=Clip}"/>
-                        <RadioButton x:Name="rb_youTubeclip" GroupName="rightVideoRbs" Margin="4" Content="Song's Youtube"  IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=Youtube}"/>
-                        <RadioButton GroupName="rightVideoRbs" Margin="4" Content="Video Lib 1" IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=VideoDir1}"/>
-                        <RadioButton GroupName="rightVideoRbs" Margin="4" Content="Video Lib 2" IsChecked="{Binding Path=SelectedVideoMode, Converter={StaticResource enumToBool}, ConverterParameter=VideoDir2}"/>
-                    </WrapPanel>
-                    <WrapPanel Grid.Row="1" Visibility="{Binding ElementName=rb_clip, Path=IsChecked, Converter={StaticResource BoolToVis}}">
-                        <ItemsControl ItemsSource="{Binding ClipTypes}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <CheckBox Margin="4" Content="{Binding Text}" IsChecked="{Binding IsChecked}" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </WrapPanel>
 
-                    <GroupBox Header="Song's Youtube Videos"  Grid.Row="1" Visibility="{Binding ElementName=rb_youTubeclip, Path=IsChecked, Converter={StaticResource BoolToVis}}">
-                        <WrapPanel>
-                            <ItemsControl ItemsSource="{Binding SongYoutubeVideos}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <RadioButton GroupName="songYoutube" Margin="4" Content="{Binding Text}" IsChecked="{Binding IsChecked}"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </WrapPanel>
-                    </GroupBox>
-                </Grid>
-            </GroupBox>
-            <GroupBox Header="Left Side" 
-                      Grid.Row="3" 
-                      Margin="4,0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                <TabControl Grid.Row="2" Margin="10" BorderBrush="Gainsboro">
+                    <TabControl.Resources>
+                        <Style TargetType="TabItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TabItem">
+                                        <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Gainsboro" CornerRadius="4,4,0,0" Margin="2,0">
+                                            <ContentPresenter x:Name="ContentSite"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        Margin="10,2"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="Border" Property="Background" Value="LightSkyBlue" />
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="False">
+                                                <Setter TargetName="Border" Property="Background" Value="GhostWhite" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TabControl.Resources>
 
-                    <CheckBox Content="Show ?" IsChecked="{Binding ShowLeftPic}" Margin="4"/>
 
-                    <WrapPanel Grid.Row="1" >
-                        <RadioButton GroupName="leftPicRbs" x:Name="rb_lyrics"  Margin="4" Content="Lyrics"  IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Lyrics}"/>
-                        <RadioButton GroupName="leftPicRbs" x:Name="rb_flyer"   Margin="4" Content="Flyer"   IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Flyer}"/>
-                        <RadioButton GroupName="leftPicRbs" x:Name="rb_picture" Margin="4" Content="Picture" IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Pics}"/>
-                    </WrapPanel>
+                    <TabItem Header="Main video">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <ComboBox x:Name="cbVids"
+                                  ItemsSource="{Binding VideoModes}" 
+                                  DisplayMemberPath="Text"
+                                  SelectedItem="{Binding SelectedVideoMode, Mode=TwoWay}"
+                                   />
 
-                    <!--Lyics fonts-->
-                    <GroupBox Grid.Row="2" Header="Lyrics" Visibility="{Binding ElementName=rb_lyrics, Path=IsChecked, Converter={StaticResource BoolToVis}}">
+                            <Button x:Name="editVidsBtn" Grid.Column="1" Margin="4,0,0,0" Click="EditVidsBtn_Click" Width="20" Height="20">
+                                <Image Margin="2" Source="Resources/settings.png"/>
+                            </Button>
+
+
+                            <Grid x:Name="vidEditPopup" Grid.Row="1" MaxHeight="200"  Visibility="Visible" Grid.ColumnSpan="2"  Margin="0,4">
+                                <Button x:Name="addVidsBtn" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                    Margin="0,3,2,0" Click="AddVidsBtn_Click" Width="20" Height="20" Panel.ZIndex="1">
+                                    <Image Margin="2" Source="Resources/pen.png"/>
+                                </Button>
+                                <DataGrid ItemsSource="{Binding VideoModes}"
+                                          x:Name="vidsGrid"
+                                          AlternatingRowBackground="#f0f0f0" 
+                                          AutoGenerateColumns="False"
+                                          CanUserSortColumns="False"
+                                          RowHeaderWidth="14"
+                                          CanUserAddRows="False"
+                                          CanUserDeleteRows="True"
+                                          CanUserReorderColumns="False"
+                                          PreviewKeyDown="VidsGrid_PreviewKeyDown">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Text" Binding="{Binding Text}" Width="1*" >
+                                            <DataGridTextColumn.CellStyle>
+                                                <Style>
+                                                    <Setter Property="UIElement.IsEnabled" Value="{Binding IsEditable}" />
+                                                </Style>
+                                            </DataGridTextColumn.CellStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTemplateColumn Header="Source" Width="2.5*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock x:Name="brsVidDir" Tag="{Binding}" PreviewMouseLeftButtonUp="BrsVidDir_PreviewMouseLeftButtonUp">
+                                                        <TextBlock.Text>
+                                                            <Binding Mode="TwoWay"  Path="Source"></Binding>
+                                                        </TextBlock.Text>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Left Side">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <Button Click="btnLyricsFontPicker" 
+
+                            <CheckBox Content="Show ?" IsChecked="{Binding ShowLeftPic}" Margin="4"/>
+
+                            <WrapPanel Grid.Row="1" >
+                                <RadioButton GroupName="leftPicRbs" x:Name="rb_lyrics"  Margin="4" Content="Lyrics"  IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Lyrics}"/>
+                                <RadioButton GroupName="leftPicRbs" x:Name="rb_flyer"   Margin="4" Content="Flyer"   IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Flyer}"/>
+                                <RadioButton GroupName="leftPicRbs" x:Name="rb_picture" Margin="4" Content="Picture" IsChecked="{Binding Path=SelectedPicMode, Converter={StaticResource enumToBool}, ConverterParameter=Pics}"/>
+                            </WrapPanel>
+
+                            <!--Lyics fonts-->
+                            <GroupBox Grid.Row="2" Header="Lyrics" Visibility="{Binding ElementName=rb_lyrics, Path=IsChecked, Converter={StaticResource BoolToVis}}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Click="btnLyricsFontPicker" 
                         Content="Font"
                         Margin="4,0,4,1"
                         Height="25"
                         Padding="4,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Bottom"/>
-                                <Button Click="btnLyricsForeColorPicker" 
+                                        <Button Click="btnLyricsForeColorPicker" 
                         Style="{StaticResource colorBtn}"
                         DataContext="{Binding Lyrics.ForeColor}"
                         Margin="4,0"
                         BorderThickness="2"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"/>
-                                <Button Click="btnLyricsBackColorPicker" 
+                                        <Button Click="btnLyricsBackColorPicker" 
                         Style="{StaticResource colorBtn}"
                         DataContext="{Binding Lyrics.BackColor}"
                         Margin="4,0"
                         BorderThickness="2"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"/>
-                            </StackPanel>
+                                    </StackPanel>
 
-                        </Grid>
-                    </GroupBox>
-                    <!--Pic Header fonts-->
-                    <GroupBox 
+                                </Grid>
+                            </GroupBox>
+                            <!--Pic Header fonts-->
+                            <GroupBox 
                         Grid.Row="2" 
                         
                         Header="Pic Header" 
                         Visibility="{Binding ElementName=rb_picture, Path=IsChecked, Converter={StaticResource BoolToVis}}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <UniformGrid 
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <UniformGrid 
                                 Visibility="{Binding ElementName=rb_picture, Path=IsChecked, Converter={StaticResource BoolToVis}}">
-                                <CheckBox Content="Creator"   IsChecked="{Binding Pic_ShowCreator}" />
-                                <CheckBox Content="Performer" IsChecked="{Binding Pic_ShowPerformer}" />
-                                <CheckBox Content="Composer"  IsChecked="{Binding Pic_ShowComposer}" />
-                                <CheckBox Content="Writer"    IsChecked="{Binding Pic_ShowWriter}" />
-                                <CheckBox Content="Name"      IsChecked="{Binding Pic_ShowSongName}" />
-                                <CheckBox Content="Event"     IsChecked="{Binding Pic_ShowEvent}" />
-                                <CheckBox Content="Default"   IsChecked="{Binding Pic_ShowDefault}" />
-                            </UniformGrid>
-                            <StackPanel Orientation="Horizontal" Grid.Row="1">
-                                <Button Click="btnLeftPicHeaderFontPicker" 
+                                        <CheckBox Content="Creator"   IsChecked="{Binding Pic_ShowCreator}" />
+                                        <CheckBox Content="Performer" IsChecked="{Binding Pic_ShowPerformer}" />
+                                        <CheckBox Content="Composer"  IsChecked="{Binding Pic_ShowComposer}" />
+                                        <CheckBox Content="Writer"    IsChecked="{Binding Pic_ShowWriter}" />
+                                        <CheckBox Content="Name"      IsChecked="{Binding Pic_ShowSongName}" />
+                                        <CheckBox Content="Event"     IsChecked="{Binding Pic_ShowEvent}" />
+                                        <CheckBox Content="Default"   IsChecked="{Binding Pic_ShowDefault}" />
+                                    </UniformGrid>
+                                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                        <Button Click="btnLeftPicHeaderFontPicker" 
                                     Content="Font"
                                     Margin="4,0,4,1"
                                     Height="25"
                                     Padding="4,0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Bottom"/>
-                                <Button Click="btnLeftPicHeaderForeColorPicker" 
+                                        <Button Click="btnLeftPicHeaderForeColorPicker" 
                                     Style="{StaticResource colorBtn}"
                                     DataContext="{Binding LeftPicTitle.ForeColor}"
                                     Margin="4,0"
                                     BorderThickness="2"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top"/>
-                                <Button Click="btnLeftPicHeaderBackColorPicker" 
+                                        <Button Click="btnLeftPicHeaderBackColorPicker" 
                                     Style="{StaticResource colorBtn}"
                                     DataContext="{Binding LeftPicTitle.BackColor}"
                                     Margin="4,0"
                                     BorderThickness="2"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top"/>
-                                <ComboBox Text="{Binding PicStretch}">
-                                    <ComboBoxItem>None</ComboBoxItem>
-                                    <ComboBoxItem>Fill</ComboBoxItem>
-                                    <ComboBoxItem>Uniform</ComboBoxItem>
-                                    <ComboBoxItem>UniformToFill</ComboBoxItem>
-                                </ComboBox>
-                            </StackPanel>
+                                        <ComboBox Text="{Binding PicStretch}">
+                                            <ComboBoxItem>None</ComboBoxItem>
+                                            <ComboBoxItem>Fill</ComboBoxItem>
+                                            <ComboBoxItem>Uniform</ComboBoxItem>
+                                            <ComboBoxItem>UniformToFill</ComboBoxItem>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Grid>
+                            </GroupBox>
                         </Grid>
-                    </GroupBox>
-                </Grid>
-            </GroupBox>
-            <GroupBox Header="Song info" 
-                      Grid.Row="4" 
-                      Margin="4,0">
-                <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Top" 
-                                HorizontalAlignment="Right" 
-                                Grid.Column="1" 
-                                Orientation="Horizontal">
-                        <Button Padding="3" Margin="4,0"
-                                Click="btnRestoreSongInfoPopup" Width="25">
-                            <Image Source="Resources\restore.png" Stretch="Uniform"/>
-                        </Button>
-                        <Button Padding="3" Margin="4,0"
-                                Click="btnShowSongInfoPopup" Width="25">
-                            <Image Source="Resources\export-arrow.png" Stretch="Uniform"/>
-                        </Button>
-                        <Button Padding="3" Margin="4,0"
-                                Click="btnHideSongInfoPopup" Width="25" >
-                            <Image Source="Resources\close-button.png" Stretch="Uniform"/>
-                        </Button>
-                    </StackPanel>
-                    <WrapPanel Orientation="Horizontal">
-                        <CheckBox Content="Show ?" IsChecked="{Binding ShowSongInfo}" Margin="8,4"/>
-                        <CheckBox Content="Show pic ?" IsChecked="{Binding ShowSongInfoPic}" Margin="8,4"/>
-                        <CheckBox Content="Show type ?" IsChecked="{Binding ShowType}" Margin="8,4"/>
-                    </WrapPanel>
-                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="Position"/>
-                            <RadioButton x:Name="rb_SongInfoPosButtom" Content="Buttom"  Margin="4,0,4,0" IsChecked="True" VerticalAlignment="Center" />
-                            <RadioButton x:Name="rb_SongInfoPosTop" Content="Top" Margin="4,0,10,0" IsChecked="{Binding DefaultLayout_SongInfoShowOnTop}" VerticalAlignment="Center" />
-                        </StackPanel>
-
+                    </TabItem>
+                    <TabItem Header="Song info">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Top" 
+                                HorizontalAlignment="Right" 
+                                Grid.Column="1" 
+                                Orientation="Horizontal">
+                                <Button Padding="3" Margin="4,0"
+                                Click="btnRestoreSongInfoPopup" Width="25">
+                                    <Image Source="Resources\restore.png" Stretch="Uniform"/>
+                                </Button>
+                                <Button Padding="3" Margin="4,0"
+                                Click="btnShowSongInfoPopup" Width="25">
+                                    <Image Source="Resources\export-arrow.png" Stretch="Uniform"/>
+                                </Button>
+                                <Button Padding="3" Margin="4,0"
+                                Click="btnHideSongInfoPopup" Width="25" >
+                                    <Image Source="Resources\close-button.png" Stretch="Uniform"/>
+                                </Button>
+                            </StackPanel>
+                            <WrapPanel Orientation="Horizontal">
+                                <CheckBox Content="Show ?" IsChecked="{Binding ShowSongInfo}" Margin="8,4"/>
+                                <CheckBox Content="Show pic ?" IsChecked="{Binding ShowSongInfoPic}" Margin="8,4"/>
+                                <CheckBox Content="Show type ?" IsChecked="{Binding ShowType}" Margin="8,4"/>
+                            </WrapPanel>
+                            <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Position"/>
+                                    <RadioButton x:Name="rb_SongInfoPosButtom" Content="Buttom"  Margin="4,0,4,0" IsChecked="True" VerticalAlignment="Center" />
+                                    <RadioButton x:Name="rb_SongInfoPosTop" Content="Top" Margin="4,0,10,0" IsChecked="{Binding DefaultLayout_SongInfoShowOnTop}" VerticalAlignment="Center" />
+                                </StackPanel>
 
-                            
-                            <Label Content="Song Title" Grid.Row="1" Grid.Column="0" />
-                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
-                                <Button Click="btnSongInfoFontPicker" 
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+
+                                    <Label Content="Song Title" Grid.Row="1" Grid.Column="0" />
+                                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
+                                        <Button Click="btnSongInfoFontPicker" 
                                     Content="Font"
                                     Margin="4,0,4,1"
                                     Height="25"
                                     Padding="4,0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Bottom"/>
-                                <Button Click="btnSongInfoForeColorPicker" 
+                                        <Button Click="btnSongInfoForeColorPicker" 
                                     Style="{StaticResource colorBtn}"
                                     DataContext="{Binding SongInfo01.ForeColor}"
                                     Margin="4,0"
                                     BorderThickness="2"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top"/>
-                            </StackPanel>
-                        
-                            <Label Content="Song Type" Grid.Row="3" Grid.Column="0"/>
-                            <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1">
-                                <ComboBox Margin="4,0,4,1"
+                                    </StackPanel>
+
+                                    <Label Content="Song Type" Grid.Row="3" Grid.Column="0"/>
+                                    <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1">
+                                        <ComboBox Margin="4,0,4,1"
                                           ItemsSource="{Binding TypesFormats}" 
                                           DisplayMemberPath="Type"
                                           SelectedItem="{Binding SelectedTypeFormat}"/>
-                                
-                                <Button Click="btnSongInfoTypeFontPicker" 
+
+                                        <Button Click="btnSongInfoTypeFontPicker" 
                                         Content="Font"
                                         Margin="4,0,4,1"
                                         Height="25"
                                         Padding="4,0"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"/>
-                                <Button Click="btnSongInfoTypeForeColorPicker" 
+                                        <Button Click="btnSongInfoTypeForeColorPicker" 
                                         Style="{StaticResource colorBtn}"
                                         DataContext="{Binding SelectedTypeFormat.Format.ForeColor}"
                                         Margin="4,0"
                                         HorizontalAlignment="Left"
                                         BorderThickness="2"
                                         VerticalAlignment="Top" Width="23"/>
-                                <Button Click="btnSongInfoTypeBackColorPicker" 
+                                        <Button Click="btnSongInfoTypeBackColorPicker" 
                                         Style="{StaticResource colorBtn}"
                                         DataContext="{Binding SelectedTypeFormat.Format.BackColor}"
                                         Margin="4,0"
@@ -424,18 +463,18 @@
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Top" Width="23"/>
 
-                            </StackPanel>
+                                    </StackPanel>
 
-                                <Label Content="Song Details" Grid.Row="2" Grid.Column="0"/>
-                                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
-                                    <Button Click="btnSongInfo2FontPicker" 
+                                    <Label Content="Song Details" Grid.Row="2" Grid.Column="0"/>
+                                    <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
+                                        <Button Click="btnSongInfo2FontPicker" 
                                         Content="Font"
                                         Margin="4,0,4,1"
                                         Height="25"
                                         Padding="4,0"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"/>
-                                    <Button Click="btnSongInfo2ForeColorPicker" 
+                                        <Button Click="btnSongInfo2ForeColorPicker" 
                                         Style="{StaticResource colorBtn}"
                                         DataContext="{Binding SongInfo02.ForeColor}"
                                         Margin="4,0"
@@ -443,11 +482,11 @@
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Top" Width="23"/>
 
-                            </StackPanel>
+                                    </StackPanel>
 
 
-                            <Label Content="Background" Grid.Row="0" Grid.Column="0"/>
-                            <Button Click="btnSongInfoBackColorPicker" 
+                                    <Label Content="Background" Grid.Row="0" Grid.Column="0"/>
+                                    <Button Click="btnSongInfoBackColorPicker" 
                                 Grid.Row="0" Grid.Column="1"
                                 Style="{StaticResource colorBtn}"
                                 DataContext="{Binding SongInfo01.BackColor}"
@@ -457,151 +496,152 @@
                                 VerticalAlignment="Top"/>
 
 
+                                </Grid>
+
+                            </StackPanel>
                         </Grid>
+                    </TabItem>
+                </TabControl>
 
-                    </StackPanel>
-                </Grid>
 
+            </Grid>
 
-            </GroupBox>
-        </Grid>
-
-        <!--Presentation Layout-->
-        <Grid Grid.Row="1"
+            <!--Presentation Layout-->
+            <Grid Grid.Row="1"
               Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Presentation}"
               Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-            <GroupBox Header="New item">
+                <GroupBox Header="New item">
 
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.Resources>
-                        <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
-                            <ObjectDataProvider.MethodParameters>
-                                <x:Type TypeName="my:ePresentationKinds"/>
-                            </ObjectDataProvider.MethodParameters>
-                        </ObjectDataProvider>
-                    </Grid.Resources>
-                    <Label Grid.Row="0" Grid.Column="0" Content="Type" />
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.Resources>
+                            <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+                                <ObjectDataProvider.MethodParameters>
+                                    <x:Type TypeName="my:ePresentationKinds"/>
+                                </ObjectDataProvider.MethodParameters>
+                            </ObjectDataProvider>
+                        </Grid.Resources>
+                        <Label Grid.Row="0" Grid.Column="0" Content="Type" />
 
-                    <ComboBox Grid.Column="1" x:Name="presentaionItemCB" ItemsSource="{Binding Source={StaticResource dataFromEnum}}" 
+                        <ComboBox Grid.Column="1" x:Name="presentaionItemCB" ItemsSource="{Binding Source={StaticResource dataFromEnum}}" 
                               SelectedIndex="0"
                               HorizontalAlignment="Left"
                               Margin="4,0"/>
 
-                    <Label Grid.Row="1" Grid.Column="0" Content="Path" />
-                    <CheckBox Visibility="Collapsed" 
+                        <Label Grid.Row="1" Grid.Column="0" Content="Path" />
+                        <CheckBox Visibility="Collapsed" 
                               IsChecked="{Binding Path=SelectedValue, ElementName=presentaionItemCB, Converter={StaticResource enumToBool}, ConverterParameter=AmpsLive}" 
                               Checked  ="presentaionItemCBChecked"
                               Unchecked="presentaionItemCBChecked"
                               DataContextChanged="presentaionItemCBContextChanged"/>
 
-                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="persentaionItemPath" Margin="4,0"/>
-                    <Button Grid.Row="1" Grid.Column="2" x:Name="btnPresentationPath"
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="persentaionItemPath" Margin="4,0"/>
+                        <Button Grid.Row="1" Grid.Column="2" x:Name="btnPresentationPath"
                             Content="..."
                             Padding="4,0"
                             Margin="0,0,4,0"
                             Click="btnPresentationPathBrowse"/>
-                    <Button Grid.Row="0" Grid.Column="3"
+                        <Button Grid.Row="0" Grid.Column="3"
                             Grid.RowSpan="2"
                             Content="Add"
                             Padding="8,0"
                             Margin="0,0,4,0"
                             Click="addPresentationItemClick"/>
-                </Grid>
+                    </Grid>
 
-            </GroupBox>
+                </GroupBox>
 
 
-            <Viewbox Stretch="Uniform" Grid.Row="1" Margin="4,0">
-                <ListView ItemsSource="{Binding PresentationVM.PresentationItems}" x:Name="DesignerCanvas"
+                <Viewbox Stretch="Uniform" Grid.Row="1" Margin="4,0">
+                    <ListView ItemsSource="{Binding PresentationVM.PresentationItems}" x:Name="DesignerCanvas"
                           SelectedItem="{Binding PVM.SelectedPresentationItem, ElementName=mainWindow, Mode=TwoWay}"
                           Background="#303030"
                           Padding="4">
-                    <ItemsControl.Resources>
+                        <ItemsControl.Resources>
 
-                        <!--videoItem-->
-                        <DataTemplate DataType="{x:Type my:VideoItem}">
-                            <UI:CanvasItem>
-                                <Image Source="Resources/videoItem.png"/>
-                            </UI:CanvasItem>
-                        </DataTemplate>
+                            <!--videoItem-->
+                            <DataTemplate DataType="{x:Type my:VideoItem}">
+                                <UI:CanvasItem>
+                                    <Image Source="Resources/videoItem.png"/>
+                                </UI:CanvasItem>
+                            </DataTemplate>
 
-                        <!--VideoListItem-->
-                        <DataTemplate DataType="{x:Type my:VideoListItem}">
-                            <UI:CanvasItem>
-                                <Image Source="Resources/videosItem.png"/>
-                            </UI:CanvasItem>
-                        </DataTemplate>
+                            <!--VideoListItem-->
+                            <DataTemplate DataType="{x:Type my:VideoListItem}">
+                                <UI:CanvasItem>
+                                    <Image Source="Resources/videosItem.png"/>
+                                </UI:CanvasItem>
+                            </DataTemplate>
 
-                        <!--imageItem-->
-                        <DataTemplate DataType="{x:Type my:PictureItem}">
-                            <UI:CanvasItem>
-                                <Image Source="Resources/imageItem.jpg"/>
-                            </UI:CanvasItem>
-                        </DataTemplate>
+                            <!--imageItem-->
+                            <DataTemplate DataType="{x:Type my:PictureItem}">
+                                <UI:CanvasItem>
+                                    <Image Source="Resources/imageItem.jpg"/>
+                                </UI:CanvasItem>
+                            </DataTemplate>
 
-                        <!--imageItem-->
-                        <DataTemplate DataType="{x:Type my:PictureListItem}">
-                            <UI:CanvasItem>
-                                <Image Source="Resources/imagesItem.png"/>
-                            </UI:CanvasItem>
-                        </DataTemplate>
+                            <!--imageItem-->
+                            <DataTemplate DataType="{x:Type my:PictureListItem}">
+                                <UI:CanvasItem>
+                                    <Image Source="Resources/imagesItem.png"/>
+                                </UI:CanvasItem>
+                            </DataTemplate>
 
-                        <!--youtubeItem-->
-                        <DataTemplate DataType="{x:Type my:YoutubeVideoItem}">
-                            <UI:CanvasItem>
-                                <Grid Background="White" Margin="10">
-                                    <Image Source="Resources/youtubeItem.png" Margin="-10"/>
-                                </Grid>
-                            </UI:CanvasItem>
-                        </DataTemplate>
+                            <!--youtubeItem-->
+                            <DataTemplate DataType="{x:Type my:YoutubeVideoItem}">
+                                <UI:CanvasItem>
+                                    <Grid Background="White" Margin="10">
+                                        <Image Source="Resources/youtubeItem.png" Margin="-10"/>
+                                    </Grid>
+                                </UI:CanvasItem>
+                            </DataTemplate>
 
-                    </ItemsControl.Resources>
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas  IsItemsHost="True"
+                        </ItemsControl.Resources>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas  IsItemsHost="True"
                                      ClipToBounds="True"
                                      Width="640"
                                      Height="360"
                                      SnapsToDevicePixels="True"
                                      Loaded="designerCanvasLoaded"
                                      />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemContainerStyle>
-                        <Style TargetType="{x:Type ListViewItem}">
-                            <Setter Property="Canvas.Left" Value="{Binding X, Mode=TwoWay}" />
-                            <Setter Property="Canvas.Top" Value="{Binding Y, Mode=TwoWay}" />
-                            <!--<Setter Property="RotateTransform.Angle" Value="{Binding Angle, Mode=TwoWay }"/>-->
-                            <Setter Property="RenderTransform" >
-                                <Setter.Value>
-                                    <RotateTransform Angle="{Binding Angle, Mode=TwoWay}"/>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-                            <EventSetter Event="PreviewMouseDown" Handler="pItemPreviewMouseDown"/>
-                            <EventSetter Event="KeyDown" Handler="pItemKeyDown"/>
-                        </Style>
-                    </ItemsControl.ItemContainerStyle>
-                </ListView>
-            </Viewbox>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListViewItem}">
+                                <Setter Property="Canvas.Left" Value="{Binding X, Mode=TwoWay}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Y, Mode=TwoWay}" />
+                                <!--<Setter Property="RotateTransform.Angle" Value="{Binding Angle, Mode=TwoWay }"/>-->
+                                <Setter Property="RenderTransform" >
+                                    <Setter.Value>
+                                        <RotateTransform Angle="{Binding Angle, Mode=TwoWay}"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                                <EventSetter Event="PreviewMouseDown" Handler="pItemPreviewMouseDown"/>
+                                <EventSetter Event="KeyDown" Handler="pItemKeyDown"/>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                    </ListView>
+                </Viewbox>
 
-            <!--<Viewbox Stretch="Fill">
+                <!--<Viewbox Stretch="Fill">
 
                 <Canvas 
                          ClipToBounds="True"
@@ -626,14 +666,14 @@
 
                 </Canvas>
             </Viewbox>-->
-            <!--<Canvas  x:Name="DesignerCanvas"
+                <!--<Canvas  x:Name="DesignerCanvas"
                          ClipToBounds="True"
                          Width="600" Height="600"
                          SnapsToDevicePixels="True">
 
                 -->
-            <!--Ellipse-->
-            <!--
+                <!--Ellipse-->
+                <!--
                 <ContentControl Width="100"
                       Height="100"
                       Padding="1"
@@ -651,8 +691,8 @@
                 </ContentControl>
 
                 -->
-            <!--Ellipse-->
-            <!--
+                <!--Ellipse-->
+                <!--
                 <ContentControl Width="100"
                       Height="100"
                       Padding="1"
@@ -670,8 +710,8 @@
                 </ContentControl>
 
                 -->
-            <!--Ellipse-->
-            <!--
+                <!--Ellipse-->
+                <!--
                 <ContentControl Width="100"
                       Height="100"
                       Padding="1"
@@ -689,8 +729,8 @@
                 </ContentControl>
 
                 -->
-            <!--Image-->
-            <!--
+                <!--Image-->
+                <!--
                 <ContentControl Width="100"
                       Height="100"
                       Canvas.Left="210"
@@ -700,8 +740,8 @@
                 </ContentControl>
 
                 -->
-            <!--Image-->
-            <!--
+                <!--Image-->
+                <!--
                 <ContentControl Width="100"
                       Height="100"
                       Canvas.Left="75"
@@ -711,8 +751,8 @@
                 </ContentControl>
 
                 -->
-            <!--Satelite-->
-            <!--
+                <!--Satelite-->
+                <!--
 
                 <ContentControl Width="130"
                       Height="130"
@@ -752,8 +792,8 @@
                 </ContentControl>
 
                 -->
-            <!--Media-->
-            <!--
+                <!--Media-->
+                <!--
 
                 <ContentControl Width="130"
                       Height="130"
@@ -796,8 +836,8 @@
                 </ContentControl>
 
                 -->
-            <!--TextBox-->
-            <!--
+                <!--TextBox-->
+                <!--
                 <ContentControl Width="130"
                       Height="130"
                       Padding="2"
@@ -829,8 +869,8 @@
                 </ContentControl>
 
                 -->
-            <!--ECG-->
-            <!--
+                <!--ECG-->
+                <!--
                 <ContentControl Width="130"
                       Height="130"
                       Padding="2"
@@ -903,14 +943,14 @@
                         </Border>
                     </Grid>
                 </ContentControl>-->
-            <!--
+                <!--
 
             </Canvas>-->
-        </Grid>
+            </Grid>
 
 
-        <!--ThreePics Layout-->
-        <!--<Grid Grid.Row="1"
+            <!--ThreePics Layout-->
+            <!--<Grid Grid.Row="1"
               Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=ThreePics}"
               Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
             <Grid.RowDefinitions>
@@ -920,68 +960,68 @@
            
         </Grid>-->
 
-        <!--Banner-->
-        <GroupBox Header="Banner" Grid.Row="2" Margin="4,0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+            <!--Banner-->
+            <GroupBox Header="Banner" Grid.Row="2" Margin="4,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
 
-                <StackPanel VerticalAlignment="Top" 
+                    <StackPanel VerticalAlignment="Top" 
                                 HorizontalAlignment="Right" 
                                 Grid.Column="1" 
                                 Orientation="Horizontal">
-                    <Button Padding="3" Margin="4,0"
+                        <Button Padding="3" Margin="4,0"
                                 Click="btnRestoreBannerPopup" Width="25">
-                        <Image Source="Resources\restore.png" Stretch="Uniform"/>
-                    </Button>
-                    <Button Padding="3" Margin="4,0"
+                            <Image Source="Resources\restore.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Padding="3" Margin="4,0"
                                 Click="btnShowBannerPopup" Width="25">
-                        <Image Source="Resources\export-arrow.png" Stretch="Uniform"/>
-                    </Button>
-                    <Button Padding="3" Margin="4,0"
+                            <Image Source="Resources\export-arrow.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Padding="3" Margin="4,0"
                                 Click="btnHideBannerPopup" Width="25" >
-                        <Image Source="Resources\close-button.png" Stretch="Uniform"/>
-                    </Button>
-                </StackPanel>
-                <StackPanel>
-                    <CheckBox Content="Show ?" IsChecked="{Binding Banner.IsVisible}" Margin="8,4" HorizontalAlignment="Left"/>
+                            <Image Source="Resources\close-button.png" Stretch="Uniform"/>
+                        </Button>
+                    </StackPanel>
+                    <StackPanel>
+                        <CheckBox Content="Show ?" IsChecked="{Binding Banner.IsVisible}" Margin="8,4" HorizontalAlignment="Left"/>
 
-                <DockPanel LastChildFill="True" Margin="4">
-                    <TextBlock DockPanel.Dock="Left" Text="Text" Padding="0,0,4,0"/>
-                    <TextBox Text="{Binding Banner.Text}" Margin="4,0" Width="Auto"/>
-                </DockPanel>
-                </StackPanel>
+                        <DockPanel LastChildFill="True" Margin="4">
+                            <TextBlock DockPanel.Dock="Left" Text="Text" Padding="0,0,4,0"/>
+                            <TextBox Text="{Binding Banner.Text}" Margin="4,0" Width="Auto"/>
+                        </DockPanel>
+                    </StackPanel>
 
-                <DockPanel LastChildFill="True" Margin="4"
+                    <DockPanel LastChildFill="True" Margin="4"
                            Grid.Row="1">
-                    <TextBlock DockPanel.Dock="Left" Text="Pics Dir" Padding="0,0,4,0"/>
-                    <TextBox Text="{Binding Banner.PicsPath}" Margin="4,0"/>
-                </DockPanel>
-                <StackPanel Grid.Row="2" Orientation="Horizontal">
-                    <Label Content="Position"/>
+                        <TextBlock DockPanel.Dock="Left" Text="Pics Dir" Padding="0,0,4,0"/>
+                        <TextBox Text="{Binding Banner.PicsPath}" Margin="4,0"/>
+                    </DockPanel>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                        <Label Content="Position"/>
 
-                    <RadioButton x:Name="rb_BannerPosButtom" Content="Buttom"  Margin="4,0,4,0" IsChecked="True"
+                        <RadioButton x:Name="rb_BannerPosButtom" Content="Buttom"  Margin="4,0,4,0" IsChecked="True"
                               VerticalAlignment="Center"
                                  />
-                    <RadioButton x:Name="rb_BannerPosTop" Content="Top" Margin="4,0,10,0" IsChecked="{Binding Banner.ShowOnTop}"
+                        <RadioButton x:Name="rb_BannerPosTop" Content="Top" Margin="4,0,10,0" IsChecked="{Binding Banner.ShowOnTop}"
                               VerticalAlignment="Center"
                                  />
 
-                    <Label Content="Height"/>
-                    <TextBox Text="{Binding Banner.Height, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Width="40"  HorizontalContentAlignment="Center"/>
+                        <Label Content="Height"/>
+                        <TextBox Text="{Binding Banner.Height, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Width="40"  HorizontalContentAlignment="Center"/>
 
-                </StackPanel>
-                <StackPanel Grid.Row="3" Orientation="Horizontal">
-                    <Label Content="Speed"/>
-                    <Slider Width="100"
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Orientation="Horizontal">
+                        <Label Content="Speed"/>
+                        <Slider Width="100"
                         Margin="4,0"
                         Minimum="2" 
                         Maximum="40" 
@@ -989,27 +1029,27 @@
                         VerticalAlignment="Center"
                         Value="{Binding Banner.Speed}" />
 
-                    <CheckBox Content="Left -> Right" 
+                        <CheckBox Content="Left -> Right" 
                               Margin="4,0,4,0"
                               VerticalAlignment="Center"
                               IsChecked="{Binding Banner.Direction, Converter={StaticResource flowDirection2Bool}}"/>
-                </StackPanel>
-                <StackPanel Grid.Row="4" Orientation="Horizontal">
-                    <Button Click="btnBannerFontPicker" 
+                    </StackPanel>
+                    <StackPanel Grid.Row="4" Orientation="Horizontal">
+                        <Button Click="btnBannerFontPicker" 
                         Content="Font"
                         Margin="4,0"
                         Height="25"
                         Padding="4,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"/>
-                    <Button Click="btnBannerForeColorPicker" 
+                        <Button Click="btnBannerForeColorPicker" 
                         Style="{StaticResource colorBtn}"
                         DataContext="{Binding Banner.ForeColor}"
                         Margin="4,0"
                         BorderThickness="2"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"/>
-                    <Button Click="btnBannerBackColorPicker" 
+                        <Button Click="btnBannerBackColorPicker" 
                         Style="{StaticResource colorBtn}"
                         DataContext="{Binding Banner.BackColor}"
                         Margin="4,0"
@@ -1018,12 +1058,12 @@
                         VerticalAlignment="Top"/>
 
 
-                </StackPanel>
+                    </StackPanel>
 
-            </Grid>
-        </GroupBox>
+                </Grid>
+            </GroupBox>
 
-        <Label x:Name="VersionLbl" Grid.Row="3"/>
-    </StackPanel>
-    </Viewbox>
+            <Label x:Name="VersionLbl" Grid.Row="3"/>
+        </StackPanel>
+    </Grid>
 </Window>

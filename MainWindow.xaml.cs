@@ -348,6 +348,52 @@ namespace BitnuaVideoPlayer
         }
 
         private void presentaionItemCBContextChanged(object sender, DependencyPropertyChangedEventArgs e) => presentaionItemCBChecked(null, null);
+
+        private void EditVidsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (vidEditPopup.Visibility == Visibility.Visible)
+                vidEditPopup.Visibility = Visibility.Collapsed;
+            else
+                vidEditPopup.Visibility = Visibility.Visible;
+
+        }
+
+        private void BrsVidDir_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            TextBlock tb = sender as TextBlock;
+            if (tb != null)
+            {
+                var mode = (VideoMode)tb.Tag;
+                if (!VM.IsStaticVideoMode(mode))
+                    using (var dialog = new CommonOpenFileDialog())
+                    {
+                        dialog.IsFolderPicker = true;
+                        CommonFileDialogResult result = dialog.ShowDialog();
+                        if (result == CommonFileDialogResult.Ok)
+                        {
+                            mode.Source = dialog.FileName;
+                        }
+                    }
+              
+            }
+        }
+
+        private void AddVidsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            VM.VideoModes.Add(new VideoMode());
+        }
+
+        private void VidsGrid_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            var grid = (System.Windows.Controls.DataGrid)sender;
+            if (Key.Delete == e.Key)
+            {
+                var mode = (VideoMode)grid.SelectedItem;
+                if (VM.IsStaticVideoMode(mode))
+                    e.Handled = true;
+
+            }
+        }
     }
 
     public class ColorToSolidColorBrushValueConverter : IValueConverter

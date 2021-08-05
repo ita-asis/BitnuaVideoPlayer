@@ -357,7 +357,6 @@ namespace BitnuaVideoPlayer
                      e.PropertyName == nameof(VM.Pic_ShowSongName) ||
                      e.PropertyName == nameof(VM.Pic_ShowEvent) ||
                      e.PropertyName == nameof(VM.ClipTypes) ||
-                     e.PropertyName == nameof(VM.SongYoutubeVideos) ||
                      e.PropertyName == nameof(VM.SelectedVideoMode) ||
                      e.PropertyName == nameof(VM.SelectedPicMode))
             {
@@ -747,7 +746,7 @@ namespace BitnuaVideoPlayer
 
             if (VM.Song != null)
             {
-                if (VM.SelectedVideoMode == eVideoMode.Clip)
+                if (VM.IsVideoModeClip())
                 {
                     if (!string.IsNullOrWhiteSpace(VM.VideoPathSinger) && !string.IsNullOrWhiteSpace(VM.Song.Heb_Performer) && isChecked(eSongClipTypes.SongClips))
                     {
@@ -776,26 +775,29 @@ namespace BitnuaVideoPlayer
                             videos.Add(new VideoSource(danceVideo));
                     }
                 }
-                else if (VM.SelectedVideoMode == eVideoMode.Youtube)
+                else if (VM.IsVideoModeYoutubeDance() && !string.IsNullOrEmpty(VM.Song.YouTubeDance))
+                    videos.Add(new YoutubeVideoSource(VM.Song.YouTubeDance));
+                else if (VM.IsVideoModeYoutubeClip() && !string.IsNullOrEmpty(VM.Song.YouTubeSong))
+                    videos.Add(new YoutubeVideoSource(VM.Song.YouTubeSong));
+                else
                 {
-                    if (!string.IsNullOrEmpty(VM.Song.YouTubeSong) && VM.SongYoutubeVideos.Single(c => c.Type == eSongClipTypes.YouTubeClip).IsChecked)
-                        videos.Add(new YoutubeVideoSource(VM.Song.YouTubeSong));
+                    var dirVideos = GetAllVideos((VM.SelectedVideoMode?.Source));
+                    if (dirVideos != null && dirVideos.Any())
+                        videos.AddRange(dirVideos);
+                }
 
-                    if (!string.IsNullOrEmpty(VM.Song.YouTubeDance) && VM.SongYoutubeVideos.Single(c => c.Type == eSongClipTypes.YouTubeDance).IsChecked)
-                        videos.Add(new YoutubeVideoSource(VM.Song.YouTubeDance));
-                }
-                else if (VM.SelectedVideoMode == eVideoMode.VideoDir1 && !string.IsNullOrEmpty(VM.VideoPath1))
-                {
-                    var dirVideos = GetAllVideos((VM.VideoPath1));
-                    if (dirVideos != null && dirVideos.Any())
-                        videos.AddRange(dirVideos);
-                }
-                else if (VM.SelectedVideoMode == eVideoMode.VideoDir2 && !string.IsNullOrEmpty(VM.VideoPath2))
-                {
-                    var dirVideos = GetAllVideos((VM.VideoPath2));
-                    if (dirVideos != null && dirVideos.Any())
-                        videos.AddRange(dirVideos);
-                }
+                //else if (VM.SelectedVideoMode == eVideoMode.VideoDir1 && !string.IsNullOrEmpty(VM.VideoPath1))
+                //{
+                //    var dirVideos = GetAllVideos((VM.VideoPath1));
+                //    if (dirVideos != null && dirVideos.Any())
+                //        videos.AddRange(dirVideos);
+                //}
+                //else if (VM.SelectedVideoMode == eVideoMode.VideoDir2 && !string.IsNullOrEmpty(VM.VideoPath2))
+                //{
+                //    var dirVideos = GetAllVideos((VM.VideoPath2));
+                //    if (dirVideos != null && dirVideos.Any())
+                //        videos.AddRange(dirVideos);
+                //}
             }
 
             if (videos.Count == 0 && !string.IsNullOrWhiteSpace(VM.VideoPathDefault))
