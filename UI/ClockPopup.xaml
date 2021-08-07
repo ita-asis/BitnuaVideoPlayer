@@ -10,8 +10,7 @@
              x:Name="root">
     <Grid>
         <Canvas x:Name="canvas">
-            <Grid Width="50" Height="50" 
-                    Canvas.Top="1"
+            <Grid   Canvas.Top="1"
                     Canvas.Left="0"
                     MinWidth="50" MinHeight="50"
                     x:Name="grid">

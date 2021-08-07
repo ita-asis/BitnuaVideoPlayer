@@ -118,7 +118,7 @@
                     X="{Binding Clock.X}"
                     Y="{Binding Clock.Y}"
                     Panel.ZIndex="5"
-                    Grid.RowSpan="2"/>
+                    Grid.RowSpan="5"/>
         <Grid x:Name="defualtLayout"
               Grid.Row="2"
               Panel.ZIndex="0"

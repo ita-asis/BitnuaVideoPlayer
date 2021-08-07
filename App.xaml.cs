@@ -608,15 +608,21 @@ namespace BitnuaVideoPlayer
             if (m_timer is null)
             {
                 m_timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(Math.Max(VM.LeftPicDelay, 3000)) };
-                m_timer.Tick += picsTimerTick;
+                m_timer.Tick += M_timer_Tick;
             }
 
-            picsTimerTick(null, null);
-            m_timer.Start();
+            picsTimerTick();
+            m_timer.IsEnabled = true;
 
         }
 
-        private void picsTimerTick(object sender, EventArgs e)
+        private void M_timer_Tick(object sender, EventArgs e)
+        {
+            Console.Beep(440, 1000);
+            picsTimerTick();
+        }
+
+        private void picsTimerTick()
         {
             if (VM.Song != null)
             {
