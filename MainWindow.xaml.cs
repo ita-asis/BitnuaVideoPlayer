@@ -368,6 +368,10 @@ namespace BitnuaVideoPlayer
                     using (var dialog = new CommonOpenFileDialog())
                     {
                         dialog.IsFolderPicker = true;
+
+                        if (!string.IsNullOrEmpty(mode.Source))
+                            dialog.InitialDirectory = mode.Source;
+
                         CommonFileDialogResult result = dialog.ShowDialog();
                         if (result == CommonFileDialogResult.Ok)
                         {

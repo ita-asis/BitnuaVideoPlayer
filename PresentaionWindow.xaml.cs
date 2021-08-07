@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace BitnuaVideoPlayer
@@ -96,8 +97,32 @@ namespace BitnuaVideoPlayer
 
         private void bannerShowOnTopChecked(object sender, RoutedEventArgs e)
         {
-            bool isChecked = ((CheckBox)sender).IsChecked ?? false;
-            statusGrid.SetValue(Grid.RowProperty, isChecked ? 0 : 2);
+            if (!VM.Banner.IsVisible)
+                return;
+
+            CheckBox cb = ((CheckBox)sender);      
+            bool isChecked = cb.IsChecked ?? false;
+
+            statusGrid.SetValue(Grid.RowProperty, isChecked ? 0 : 4);
+            statusGridSplitter.SetValue(Grid.RowProperty, isChecked ? 1 : 3);
+
+            Binding bnd = new Binding("Banner.Height");
+            bnd.Source = VM;
+            bnd.Mode = BindingMode.TwoWay;
+            bnd.Converter = new GridLengthConverter();
+
+            if (isChecked)
+            {
+                BindingOperations.ClearBinding(statusGridRow_buttom, RowDefinition.HeightProperty);
+                statusGridRow_buttom.SetValue(RowDefinition.HeightProperty, new GridLength(0));
+                statusGridRow_top.SetBinding(RowDefinition.HeightProperty, bnd);
+            }
+            else
+            {
+                BindingOperations.ClearBinding(statusGridRow_top, RowDefinition.HeightProperty);
+                statusGridRow_top.SetValue(RowDefinition.HeightProperty, new GridLength(0));
+                statusGridRow_buttom.SetBinding(RowDefinition.HeightProperty, bnd);
+            }
         }
 
         private void songInfoShowOnTopChecked(object sender, RoutedEventArgs e)
@@ -112,6 +137,23 @@ namespace BitnuaVideoPlayer
         {
             bannerShowOnTopChecked(sender, null);
             songInfoShowOnTopChecked(sender, null);
+        }
+
+        private void StatusGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            bool isVisible = (bool)e.NewValue;
+
+            if (!isVisible)
+            {
+                BindingOperations.ClearBinding(statusGridRow_top, RowDefinition.HeightProperty);
+                BindingOperations.ClearBinding(statusGridRow_buttom, RowDefinition.HeightProperty);
+                statusGridRow_top.SetValue(RowDefinition.HeightProperty, new GridLength(0));
+                statusGridRow_buttom.SetValue(RowDefinition.HeightProperty, new GridLength(0));
+            }
+            else
+            {
+                bannerShowOnTopChecked(statusCb, null);
+            }
         }
     }
 }

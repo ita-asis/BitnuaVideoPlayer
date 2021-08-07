@@ -25,6 +25,8 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         {
             AssociatedObject.IsVisibleChanged += AssociatedObject_IsVisibleChanged;
             base.OnAttached();
+
+            ReadSource(ImageSource);
         }
 
         private void AssociatedObject_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -65,7 +67,8 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         private static void OnImageSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var ctrl = d as PicCtrlBehavior;
-            ctrl.ReadSource((string)e.NewValue);
+            if (ctrl.AssociatedObject != null)
+                ctrl.ReadSource((string)e.NewValue);
         }
 
         private void ReadSource(string source)
@@ -81,7 +84,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 
                 if (m_pics.Length > 0)
                 {
-                    m_timer.Stop();
+                    m_timer?.Stop();
                     m_selectedPicIndex = 0;
                     ImgCtrl.Source = BuildSource(m_pics[0]);
                     startTimer();

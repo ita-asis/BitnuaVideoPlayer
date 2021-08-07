@@ -1015,9 +1015,6 @@
                               VerticalAlignment="Center"
                                  />
 
-                        <Label Content="Height"/>
-                        <TextBox Text="{Binding Banner.Height, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Width="40"  HorizontalContentAlignment="Center"/>
-
                     </StackPanel>
                     <StackPanel Grid.Row="3" Orientation="Horizontal">
                         <Label Content="Speed"/>

@@ -106,9 +106,11 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition x:Name="statusGridRow_top" Height="Auto"/> <!--gridspliter-->
             <RowDefinition Height="Auto"/>
             <RowDefinition />
             <RowDefinition Height="Auto"/>
+            <RowDefinition x:Name="statusGridRow_buttom" Height="Auto"/> <!--gridspliter-->
         </Grid.RowDefinitions>
         <UI:MyPopup IsOpen="{Binding Clock.IsShow}" 
                     ClockHeight="{Binding Clock.Height}"
@@ -118,7 +120,7 @@
                     Panel.ZIndex="5"
                     Grid.RowSpan="2"/>
         <Grid x:Name="defualtLayout"
-              Grid.Row="1"
+              Grid.Row="2"
               Panel.ZIndex="0"
               Margin="5,0"
               Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"
@@ -326,7 +328,7 @@
             </Grid>
         </Grid>
         <Grid x:Name="presentationLayout"
-              Grid.Row="1"
+              Grid.Row="2"
               Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Presentation}"
               Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
             <Grid.Resources>
@@ -360,11 +362,17 @@
                 </ItemsControl>
             </Viewbox>
         </Grid>
-      
-        <Grid x:Name="statusGrid" Height="{Binding Banner.Height}"
-              Margin="5,0"
-              Visibility="{Binding Banner.IsVisible, Converter={StaticResource BoolToVis}}">
-            <CheckBox Visibility="Collapsed" IsChecked="{Binding Banner.ShowOnTop}" 
+
+
+
+        <GridSplitter x:Name="statusGridSplitter"
+                    Height="3"
+                    HorizontalAlignment="Stretch"
+                    Visibility="{Binding  Banner.IsVisible, Converter={StaticResource BoolToVis}}"/>
+        <Grid x:Name="statusGrid" Margin="5,0"  Height="{Binding Banner.Height}"
+              Visibility="{Binding Banner.IsVisible, Converter={StaticResource BoolToVis}}"
+              IsVisibleChanged="StatusGrid_IsVisibleChanged">
+            <CheckBox x:Name="statusCb" Visibility="Collapsed" IsChecked="{Binding Banner.ShowOnTop}" 
                       Checked="bannerShowOnTopChecked"
                       Unchecked="bannerShowOnTopChecked"
                       DataContextChanged="CheckBox_DataContextChanged"/>
