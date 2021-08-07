@@ -90,16 +90,18 @@
             </Grid.RowDefinitions>
 
             <DockPanel Margin="4,0">
-                    <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Vertical" Visibility="{Binding OnlineMode, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="Client" Padding="2" Margin="2"
                                HorizontalAlignment="Left"/>
                         <ComboBox SelectedItem="{Binding CurrentClient}"
                           ItemsSource="{Binding ActiveClients}"
                           Padding="4" Margin="2"/>
-
                     </StackPanel>
-                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" DockPanel.Dock="Right"  
-                                Orientation="Horizontal" Margin="0,4">
+                    <TextBlock Visibility="{Binding OfflineMode, Converter={StaticResource BoolToVis}}"
+                            Text="Offline mode" Padding="2" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" DockPanel.Dock="Right"  
+                                Orientation="Horizontal" Margin="0,4,0,0">
                         <ListBox SelectionMode="Multiple" >
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -953,9 +955,6 @@
                     <RadioButton x:Name="rb_BannerPosTop" Content="Top" Margin="4,0,10,0" IsChecked="{Binding Banner.ShowOnTop}"
                               VerticalAlignment="Center"
                                  />
-
-                    <Label Content="Height"/>
-                    <TextBox Text="{Binding Banner.Height, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Width="40"  HorizontalContentAlignment="Center"/>
 
                 </StackPanel>
                 <StackPanel Grid.Row="3" Orientation="Horizontal">

@@ -7,7 +7,6 @@
         mc:Ignorable="d"
         x:Name="root"
         xmlns:Vlc="clr-namespace:LibVLCSharp.WPF"
-        xmlns:wpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         xmlns:my="clr-namespace:BitnuaVideoPlayer"
         xmlns:UI="clr-namespace:BitnuaVideoPlayer.UI"
         xmlns:props="clr-namespace:BitnuaVideoPlayer.UI.AttachedProps"
@@ -34,7 +33,11 @@
             <DataTemplate DataType="{x:Type my:PictureItem}">
             <UI:PresentationCanvasItem>
                 <Viewbox StretchDirection="Both" Stretch="Fill">
-                    <Image props:PicCtrlBehavior.ImageSource="{Binding Path}" />
+                        <Image>
+                            <i:Interaction.Behaviors>
+                                <props:PicCtrlBehavior ImageSource="{Binding Path}"/>
+                            </i:Interaction.Behaviors>
+                        </Image>
                 </Viewbox>
             </UI:PresentationCanvasItem>
         </DataTemplate>
@@ -103,9 +106,11 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition x:Name="statusGridRow_top" Height="Auto"/> <!--gridspliter-->
             <RowDefinition Height="Auto"/>
             <RowDefinition />
             <RowDefinition Height="Auto"/>
+            <RowDefinition x:Name="statusGridRow_buttom" Height="Auto"/> <!--gridspliter-->
         </Grid.RowDefinitions>
         <UI:MyPopup IsOpen="{Binding Clock.IsShow}" 
                     ClockHeight="{Binding Clock.Height}"
@@ -113,22 +118,9 @@
                     X="{Binding Clock.X}"
                     Y="{Binding Clock.Y}"
                     Panel.ZIndex="5"
-                    Grid.RowSpan="2">
-            <Border BorderThickness="1" Background="#424242"
-                    CornerRadius="8">
-                <Viewbox>
-                    <!--{Binding CurrDate, StringFormat='{}{0:h:mm:ss}'}-->
-                    <TextBlock Text="{Binding CurrDate, StringFormat='{}{0:HH:mm:ss}'}"
-                               FontSize="20"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               Foreground="WhiteSmoke"
-                               Padding="8,2"/>
-                </Viewbox>
-            </Border>
-        </UI:MyPopup>
+                    Grid.RowSpan="2"/>
         <Grid x:Name="defualtLayout"
-              Grid.Row="1"
+              Grid.Row="2"
               Panel.ZIndex="0"
               Margin="5,0"
               Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Default}"
@@ -336,7 +328,7 @@
             </Grid>
         </Grid>
         <Grid x:Name="presentationLayout"
-              Grid.Row="1"
+              Grid.Row="2"
               Tag="{Binding Path=SelectedLayout, Converter={StaticResource enumToBool}, ConverterParameter=Presentation}"
               Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
             <Grid.Resources>
@@ -370,11 +362,17 @@
                 </ItemsControl>
             </Viewbox>
         </Grid>
-      
-        <Grid x:Name="statusGrid" Height="{Binding Banner.Height}"
-              Margin="5,0"
-              Visibility="{Binding Banner.IsVisible, Converter={StaticResource BoolToVis}}">
-            <CheckBox Visibility="Collapsed" IsChecked="{Binding Banner.ShowOnTop}" 
+
+
+
+        <GridSplitter x:Name="statusGridSplitter"
+                    Height="3"
+                    HorizontalAlignment="Stretch"
+                    Visibility="{Binding  Banner.IsVisible, Converter={StaticResource BoolToVis}}"/>
+        <Grid x:Name="statusGrid" Margin="5,0"  Height="{Binding Banner.Height}"
+              Visibility="{Binding Banner.IsVisible, Converter={StaticResource BoolToVis}}"
+              IsVisibleChanged="StatusGrid_IsVisibleChanged">
+            <CheckBox x:Name="statusCb" Visibility="Collapsed" IsChecked="{Binding Banner.ShowOnTop}" 
                       Checked="bannerShowOnTopChecked"
                       Unchecked="bannerShowOnTopChecked"
                       DataContextChanged="CheckBox_DataContextChanged"/>

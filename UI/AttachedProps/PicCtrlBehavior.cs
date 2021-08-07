@@ -4,113 +4,117 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interactivity;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using SWC = System.Windows.Controls;
 namespace BitnuaVideoPlayer.UI.AttachedProps
 {
-    public static class PicCtrlBehavior 
+
+    public class PicCtrlBehavior : Behavior<SWC.Image>
     {
+      
+        // ---------------------
         private const int c_DefaultDelayMs = 3000;
+        protected SWC.Image ImgCtrl => AssociatedObject;
 
-        public static string GetImageSource(DependencyObject obj)
+        private DispatcherTimer m_timer;
+        private int m_selectedPicIndex;
+        private string[] m_pics;
+        protected override void OnAttached()
         {
-            return (string)obj.GetValue(ImageSourceProperty);
+            AssociatedObject.IsVisibleChanged += AssociatedObject_IsVisibleChanged;
+            base.OnAttached();
+
+            ReadSource(ImageSource);
         }
 
-        public static void SetImageSource(DependencyObject obj, string value)
+        private void AssociatedObject_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            obj.SetValue(ImageSourceProperty, value);
+            bool isVisible = (bool)e.NewValue;
+            if (!isVisible)
+                m_timer?.Stop();
         }
 
-        // Using a DependencyProperty as the backing store for ImageSource.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ImageSourceProperty =
-            DependencyProperty.RegisterAttached("ImageSource", typeof(string), typeof(PicCtrlBehavior), new PropertyMetadata(null, OnImageSourceChanged));
 
-
-
-        public static int GetDelayMS(DependencyObject obj)
+        public int DelayMS
         {
-            return (int)obj.GetValue(DelayMSProperty);
-        }
-
-        public static void SetDelayMS(DependencyObject obj, int value)
-        {
-            obj.SetValue(DelayMSProperty, value);
-        }
-
-        // Using a DependencyProperty as the backing store for DelayMS.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty DelayMSProperty =
-            DependencyProperty.RegisterAttached("DelayMS", typeof(int), typeof(PicCtrlBehavior), new PropertyMetadata(c_DefaultDelayMs));
-
-        private static async void OnImageSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var cts = new CancellationTokenSource();
-            var ctrl = d as SWC.Image;
-            RegisterEvents(ctrl, cts);
-            await Init(ctrl, (string)e.NewValue, cts.Token);
-        }
-
-        private static void RegisterEvents(FrameworkElement frameworkElement, CancellationTokenSource cts)
-        {
-            DependencyPropertyChangedEventHandler onVisibleChanged = (object sender, DependencyPropertyChangedEventArgs e) =>
+            get { return (int)GetValue(DelayMSProperty); }
+            set
             {
-                if (!(bool)e.NewValue)
-                {
-                    cts.Cancel();
-                }
-            };
-
-            frameworkElement.IsVisibleChanged -= onVisibleChanged;
-            frameworkElement.IsVisibleChanged += onVisibleChanged;
+                SetValue(DelayMSProperty, value);
+            }
         }
 
-        private static async Task Init(SWC.Image ctrl, string source, CancellationToken token)
+        // Using a DependencyProperty as the backing store for Source.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DelayMSProperty =
+            DependencyProperty.Register("DelayMS", typeof(int), typeof(PicCtrlBehavior), new PropertyMetadata(c_DefaultDelayMs));
+
+        public string ImageSource
+        {
+            get { return (string)GetValue(ImageSourceProperty); }
+            set
+            {
+                SetValue(ImageSourceProperty, value);
+            }
+        }
+
+        // Using a DependencyProperty as the backing store for Source.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ImageSourceProperty =
+            DependencyProperty.Register("ImageSource", typeof(string), typeof(PicCtrlBehavior), new PropertyMetadata(null, OnImageSourceChanged));
+
+
+        private static void OnImageSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var ctrl = d as PicCtrlBehavior;
+            if (ctrl.AssociatedObject != null)
+                ctrl.ReadSource((string)e.NewValue);
+        }
+
+        private void ReadSource(string source)
         {
             if (File.Exists(source))
             {
-                ctrl.Source = BuildSource(source);
+                m_timer?.Stop();
+                ImgCtrl.Source = BuildSource(source);
             }
             else if (Directory.Exists(source))
             {
-                var files = Directory.GetFiles(source, "*", SearchOption.AllDirectories);
-                await StartPicTask(ctrl, files, token);
+                m_pics = Directory.GetFiles(source, "*", SearchOption.AllDirectories);
+
+                if (m_pics.Length > 0)
+                {
+                    m_timer?.Stop();
+                    m_selectedPicIndex = 0;
+                    ImgCtrl.Source = BuildSource(m_pics[0]);
+                    startTimer();
+                }
             }
         }
 
-        private static async Task StartPicTask(SWC.Image ctrl, IEnumerable<string> images, CancellationToken token)
+        private void startTimer()
         {
-            int delay = (int)ctrl.GetValue(DelayMSProperty);
-
-            await Task.Delay(100);
-            while (!token.IsCancellationRequested)
+            if (m_timer is null)
             {
-                try
+                m_timer = new DispatcherTimer()
                 {
-                    foreach (var picPath in IterateLoop(images, token))
-                    {
-                        await ctrl.Dispatcher.BeginInvoke((Action)(() => ctrl.Source = BuildSource(picPath)));
-                        await Task.Delay(delay, token).ConfigureAwait(false);
-                    }
-                }
-                catch (TaskCanceledException)
-                {
-                }
+                    Interval = TimeSpan.FromMilliseconds(DelayMS)
+                };
+
+                m_timer.Tick += timerTick; ;
             }
+            m_timer.Start();
+        }
+
+        private void timerTick(object sender, EventArgs e)
+        {
+            m_selectedPicIndex++;
+            ImgCtrl.Source = BuildSource(m_pics[m_selectedPicIndex % m_pics.Length]);
         }
 
         private static BitmapImage BuildSource(string picPath)
         {
             return new BitmapImage(new Uri(picPath));
-        }
-
-        public static IEnumerable<T> IterateLoop<T>(this IEnumerable<T> source, CancellationToken token)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                using (var videos = source.GetEnumerator())
-                    while (videos.MoveNext() && !token.IsCancellationRequested)
-                        yield return videos.Current;
-            }
         }
     }
 }

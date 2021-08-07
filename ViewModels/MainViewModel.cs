@@ -611,9 +611,13 @@ namespace BitnuaVideoPlayer
         }
 
         public int LangTicks { get; set; } = 3;
+        public bool OfflineMode { get; set; } = false;
 
         [JsonIgnore]
-        public IEnumerable<Tuple<string, Func<string>>> PicSources;
+        public bool OnlineMode => !OfflineMode;
+
+        [JsonIgnore]
+        public IEnumerable<Tuple<string, string>> PicSources;
         [JsonIgnore]
         public IEnumerable<string> Flyerfiles;
 

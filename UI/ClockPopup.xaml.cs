@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace BitnuaVideoPlayer.UI
 {
@@ -17,11 +18,6 @@ namespace BitnuaVideoPlayer.UI
 
     public partial class MyPopup : UserControl
     {
-        private Thumb moveThumb;
-        private Thumb resizeThumb;
-        private Grid grid;
-        private Canvas canvas;
-
         public bool IsOpen
         {
             get { return (bool)GetValue(IsOpenProperty); }
@@ -54,19 +50,36 @@ namespace BitnuaVideoPlayer.UI
             this.Visibility = this.IsOpen ? Visibility.Visible : Visibility.Hidden;
         }
 
+        private readonly DispatcherTimer m_timer;
         public MyPopup()
         {
             InitializeComponent();
+
+            this.IsVisibleChanged += MyPopup_IsVisibleChanged; ;
+            m_timer = new DispatcherTimer();
+            m_timer.Interval = TimeSpan.FromSeconds(1);
+            m_timer.Tick += timer_Tick;
+            m_timer.Start();
+        }
+
+        private void MyPopup_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            bool isVisible = (bool)e.NewValue;
+            if (!isVisible)
+                m_timer?.Stop();
+            else
+                m_timer?.Start();
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            this.tbTime.Text = DateTime.Now.ToString("HH:mm:ss");
         }
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
-            moveThumb = this.GetTemplateChild("PART_moveThumb") as Thumb;
-            resizeThumb = this.GetTemplateChild("PART_resizeThumb") as Thumb;
-            canvas = this.GetTemplateChild("PART_canvas") as Canvas;
-            grid = this.GetTemplateChild("PART_grid") as Grid;
 
             grid.MouseDown += gridMouseDown;
             grid.MouseEnter += (s, e) => resizeThumb.Visibility = Visibility.Visible;

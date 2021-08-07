@@ -39,6 +39,8 @@ namespace BitnuaVideoPlayer
         private static Random s_Random = new Random();
 
 
+        private DispatcherTimer m_timer;
+        private int m_timer_ticks;
         private MainWindow m_MainWindow;
         public PresentaionWindow m_PlayerWindow;
 
@@ -48,11 +50,11 @@ namespace BitnuaVideoPlayer
 
         private IMongoCollection<PlayEntry> DB_Plays;
         private IMongoCollection<ClientInfo> DB_ActiveClients;
-        private CancellationTokenSource m_PicLoopToken;
         private CancellationTokenSource m_WatchCloudDBToken;
         private ClientInfo m_BitnuaClient;
         private Song m_Song;
-        private CancellationTokenSource m_CancelClock;
+        private IEnumerator<Tuple<string, string>> m_songPics;
+        private IEnumerator<Tuple<string, string>> m_leftPics;
 
         public MainViewModel VM { get; set; }
         public static App Instance { get; private set; }
@@ -175,14 +177,15 @@ namespace BitnuaVideoPlayer
         {
             base.OnExit(e);
 
-            m_PicLoopToken?.Cancel();
+            m_timer?.Stop();
             m_WatchCloudDBToken?.Cancel();
-            m_CancelClock?.Cancel();
 
             BitnuaVideoPlayer.Properties.Settings.Default.Save();
             var vmJson = JsonConvert.SerializeObject(VM, Formatting.Indented);
             UserSettings.Set(c_MainVmSettingKey, vmJson);
-            DeInitMongoDb();
+
+            if (!VM.OfflineMode)
+                DeInitMongoDb();
         }
 
         private void InitUpdateManager()
@@ -201,22 +204,32 @@ namespace BitnuaVideoPlayer
             VM.CurrentClient = m_BitnuaClient = new ClientInfo() { Name = VM.ClientName };
 
             if (!Directory.Exists(VM.WatchDir))
-                throw new DirectoryNotFoundException($"Amps dir not found in {VM.WatchDir}");
-
-            initClock();
-
-            m_FileSysWatcher = new FileSystemWatcher()
             {
-                Path = VM.WatchDir,
-                NotifyFilter = NotifyFilters.LastWrite,
-                Filter = "*.*",
-                EnableRaisingEvents = true
-            };
-            m_FileSysWatcher.Changed += new FileSystemEventHandler(OnWatchDirChanged);
+#if DEBUG == false
+                throw new DirectoryNotFoundException($"Amps dir not found in {VM.WatchDir}");
+#endif
+            }
+            else
+            {
+                m_FileSysWatcher = new FileSystemWatcher()
+                {
+                    Path = VM.WatchDir,
+                    NotifyFilter = NotifyFilters.LastWrite,
+                    Filter = "*.*",
+                    EnableRaisingEvents = true
+                };
+                m_FileSysWatcher.Changed += new FileSystemEventHandler(OnWatchDirChanged);
+            }
+
             RegisterBannerPicsChanged();
             await ShowLastSong();
 
+            if (!VM.OfflineMode)
+                await ConnectDb();
+        }
 
+        private async Task ConnectDb()
+        {
             if (CheckForInternetConnection())
             {
                 await InitMongoDb();
@@ -226,30 +239,14 @@ namespace BitnuaVideoPlayer
                 m_WatchCloudDBToken = new CancellationTokenSource();
 #pragma warning disable 
                 CheckConnectionLoop(m_WatchCloudDBToken.Token).ContinueWith(t =>
-                 {
-                     if (t.IsCompleted)
-                         return InitMongoDb();
-                     else
-                         return Task.FromCanceled(m_WatchCloudDBToken.Token);
-                 });
+                {
+                    if (t.IsCompleted)
+                        return InitMongoDb();
+                    else
+                        return Task.FromCanceled(m_WatchCloudDBToken.Token);
+                });
             }
 #pragma warning restore
-        }
-
-        private void initClock()
-        {
-            m_CancelClock = new CancellationTokenSource();
-            UpdateTime();
-        }
-        private void UpdateTime()
-        { 
-            Task.Run(() =>
-            {
-                VM.CurrDate = DateTime.Now;
-                Task.Delay(1000, m_CancelClock.Token);
-                UpdateTime();
-            }, m_CancelClock.Token);
-
         }
 
         public static async Task CheckConnectionLoop(CancellationToken token)
@@ -302,6 +299,9 @@ namespace BitnuaVideoPlayer
 
         private async Task ShowLastSong()
         {
+            if (!Directory.Exists(VM.WatchDir))
+                return;
+
             var directory = new DirectoryInfo(VM.WatchDir);
             var lastFile = (from f in directory.GetFiles("*.xml")
                             orderby f.LastWriteTimeUtc descending
@@ -339,7 +339,6 @@ namespace BitnuaVideoPlayer
                      e.PropertyName == nameof(VM.Pic_ShowSongName) ||
                      e.PropertyName == nameof(VM.Pic_ShowEvent) ||
                      e.PropertyName == nameof(VM.ClipTypes) ||
-                     e.PropertyName == nameof(VM.SongYoutubeVideos) ||
                      e.PropertyName == nameof(VM.SelectedVideoMode) ||
                      e.PropertyName == nameof(VM.SelectedPicMode))
             {
@@ -468,8 +467,7 @@ namespace BitnuaVideoPlayer
         private Task UpdateVM() => UpdateVM(m_Song);
         private async Task UpdateVM(Song song)
         {
-            m_PicLoopToken?.Cancel();
-
+            m_timer?.Stop();
             if (song == null)
                 return;
 
@@ -482,8 +480,7 @@ namespace BitnuaVideoPlayer
                 VM.Flyerfiles = Directory.EnumerateFiles(VM.FlayerDir, "*.*", SearchOption.AllDirectories).Shuffle(s_Random);
             }
 
-            m_PicLoopToken = new CancellationTokenSource();
-            var t = Task.Run(() => StartLeftPicTask(m_PicLoopToken.Token));
+            StartLeftPicTimer();
             var songVideos = GetAvaiableSongVideos(VM).Shuffle(s_Random).ToList();
             if (VM.SelectedLayout == eLayoutModes.Default)
             {
@@ -592,66 +589,62 @@ namespace BitnuaVideoPlayer
         private Task<List<ClientInfo>> GetActiveClients() => DB_ActiveClients.Find(Builders<ClientInfo>.Filter.Empty).ToListAsync();
 
 
-        private async Task StartLeftPicTask(CancellationToken token)
+        private void StartLeftPicTimer()
         {
+
             VM.ArtistPicSource = null;
             VM.LeftPicSource = null;
             VM.LeftPicTitle.Text = null;
-
-            await Task.Delay(100);
-
-
             VM.RTL = !(VM.ShowEng && VM.Song.HasEng && !VM.Song.HasHeb);
 
-            using (var songPics = IterateInLoop(GetAvaiableSongPics(VM), token).GetEnumerator())
-            using (var leftPics = IterateNextLeftPic(VM, token).GetEnumerator())
+
+            m_songPics?.Dispose();
+            m_leftPics?.Dispose();
+
+            m_songPics = IterateInLoop(GetAvaiableSongPics(VM)).GetEnumerator();
+            m_leftPics = IterateNextLeftPic(VM).GetEnumerator();
+
+            m_timer_ticks = 0;
+            if (m_timer is null)
             {
-                int ticks = 0;
-                while (!token.IsCancellationRequested)
-                {
-                    var st = DateTime.UtcNow.Ticks;
-                    try
-                    {
-                        if (VM.Song != null)
-                        {
-
-                            if (VM.ShowEng && VM.ShowHeb && ticks % VM.LangTicks == 0 && VM.Song.HasEng && VM.Song.HasHeb)
-                            {
-                                VM.RTL = !VM.RTL;
-                            }
-
-                            if (songPics.MoveNext())
-                                VM.ArtistPicSource = songPics.Current.Item1;
-
-
-                            if (VM.SelectedPicMode != ViewModels.ePicMode.Lyrics && leftPics.MoveNext())
-                            {
-                                var fileNTitle = leftPics.Current;
-                                VM.LeftPicSource = fileNTitle.Item1;
-                                VM.LeftPicTitle.Text = fileNTitle.Item2;
-#if DEBUG
-                                Console.WriteLine($"{TimeSpan.FromTicks(DateTime.UtcNow.Ticks - st)}: {fileNTitle.Item2}");
-#endif
-                            }
-
-                            await Task.Delay(Math.Max(VM.LeftPicDelay, 3000), token).ConfigureAwait(false);
-                        }
-                    }
-                    catch (Exception)
-                    {
-                    }
-                    ticks++;
-                }
+                m_timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(Math.Max(VM.LeftPicDelay, 3000)) };
+                m_timer.Tick += picsTimerTick;
             }
+
+            picsTimerTick(null, null);
+            m_timer.Start();
+
         }
 
-        private static IEnumerable<T> IterateInLoop<T>(IEnumerable<T> source, CancellationToken token)
+        private void picsTimerTick(object sender, EventArgs e)
+        {
+            if (VM.Song != null)
+            {
+                if (VM.ShowEng && VM.ShowHeb && m_timer_ticks % VM.LangTicks == 0 && VM.Song.HasEng && VM.Song.HasHeb)
+                    VM.RTL = !VM.RTL;
+
+                if (m_songPics.MoveNext())
+                    VM.ArtistPicSource = m_songPics.Current.Item1;
+
+
+                if (VM.SelectedPicMode != ePicMode.Lyrics && m_leftPics.MoveNext())
+                {
+                    var fileNTitle = m_leftPics.Current;
+                    VM.LeftPicSource = fileNTitle.Item1;
+                    VM.LeftPicTitle.Text = fileNTitle.Item2;
+                }
+            }
+
+            m_timer_ticks++;
+        }
+
+        private static IEnumerable<T> IterateInLoop<T>(IEnumerable<T> source, CancellationToken? token = null)
         {
             bool empty = true;
-            while (!token.IsCancellationRequested)
+            while (token is null || !token.Value.IsCancellationRequested)
             {
                 using (var items = source.GetEnumerator())
-                    while (items.MoveNext() && !token.IsCancellationRequested)
+                    while (items.MoveNext() && (token is null || !token.Value.IsCancellationRequested))
                     {
                         empty = false;
                         yield return items.Current;
@@ -661,15 +654,15 @@ namespace BitnuaVideoPlayer
                     yield break;
             }
         }
-        private static IEnumerable<Tuple<string, string>> IterateNextLeftPic(MainViewModel VM, CancellationToken token)
+        private static IEnumerable<Tuple<string, string>> IterateNextLeftPic(MainViewModel VM, CancellationToken? token = null)
         {
-            while (!token.IsCancellationRequested)
+            while (token is null || !token.Value.IsCancellationRequested)
             {
                 bool empty = true;
                 if (VM.SelectedPicMode == ePicMode.Flyer)
                 {
                     using (var flyerPics = VM.Flyerfiles.GetEnumerator())
-                        while (flyerPics.MoveNext() && !token.IsCancellationRequested)
+                        while (flyerPics.MoveNext() && (token is null || !token.Value.IsCancellationRequested))
                         {
                             empty = false;
                             yield return new Tuple<string, string>(flyerPics.Current, null);
@@ -678,10 +671,10 @@ namespace BitnuaVideoPlayer
                 else
                 {
                     using (var songPics = VM.PicSources.GetEnumerator())
-                        while (songPics.MoveNext() && !token.IsCancellationRequested)
+                        while (songPics.MoveNext() && (token is null || !token.Value.IsCancellationRequested))
                         {
                             empty = false;
-                            yield return new Tuple<string, string>(songPics.Current.Item1, songPics.Current.Item2?.Invoke());
+                            yield return new Tuple<string, string>(songPics.Current.Item1, songPics.Current.Item2);
                         }
                 }
 
@@ -690,35 +683,35 @@ namespace BitnuaVideoPlayer
             }
         }
 
-        private static IEnumerable<Tuple<string, Func<string>>> GetAvaiableSongPics(MainViewModel VM, bool addDefault = true)
+        private static IEnumerable<Tuple<string, string>> GetAvaiableSongPics(MainViewModel VM, bool addDefault = true)
         {
-            var pics = new List<Tuple<string, Func<string>>>();
+            var pics = new List<Tuple<string, string>>();
 
             if (VM.Song != null)
             {
                 var dir = GetDir(VM.Pic_ShowCreator, VM.Song.Heb_Creator, VM.PicPathCreator);
-                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.Creator));
+                if (dir != null) pics.Add(new Tuple<string, string>(dir, VM.Song.Creator));
 
                 dir = GetDir(VM.Pic_ShowWriter, VM.Song.Heb_Writer, VM.PicPathWriter);
-                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.Writer));
+                if (dir != null) pics.Add(new Tuple<string, string>(dir, VM.Song.Writer));
 
                 dir = GetDir(VM.Pic_ShowComposer, VM.Song.Heb_Composer, VM.PicPathComposer);
-                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.Composer));
+                if (dir != null) pics.Add(new Tuple<string, string>(dir, VM.Song.Composer));
 
                 dir = GetDir(VM.Pic_ShowPerformer, VM.Song.Heb_Performer, VM.PicPathPerformer);
-                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.Performer));
+                if (dir != null) pics.Add(new Tuple<string, string>(dir, VM.Song.Performer));
 
                 dir = GetDir(VM.Pic_ShowEvent, VM.Song.EventName, VM.PicPathEventName);
-                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.EventName));
+                if (dir != null) pics.Add(new Tuple<string, string>(dir, VM.Song.EventName));
 
                 dir = GetDir(VM.Pic_ShowSongName, VM.Song.HebTitle, VM.PicPathSongName);
-                if (dir != null) pics.Add(new Tuple<string, Func<string>>(dir, () => VM.Song.HebTitle));
+                if (dir != null) pics.Add(new Tuple<string, string>(dir, VM.Song.HebTitle));
             }
 
             if (addDefault && (pics.Count == 0 || VM.Pic_ShowDefault))
-                pics.Add(new Tuple<string, Func<string>>(VM.PicPathDefault, null));
+                pics.Add(new Tuple<string, string>(VM.PicPathDefault, null));
 
-            return pics.Select(dir => new Tuple<string, Func<string>>(PickRandomFile(dir.Item1), dir.Item2));
+            return pics.Select(dir => new Tuple<string, string>(PickRandomFile(dir.Item1), dir.Item2));
         }
 
         private static IEnumerable<VideoSource> GetAvaiableSongVideos(MainViewModel VM)
@@ -764,7 +757,7 @@ namespace BitnuaVideoPlayer
                         videos.Add(new YoutubeVideoSource(VM.Song.YouTubeSong));
 
                     if (!string.IsNullOrEmpty(VM.Song.YouTubeDance) && VM.SongYoutubeVideos.Single(c => c.Type == eSongClipTypes.YouTubeDance).IsChecked)
-                        videos.Add(new YoutubeVideoSource(VM.Song.YouTubeDance));
+                    videos.Add(new YoutubeVideoSource(VM.Song.YouTubeDance));
                 }
                 else if (VM.SelectedVideoMode == eVideoMode.VideoDir1 && !string.IsNullOrEmpty(VM.VideoPath1))
                 {
