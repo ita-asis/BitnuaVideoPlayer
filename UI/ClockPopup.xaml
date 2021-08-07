@@ -10,10 +10,10 @@
              x:Name="root">
     <Grid>
         <Canvas x:Name="canvas">
-                <Grid Width="50" Height="50" 
-                      Canvas.Top="1"
-                      Canvas.Left="0"
-                      MinWidth="50" MinHeight="50"
+            <Grid Width="50" Height="50" 
+                    Canvas.Top="1"
+                    Canvas.Left="0"
+                    MinWidth="50" MinHeight="50"
                     x:Name="grid">
                 <Border BorderThickness="1" Background="#424242" CornerRadius="8">
                     <Viewbox>
@@ -27,17 +27,17 @@
                     </Viewbox>
                 </Border>
                 <Thumb Width="0" Height="0" x:Name="moveThumb" 
-                       Panel.ZIndex="1"
-                       DragDelta="onDragMoveDelta"/>
-                    <Thumb HorizontalAlignment="Right" 
-                           VerticalAlignment="Bottom" 
+                    Panel.ZIndex="1"
+                    DragDelta="onDragMoveDelta"/>
+                <Thumb HorizontalAlignment="Right" 
+                        VerticalAlignment="Bottom" 
                         x:Name="resizeThumb" 
-                           Visibility="Hidden"
-                           Width="10" Height="10"
-                           Panel.ZIndex="2"
-                           Cursor="SizeNWSE"
-                           DragDelta="onDragResizeDelta"/>
-                </Grid>
-            </Canvas>
+                        Visibility="Hidden"
+                        Width="10" Height="10"
+                        Panel.ZIndex="2"
+                        Cursor="SizeNWSE"
+                        DragDelta="onDragResizeDelta"/>
+            </Grid>
+        </Canvas>
     </Grid>
 </UserControl>

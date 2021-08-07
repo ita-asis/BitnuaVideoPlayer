@@ -618,21 +618,21 @@ namespace BitnuaVideoPlayer
         }
 
         private void picsTimerTick(object sender, EventArgs e)
-                    {
-                        if (VM.Song != null)
-                        {
+        {
+            if (VM.Song != null)
+            {
                 if (VM.ShowEng && VM.ShowHeb && m_timer_ticks % VM.LangTicks == 0 && VM.Song.HasEng && VM.Song.HasHeb)
-                                VM.RTL = !VM.RTL;
+                    VM.RTL = !VM.RTL;
 
                 if (m_songPics.MoveNext())
                     VM.ArtistPicSource = m_songPics.Current.Item1;
 
 
                 if (VM.SelectedPicMode != ePicMode.Lyrics && m_leftPics.MoveNext())
-                            {
+                {
                     var fileNTitle = m_leftPics.Current;
-                                VM.LeftPicSource = fileNTitle.Item1;
-                                VM.LeftPicTitle.Text = fileNTitle.Item2;
+                    VM.LeftPicSource = fileNTitle.Item1;
+                    VM.LeftPicTitle.Text = fileNTitle.Item2;
                 }
             }
 

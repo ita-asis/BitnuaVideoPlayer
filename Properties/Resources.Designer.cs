@@ -19,7 +19,7 @@ namespace BitnuaVideoPlayer.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -69,10 +69,10 @@ namespace BitnuaVideoPlayer.Properties {
         ///                &lt;value&gt;
         ///                    &lt;WindowStateDTO xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
         ///                        xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
-        ///                        &lt;Height&gt;503&lt;/Height&gt;
+        ///                        &lt;Height&gt;490&lt;/Height&gt;
         ///                        &lt;Width&gt;400&lt;/Width&gt;
-        ///                        &lt;Left&gt;796&lt;/Left&gt;
-        ///            [rest of string was truncated]&quot;;.
+        ///                        &lt;Left&gt;0&lt;/Left&gt;
+        ///                 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string UserConfTemplate {
             get {

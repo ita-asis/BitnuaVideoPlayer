@@ -39,7 +39,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         {
             get { return (int)GetValue(DelayMSProperty); }
             set
-        {
+            {
                 SetValue(DelayMSProperty, value);
             }
         }
@@ -49,13 +49,13 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             DependencyProperty.Register("DelayMS", typeof(int), typeof(PicCtrlBehavior), new PropertyMetadata(c_DefaultDelayMs));
 
         public string ImageSource
-            {
+        {
             get { return (string)GetValue(ImageSourceProperty); }
             set
-                {
+            {
                 SetValue(ImageSourceProperty, value);
             }
-                }
+        }
 
         // Using a DependencyProperty as the backing store for Source.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ImageSourceProperty =
@@ -80,7 +80,7 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
                 m_pics = Directory.GetFiles(source, "*", SearchOption.AllDirectories);
 
                 if (m_pics.Length > 0)
-        {
+                {
                     m_timer.Stop();
                     m_selectedPicIndex = 0;
                     ImgCtrl.Source = BuildSource(m_pics[0]);
@@ -90,21 +90,21 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         }
 
         private void startTimer()
-            {
+        {
             if (m_timer is null)
-                {
+            {
                 m_timer = new DispatcherTimer()
-                    {
+                {
                     Interval = TimeSpan.FromMilliseconds(DelayMS)
                 };
 
                 m_timer.Tick += timerTick; ;
-                    }
+            }
             m_timer.Start();
-                }
+        }
 
         private void timerTick(object sender, EventArgs e)
-                {
+        {
             m_selectedPicIndex++;
             ImgCtrl.Source = BuildSource(m_pics[m_selectedPicIndex % m_pics.Length]);
         }
