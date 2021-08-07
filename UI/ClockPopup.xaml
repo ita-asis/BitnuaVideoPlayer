@@ -8,21 +8,30 @@
              d:DesignHeight="300" d:DesignWidth="300"
              FlowDirection="LeftToRight"
              x:Name="root">
-    <UserControl.Template>
-        <ControlTemplate >
-            <Canvas x:Name="PART_canvas">
+    <Grid>
+        <Canvas x:Name="canvas">
                 <Grid Width="50" Height="50" 
                       Canvas.Top="1"
                       Canvas.Left="0"
                       MinWidth="50" MinHeight="50"
-                      x:Name="PART_grid">
-                    <ContentPresenter Content="{TemplateBinding ContentControl.Content}"/>
-                    <Thumb Width="0" Height="0" x:Name="PART_moveThumb" 
+                    x:Name="grid">
+                <Border BorderThickness="1" Background="#424242" CornerRadius="8">
+                    <Viewbox>
+                        <!--{Binding CurrDate, StringFormat='{}{0:h:mm:ss}'}-->
+                        <TextBlock x:Name="tbTime" Text="00:00:00"
+                            FontSize="20"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Foreground="WhiteSmoke"
+                            Padding="8,2"/>
+                    </Viewbox>
+                </Border>
+                <Thumb Width="0" Height="0" x:Name="moveThumb" 
                        Panel.ZIndex="1"
                        DragDelta="onDragMoveDelta"/>
                     <Thumb HorizontalAlignment="Right" 
                            VerticalAlignment="Bottom" 
-                           x:Name="PART_resizeThumb" 
+                        x:Name="resizeThumb" 
                            Visibility="Hidden"
                            Width="10" Height="10"
                            Panel.ZIndex="2"
@@ -30,6 +39,5 @@
                            DragDelta="onDragResizeDelta"/>
                 </Grid>
             </Canvas>
-        </ControlTemplate>
-    </UserControl.Template>
+    </Grid>
 </UserControl>

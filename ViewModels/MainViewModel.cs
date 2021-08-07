@@ -590,7 +590,7 @@ namespace BitnuaVideoPlayer
         public bool OnlineMode => !OfflineMode;
 
         [JsonIgnore]
-        public IEnumerable<Tuple<string, Func<string>>> PicSources;
+        public IEnumerable<Tuple<string, string>> PicSources;
         [JsonIgnore]
         public IEnumerable<string> Flyerfiles;
 

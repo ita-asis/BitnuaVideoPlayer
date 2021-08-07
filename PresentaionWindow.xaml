@@ -33,7 +33,11 @@
             <DataTemplate DataType="{x:Type my:PictureItem}">
             <UI:PresentationCanvasItem>
                 <Viewbox StretchDirection="Both" Stretch="Fill">
-                    <Image props:PicCtrlBehavior.ImageSource="{Binding Path}" />
+                        <Image>
+                            <i:Interaction.Behaviors>
+                                <props:PicCtrlBehavior ImageSource="{Binding Path}"/>
+                            </i:Interaction.Behaviors>
+                        </Image>
                 </Viewbox>
             </UI:PresentationCanvasItem>
         </DataTemplate>
@@ -112,20 +116,7 @@
                     X="{Binding Clock.X}"
                     Y="{Binding Clock.Y}"
                     Panel.ZIndex="5"
-                    Grid.RowSpan="2">
-            <Border BorderThickness="1" Background="#424242"
-                    CornerRadius="8">
-                <Viewbox>
-                    <!--{Binding CurrDate, StringFormat='{}{0:h:mm:ss}'}-->
-                    <TextBlock Text="{Binding CurrDate, StringFormat='{}{0:HH:mm:ss}'}"
-                               FontSize="20"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               Foreground="WhiteSmoke"
-                               Padding="8,2"/>
-                </Viewbox>
-            </Border>
-        </UI:MyPopup>
+                    Grid.RowSpan="2"/>
         <Grid x:Name="defualtLayout"
               Grid.Row="1"
               Panel.ZIndex="0"
