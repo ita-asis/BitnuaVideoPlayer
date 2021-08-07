@@ -127,7 +127,7 @@ namespace BitnuaVideoPlayer
             
             base.OnStartup(e);
 
-            InitUpdateManager();
+            //InitUpdateManager();
             await InitAll();
 
             MainWindow = m_MainWindow = new MainWindow()

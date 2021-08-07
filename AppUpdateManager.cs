@@ -72,7 +72,7 @@ namespace BitnuaVideoPlayer
 
         private static Task<Squirrel.UpdateManager> getUpdateManager()
         {
-            return UpdateManager.GitHubUpdateManager("https://github.com/ita-asis/BitnuaVideoPlayer");
+            return UpdateManager.GitHubUpdateManager("https://github.com/ita-asis/BitVideoPlayer");
         }
 
         private static int _isUpdateManagerDisposed = 1;

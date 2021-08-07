@@ -103,12 +103,6 @@ static class MyAppActivation
                     return;
             }
         }
-
-
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debugger.Break();
-        }
         finally
         {
             fr.Close();
