@@ -13,7 +13,8 @@
             <Grid   Canvas.Top="1"
                     Canvas.Left="0"
                     MinWidth="50" MinHeight="50"
-                    x:Name="grid">
+                    x:Name="grid" 
+                    PreviewMouseUp="Grid_PreviewMouseUp">
                 <Border BorderThickness="1" Background="#424242" CornerRadius="8">
                     <Viewbox>
                         <!--{Binding CurrDate, StringFormat='{}{0:h:mm:ss}'}-->

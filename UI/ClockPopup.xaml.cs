@@ -159,6 +159,11 @@ namespace BitnuaVideoPlayer.UI
                     FrameworkPropertyMetadataOptions.BindsTwoWayByDefault |
                     FrameworkPropertyMetadataOptions.AffectsRender, propertyChanged));
 
+        private double? X_NewValue;
+        private double? Y_NewValue;
+        private double? ClockWidth_NewValue;
+        private double? ClockHeight_NewValue;
+        private int drag_resize_c;
         private void onDragMoveDelta(object sender, DragDeltaEventArgs e)
         {
             var p = new Point(X + e.HorizontalChange, Y + e.VerticalChange);
@@ -167,8 +172,14 @@ namespace BitnuaVideoPlayer.UI
             if (IsRectOutOfCanvas(rect))
                 return;
 
-            Y = p.Y;
-            X = p.X;
+            Y_NewValue = p.Y;
+            X_NewValue = p.X;
+
+            drag_resize_c++;
+            if (drag_resize_c % 5 == 0)
+            {
+                update_drag_resize();
+            }
         }
 
         private void onDragResizeDelta(object sender, DragDeltaEventArgs e)
@@ -185,10 +196,35 @@ namespace BitnuaVideoPlayer.UI
                     return;
             }
 
-            ClockWidth = xadjust;
-            ClockHeight = yadjust;
+            ClockWidth_NewValue = xadjust;
+            ClockHeight_NewValue = yadjust;
+
+            drag_resize_c++;
+            if (drag_resize_c % 5 == 0)
+            {
+                update_drag_resize();
+            }
         }
 
+        private void Grid_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            update_drag_resize();
+        }
+
+        private void update_drag_resize()
+        {
+            if (Y_NewValue.HasValue)
+                Y = Y_NewValue.Value;
+
+            if (X_NewValue.HasValue)
+                X = X_NewValue.Value;
+
+            if (ClockWidth_NewValue.HasValue)
+                ClockWidth = ClockWidth_NewValue.Value;
+
+            if (ClockHeight_NewValue.HasValue)
+                ClockHeight = ClockHeight_NewValue.Value;
+        }
         private bool IsRectOutOfCanvas(Rect rect)
         {
             // check out of canvas bounds
