@@ -366,6 +366,7 @@ namespace BitnuaVideoPlayer
             {
                 var clientId = m_BitnuaClient.Id;
                 DB_Plays.DeleteMany(Builders<PlayEntry>.Filter.Eq("Client._id", clientId));
+                DB_ActiveClients.DeleteMany(Builders<ClientInfo>.Filter.Eq("Name", m_BitnuaClient.Name));
                 DB_ActiveClients.DeleteOne(Builders<ClientInfo>.Filter.Eq("_id", clientId));
             }
             catch (Exception)
@@ -618,7 +619,6 @@ namespace BitnuaVideoPlayer
 
         private void M_timer_Tick(object sender, EventArgs e)
         {
-            Console.Beep(440, 1000);
             picsTimerTick();
         }
 
