@@ -301,7 +301,7 @@
                         <DataTemplate DataType="{x:Type my:VideoListItem}">
                                 <Vlc:VideoView>
                                     <i:Interaction.Behaviors>
-                                        <props:VideoDirPlayerBehaviour Videos="{Binding VideoSources}"/>
+                                        <props:VideoDirPlayerBehaviour Videos="{Binding VideoSources}" MuteSound="{Binding DataContext.MuteSound, ElementName=root}"/>
                                     </i:Interaction.Behaviors>
                                 </Vlc:VideoView>
                         </DataTemplate>

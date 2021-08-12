@@ -145,7 +145,8 @@ namespace BitnuaVideoPlayer
         private void InitVLC()
         {
             Core.Initialize();
-            LibVLC = new LibVLC("--noaudio");
+            //LibVLC = new LibVLC("--noaudio");
+            LibVLC = new LibVLC();
         }
 
         private static void VerifyLicense()
@@ -190,6 +191,9 @@ namespace BitnuaVideoPlayer
 
         private void InitUpdateManager()
         {
+#if DEBUG
+            return;
+#endif
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             // Use SecurityProtocolType.Ssl3 if needed for compatibility reasons
@@ -476,7 +480,7 @@ namespace BitnuaVideoPlayer
             VM.ArtistPicSource = GetArtistPic(VM);
             VM.PicSources = GetAvaiableSongPics(VM).Shuffle(s_Random);
 
-            if (!string.IsNullOrWhiteSpace(VM.FlayerDir))
+            if (!string.IsNullOrWhiteSpace(VM.FlayerDir) && Directory.Exists(VM.FlayerDir))
             {
                 VM.Flyerfiles = Directory.EnumerateFiles(VM.FlayerDir, "*.*", SearchOption.AllDirectories).Shuffle(s_Random);
             }
@@ -609,20 +613,15 @@ namespace BitnuaVideoPlayer
             if (m_timer is null)
             {
                 m_timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(Math.Max(VM.LeftPicDelay, 3000)) };
-                m_timer.Tick += M_timer_Tick;
+                m_timer.Tick += picsTimerTick;
             }
 
-            picsTimerTick();
-            m_timer.IsEnabled = true;
+            picsTimerTick(null, null);
+            m_timer.Start();
 
         }
 
-        private void M_timer_Tick(object sender, EventArgs e)
-        {
-            picsTimerTick();
-        }
-
-        private void picsTimerTick()
+        private void picsTimerTick(object sender, EventArgs e)
         {
             if (VM.Song != null)
             {
@@ -728,7 +727,7 @@ namespace BitnuaVideoPlayer
 
             if (VM.Song != null)
             {
-                if (VM.SelectedVideoMode == eVideoMode.Clip)
+                if (VM.IsVideoModeClip())
                 {
                     if (!string.IsNullOrWhiteSpace(VM.VideoPathSinger) && !string.IsNullOrWhiteSpace(VM.Song.Heb_Performer) && isChecked(eSongClipTypes.SongClips))
                     {
@@ -757,26 +756,29 @@ namespace BitnuaVideoPlayer
                             videos.Add(new VideoSource(danceVideo));
                     }
                 }
-                else if (VM.SelectedVideoMode == eVideoMode.Youtube)
-                {
-                    if (!string.IsNullOrEmpty(VM.Song.YouTubeSong) && VM.SongYoutubeVideos.Single(c => c.Type == eSongClipTypes.YouTubeClip).IsChecked)
-                        videos.Add(new YoutubeVideoSource(VM.Song.YouTubeSong));
-
-                    if (!string.IsNullOrEmpty(VM.Song.YouTubeDance) && VM.SongYoutubeVideos.Single(c => c.Type == eSongClipTypes.YouTubeDance).IsChecked)
+                else if (VM.IsVideoModeYoutubeDance() && !string.IsNullOrEmpty(VM.Song.YouTubeDance))
                     videos.Add(new YoutubeVideoSource(VM.Song.YouTubeDance));
-                }
-                else if (VM.SelectedVideoMode == eVideoMode.VideoDir1 && !string.IsNullOrEmpty(VM.VideoPath1))
+                else if (VM.IsVideoModeYoutubeClip() && !string.IsNullOrEmpty(VM.Song.YouTubeSong))
+                    videos.Add(new YoutubeVideoSource(VM.Song.YouTubeSong));
+                else
                 {
-                    var dirVideos = GetAllVideos((VM.VideoPath1));
+                    var dirVideos = GetAllVideos((VM.SelectedVideoMode?.Source));
                     if (dirVideos != null && dirVideos.Any())
                         videos.AddRange(dirVideos);
                 }
-                else if (VM.SelectedVideoMode == eVideoMode.VideoDir2 && !string.IsNullOrEmpty(VM.VideoPath2))
-                {
-                    var dirVideos = GetAllVideos((VM.VideoPath2));
-                    if (dirVideos != null && dirVideos.Any())
-                        videos.AddRange(dirVideos);
-                }
+
+                //else if (VM.SelectedVideoMode == eVideoMode.VideoDir1 && !string.IsNullOrEmpty(VM.VideoPath1))
+                //{
+                //    var dirVideos = GetAllVideos((VM.VideoPath1));
+                //    if (dirVideos != null && dirVideos.Any())
+                //        videos.AddRange(dirVideos);
+                //}
+                //else if (VM.SelectedVideoMode == eVideoMode.VideoDir2 && !string.IsNullOrEmpty(VM.VideoPath2))
+                //{
+                //    var dirVideos = GetAllVideos((VM.VideoPath2));
+                //    if (dirVideos != null && dirVideos.Any())
+                //        videos.AddRange(dirVideos);
+                //}
             }
 
             if (videos.Count == 0 && !string.IsNullOrWhiteSpace(VM.VideoPathDefault))
