@@ -184,8 +184,8 @@ namespace BitnuaVideoPlayer.UI
 
         private void onDragResizeDelta(object sender, DragDeltaEventArgs e)
         {
-            double yadjust = grid.Height + e.VerticalChange;
-            double xadjust = grid.Width + e.HorizontalChange;
+            double yadjust = grid.ActualHeight + e.VerticalChange;
+            double xadjust = grid.ActualWidth + e.HorizontalChange;
 
             if (!(xadjust >= grid.MinWidth) && (yadjust >= grid.MinHeight)  || xadjust < 0 || yadjust < 0)
                 return;
