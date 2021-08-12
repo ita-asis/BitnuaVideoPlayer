@@ -267,8 +267,6 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
                                     </DataGrid.Columns>
-                                    <DataGridTextColumn Header="Pattern" Binding="{Binding Text}" Width="1*"/>
-
                                     <DataGrid.RowStyle>
                                         <Style TargetType="{x:Type DataGridRow}">
                                             <Style.Triggers>
@@ -278,6 +276,7 @@
                                             </Style.Triggers>
                                         </Style>
                                     </DataGrid.RowStyle>
+
                                 </DataGrid>
                             </Grid>
 
