@@ -237,12 +237,9 @@ namespace Encryption
             TripleDES
         }
 
-        private Data _data;
         private Data _key;
         private Data _iv;
         private SymmetricAlgorithm _crypto;
-        private byte[] _EncryptedBytes;
-        private bool _UseDefaultInitializationVector;
 
         private Symmetric()
         {
@@ -549,7 +546,6 @@ namespace Encryption
     {
         private RSACryptoServiceProvider _rsa;
         private string _KeyContainerName = "Encryption.AsymmetricEncryption.DefaultContainerName";
-        private bool _UseMachineKeystore = true;
         private int _KeySize = 1024;
 
         private const string _ElementParent = "RSAKeyValue";

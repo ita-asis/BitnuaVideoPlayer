@@ -43,7 +43,11 @@ namespace BitnuaVideoPlayer
         private MainWindow m_MainWindow;
         public PresentaionWindow m_PlayerWindow;
 
+
+#if DEBUG == false
         private AppUpdateManager updateManager;
+#endif
+
         private FileSystemWatcher m_FileSysWatcher;
         private MongoClient m_MongoClient;
 
@@ -195,13 +199,13 @@ namespace BitnuaVideoPlayer
 
         private void InitUpdateManager()
         {
-#if DEBUG
-            return;
-#endif
+#if DEBUG == false
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             // Use SecurityProtocolType.Ssl3 if needed for compatibility reasons
             updateManager = AppUpdateManager.Instance;
+#endif
+
         }
 
         private async Task InitAll()
@@ -230,7 +234,7 @@ namespace BitnuaVideoPlayer
             }
 
             RegisterBannerPicsChanged();
-            await ShowLastSong();
+            ShowLastSong();
 
             if (!VM.OfflineMode)
                 await ConnectDb();
@@ -245,7 +249,7 @@ namespace BitnuaVideoPlayer
             else
             {
                 m_WatchCloudDBToken = new CancellationTokenSource();
-#pragma warning disable 
+#pragma warning disable
                 CheckConnectionLoop(m_WatchCloudDBToken.Token).ContinueWith(t =>
                 {
                     if (t.IsCompleted)
@@ -305,7 +309,7 @@ namespace BitnuaVideoPlayer
             }
         }
 
-        private async Task ShowLastSong()
+        private void ShowLastSong()
         {
             if (!Directory.Exists(VM.WatchDir))
                 return;
@@ -319,23 +323,12 @@ namespace BitnuaVideoPlayer
                 return;
 
             var song = ReadSongInfo(lastFile.FullName);
-            await UpdateVM(song);
+            UpdateVM(song);
         }
 
-        private async void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(VM.SelectedLayout))
-            {
-                await UpdateVM();
-                //if (VM.SelectedLayout == eLayoutModes.Default)
-                //{
-                //}
-                //else if (VM.SelectedLayout == eLayoutModes.Presentation)
-                //{
-                //    //m_PicLoopToken?.Cancel();
-                //}
-            }
-            else if (e.PropertyName == nameof(VM.CurrentClient))
+            if (e.PropertyName == nameof(VM.CurrentClient))
             {
                 CurrentClientChanged();
             }
@@ -347,10 +340,11 @@ namespace BitnuaVideoPlayer
                      e.PropertyName == nameof(VM.Pic_ShowSongName) ||
                      e.PropertyName == nameof(VM.Pic_ShowEvent) ||
                      e.PropertyName == nameof(VM.ClipTypes) ||
+                     e.PropertyName == nameof(VM.SelectedLayout) ||
                      e.PropertyName == nameof(VM.SelectedVideoMode) ||
                      e.PropertyName == nameof(VM.SelectedPicMode))
             {
-                await UpdateVM();
+                UpdateVM();
             }
         }
 
@@ -463,7 +457,7 @@ namespace BitnuaVideoPlayer
                 var song = ReadSongInfo(filePath);
 
                 if (VM.CurrentClient == m_BitnuaClient)
-                    await UpdateVM(song);
+                    UpdateVM(song);
 
                 if (DB_Plays != null)
                     await DB_Plays.InsertOneAsync(new PlayEntry() { Song = song, Client = m_BitnuaClient });
@@ -473,8 +467,8 @@ namespace BitnuaVideoPlayer
             }
         }
 
-        private Task UpdateVM() => UpdateVM(m_Song);
-        private async Task UpdateVM(Song song)
+        private void UpdateVM() => UpdateVM(m_Song);
+        private void UpdateVM(Song song)
         {
             m_timer?.Stop();
             if (song == null)
@@ -515,7 +509,7 @@ namespace BitnuaVideoPlayer
                     if ((!newEntry?.Equals(currEntry)) ?? false)
                     {
                         currEntry = newEntry;
-                        await UpdateVM(newEntry.Song);
+                        UpdateVM(newEntry.Song);
                     }
 
                     await Task.Delay(VM.DbUpdateDelay, token).ConfigureAwait(false);

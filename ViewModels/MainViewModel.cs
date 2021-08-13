@@ -1160,7 +1160,9 @@ namespace BitnuaVideoPlayer.ViewModels
 
 
 
-    public class VideoMode: ViewModelBase
+#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
+    public class VideoMode : ViewModelBase
+#pragma warning restore CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
     {
         private static int c_id = 0;
 

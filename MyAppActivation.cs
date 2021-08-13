@@ -125,7 +125,7 @@ static class MyAppActivation
             req = null;
             return true;
         }
-        catch (Exception ex)
+        catch
         {
             req = null;
             return false;
@@ -184,7 +184,7 @@ static class MyAppActivation
 
             }
         }
-        catch (Exception ex)
+        catch
         {
             return "";
         }
