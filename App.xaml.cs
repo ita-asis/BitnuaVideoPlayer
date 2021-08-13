@@ -40,7 +40,6 @@ namespace BitnuaVideoPlayer
 
 
         private DispatcherTimer m_timer;
-        private int m_timer_ticks;
         private MainWindow m_MainWindow;
         public PresentaionWindow m_PlayerWindow;
 
@@ -614,7 +613,6 @@ namespace BitnuaVideoPlayer
             m_songPics = IterateInLoop(GetAvaiableSongPics(VM)).GetEnumerator();
             m_leftPics = IterateNextLeftPic(VM).GetEnumerator();
 
-            m_timer_ticks = 0;
             if (m_timer is null)
             {
                 m_timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(Math.Max(VM.LeftPicDelay, 3000)) };
@@ -630,7 +628,8 @@ namespace BitnuaVideoPlayer
         {
             if (VM.Song != null)
             {
-                if (VM.ShowEng && VM.ShowHeb && m_timer_ticks % VM.LangTicks == 0 && VM.Song.HasEng && VM.Song.HasHeb)
+                if (VM.ShowEng && VM.ShowHeb && VM.Song.HasEng && VM.Song.HasHeb &&
+                    Environment.TickCount % (m_timer.Interval.TotalMilliseconds * VM.LangTicks) < m_timer.Interval.TotalMilliseconds)
                     VM.RTL = !VM.RTL;
 
                 if (m_songPics.MoveNext())
@@ -644,8 +643,6 @@ namespace BitnuaVideoPlayer
                     VM.LeftPicTitle.Text = fileNTitle.Item2;
                 }
             }
-
-            m_timer_ticks++;
         }
 
         private static IEnumerable<T> IterateInLoop<T>(IEnumerable<T> source, CancellationToken? token = null)
