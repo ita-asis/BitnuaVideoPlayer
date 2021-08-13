@@ -147,6 +147,11 @@ namespace BitnuaVideoPlayer
             Core.Initialize();
             //LibVLC = new LibVLC("--noaudio");
             LibVLC = new LibVLC();
+            var assembly = typeof(App).Assembly.GetName();
+
+            var userAgent = $"{assembly.Name} v{assembly.Version.ToString(3)}";
+            var http = $"{assembly.Name}/{assembly.Version.ToString(3)}";
+            LibVLC.SetUserAgent(userAgent, http);
         }
 
         private static void VerifyLicense()
