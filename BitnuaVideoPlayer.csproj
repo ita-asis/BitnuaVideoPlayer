@@ -100,6 +100,31 @@
   <PropertyGroup>
     <ApplicationIcon>BitnuaPlayer.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Build Release|x64'">
+    <OutputPath>bin\x64\Build Release\</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Build Release|AnyCPU'">
+    <OutputPath>bin\Build Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Build Release|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Build Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ColorFont">
       <HintPath>packages\ColorFont.dll</HintPath>
@@ -457,7 +482,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Build Release'">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="myAssemblyInfo" />
     </GetAssemblyIdentity>
@@ -465,7 +490,7 @@
     <Exec Command="nuget pack BitnuaVideoPlayer.nuspec -Version %(myAssemblyInfo.Version) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" ConsoleToMsBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfNuget" />
     </Exec>
-	<Exec Command="squirrel --releasify $(OutDir)BitnuaVideoPlayer.$([System.Version]::Parse(%(myAssemblyInfo.Version)).ToString(3)).nupkg -n &quot;/a /f .\appSigningCert.pfx /p &quot;&quot;nicecti&quot;&quot; /fd sha256 /tr http://timestamp.digicert.com /td sha256&quot;" ConsoleToMsBuild="true">
+    <Exec Command="squirrel --releasify $(OutDir)BitnuaVideoPlayer.$([System.Version]::Parse(%(myAssemblyInfo.Version)).ToString(3)).nupkg -n &quot;/a /f .\appSigningCert.pfx /p &quot;&quot;nicecti&quot;&quot; /fd sha256 /tr http://timestamp.digicert.com /td sha256&quot;" ConsoleToMsBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfSquirrel" />
     </Exec>
     <Message Text="----------------------------------------" />
