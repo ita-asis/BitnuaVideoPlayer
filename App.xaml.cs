@@ -338,17 +338,17 @@ namespace BitnuaVideoPlayer
         private async Task InitMongoDb()
         {
             try
-        {
-            var url = new MongoUrl("mongodb+srv://svc_bitnua:zIGloC1lGQ3uw24d@bitnua-vplayer.b4rhw.mongodb.net/bitnua_vplayer?retryWrites=true&w=majority");
-            m_MongoClient = new MongoClient(url);
+            {
+                var url = new MongoUrl("mongodb+srv://svc_bitnua:zIGloC1lGQ3uw24d@bitnua-vplayer.b4rhw.mongodb.net/bitnua_vplayer?retryWrites=true&w=majority");
+                m_MongoClient = new MongoClient(url);
             
-            var db = m_MongoClient.GetDatabase("bitnua_vplayer");
+                var db = m_MongoClient.GetDatabase("bitnua_vplayer");
 
-            DB_Plays = db.GetCollection<PlayEntry>("ampsVmmplay");
-            DB_ActiveClients = db.GetCollection<ClientInfo>("activeClients");
-            DB_ActiveClients.InsertOne(m_BitnuaClient);
+                DB_Plays = db.GetCollection<PlayEntry>("ampsVmmplay");
+                DB_ActiveClients = db.GetCollection<ClientInfo>("activeClients");
+                DB_ActiveClients.InsertOne(m_BitnuaClient);
 
-            VM.ActiveClients = await GetActiveClients();
+                VM.ActiveClients = await GetActiveClients();
 
             }
             catch
@@ -753,9 +753,23 @@ namespace BitnuaVideoPlayer
                     videos.Add(new YoutubeVideoSource(VM.Song.YouTubeSong));
                 else
                 {
-                    var dirVideos = GetAllVideos((VM.SelectedVideoMode?.Source));
-                    if (dirVideos != null && dirVideos.Any())
-                        videos.AddRange(dirVideos);
+
+                    if (string.IsNullOrEmpty(VM.SelectedVideoMode?.SearchPattern))
+                    {
+                        var dirVideos = GetAllVideos((VM.SelectedVideoMode?.Source));
+                        if (dirVideos != null && dirVideos.Any())
+                            videos.AddRange(dirVideos);
+                    }
+                    else
+                    {
+                        var path = VM.SelectedVideoMode.Source;
+                        var pattern = VM.SelectedVideoMode.SearchPattern;
+                        (path, pattern) = unpackDirPattern(VM, path, pattern);
+                        var dirVideos = GetDirFiles(path, pattern, false);
+                        if (dirVideos != null && dirVideos.Any())
+                            videos.AddRange(dirVideos.Select(f => new VideoSource(f)).Shuffle());
+
+                    }
                 }
 
                 //else if (VM.SelectedVideoMode == eVideoMode.VideoDir1 && !string.IsNullOrEmpty(VM.VideoPath1))
@@ -779,6 +793,69 @@ namespace BitnuaVideoPlayer
             }
 
             return videos;
+        }
+
+        private static (string a, string b) unpackDirPattern(MainViewModel vm, string path, string pattern)
+        {
+            var p = Path.Combine(path, pattern);
+            path = Path.GetDirectoryName(p);
+            pattern = Path.GetFileName(p);
+
+            path = replaceFieldPlaceholder(vm, path);
+            pattern = replaceFieldPlaceholder(vm, pattern, addAstrix: true);
+
+            return (path, pattern);
+        }
+
+        private static string replaceFieldPlaceholder(MainViewModel vm, string text, bool addAstrix = false)
+        {
+            const string indicator = "@";
+
+            foreach (var field in vm.SongFieldsForSearch)
+            {
+                var placeholder = $"{indicator}{field}";
+                int ind = text.IndexOf(placeholder);
+                string value = null;
+                if (ind > -1)
+                {
+                    switch (field)
+                    {
+                        case nameof(Fields.Type):
+                            value = vm.Song.Type;
+                            break;
+                        case nameof(Fields.EventName):
+                            value = vm.Song.EventName;
+                            break;
+                        case nameof(Fields.Title):
+                            value = vm.Song.HebTitle ?? vm.Song.Title;
+                            break;
+                        case nameof(Fields.Composer):
+                            value = vm.Song.Heb_Composer ?? vm.Song.Eng_Composer;
+                            break;
+                        case nameof(Fields.Performer):
+                            value = vm.Song.Heb_Performer ?? vm.Song.Eng_Performer;
+                            break;
+                        case nameof(Fields.Writer):
+                            value = vm.Song.Heb_Writer ?? vm.Song.Eng_Writer;
+                            break;
+                        case nameof(Fields.Creator):
+                            value = vm.Song.Heb_Creator ?? vm.Song.Eng_Creator;
+                            break;
+                        
+                        default:
+                            break;
+                    }
+                    if (value != null)
+                    {
+                        if (addAstrix)
+                            value = $"*{value}*";
+                        text = text.Replace(placeholder, value);
+                    }
+                }
+            }
+
+            return text;
+
         }
 
         private static IEnumerable<VideoSource> GetAllVideos(string dir)

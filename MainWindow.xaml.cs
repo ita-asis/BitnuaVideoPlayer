@@ -23,6 +23,7 @@ using System.Text;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using BitnuaVideoPlayer.UI;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace BitnuaVideoPlayer
 {
@@ -389,13 +390,26 @@ namespace BitnuaVideoPlayer
 
         private void VidsGrid_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            var grid = (System.Windows.Controls.DataGrid)sender;
+            var dataGrid = (System.Windows.Controls.DataGrid)sender;
             if (Key.Delete == e.Key)
             {
-                var mode = (VideoMode)grid.SelectedItem;
+                var mode = (VideoMode)dataGrid.SelectedItem;
                 if (VM.IsStaticVideoMode(mode))
                     e.Handled = true;
+            }
+            else if (Key.Enter == e.Key)
+            {
+                e.Handled = true;
+                var selectedIndex = dataGrid.SelectedIndex;
+                if (selectedIndex < 0)
+                    return;
 
+                var row = (DataGridRow)dataGrid.ItemContainerGenerator.ContainerFromIndex(selectedIndex);
+                var tb = row.GetChildOfType<AutoCompleteTextBox>();
+                tb.onKeyDown(sender, new KeyEventArgs(Keyboard.PrimaryDevice, Keyboard.PrimaryDevice.ActiveSource, 0, Key.Enter)
+                {
+                    RoutedEvent = Keyboard.PreviewKeyDownEvent
+                });
             }
         }
     }

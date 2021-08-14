@@ -226,6 +226,9 @@
       <HintPath>packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity">
       <HintPath>packages\System.Windows.Interactivity\System.Windows.Interactivity.dll</HintPath>
@@ -270,6 +273,7 @@
     <Compile Include="PresentaionWindow.xaml.cs">
       <DependentUpon>PresentaionWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Program.cs" />
     <Compile Include="SettingBindingExtension.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\AttachedProps\DelayExecuter.cs" />
@@ -279,15 +283,21 @@
     <Compile Include="UI\AttachedProps\VideoCtrlBehavior.cs" />
     <Compile Include="UI\AttachedProps\VideoSource.cs" />
     <Compile Include="UI\AttachedProps\YouTubeCtrlBehaviour.cs" />
+    <Compile Include="UI\AutoCompleteTextBox.xaml.cs">
+      <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\BannerControl.xaml.cs">
       <DependentUpon>BannerControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\BindingProxy.cs" />
     <Compile Include="UI\ClockPopup.xaml.cs">
       <DependentUpon>ClockPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Converters\BitmapImageConverter.cs" />
     <Compile Include="UI\Converters\BoolToGridRowHeightConverter.cs" />
     <Compile Include="UI\Converters\DoubleMultiplyConverter.cs" />
+    <Compile Include="UI\Converters\NullImageConverter.cs" />
+    <Compile Include="UI\HelperMethods.cs" />
     <Compile Include="UI\PresentationCanvasItem.xaml.cs">
       <DependentUpon>PresentationCanvasItem.xaml</DependentUpon>
     </Compile>
@@ -326,6 +336,10 @@
     <Page Include="PresentaionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="UI\AutoCompleteTextBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\BannerControl.xaml">
       <SubType>Designer</SubType>

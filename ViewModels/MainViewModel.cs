@@ -201,7 +201,7 @@ namespace BitnuaVideoPlayer
         }
 
 
-        public class ClockInfo: ViewModelBase
+        public class ClockInfo : ViewModelBase
         {
             private bool m_IsShow;
             public bool IsShow
@@ -480,7 +480,7 @@ namespace BitnuaVideoPlayer
             get { return m_DefaultLayout_VideoItem ?? (m_DefaultLayout_VideoItem = new VideoListItem()); }
             set { m_DefaultLayout_VideoItem = value; OnPropertyChanged(nameof(DefaultLayout_VideoItem)); }
         }
-      
+
         #endregion
 
         private object m_LastLayoutData;
@@ -521,7 +521,7 @@ namespace BitnuaVideoPlayer
         {
             get { return m_PicStretch; }
             set { m_PicStretch = value; OnPropertyChanged(nameof(PicStretch)); }
-        }    
+        }
 
         private TextVM m_LeftPicTitle;
 
@@ -587,7 +587,11 @@ namespace BitnuaVideoPlayer
         public bool OfflineMode { get; set; } = false;
 
         [JsonIgnore]
-        public bool OnlineMode => !OfflineMode;
+        public bool ToggleOffline{ get; set; } = false;
+        [JsonIgnore]
+        public bool IsOnline => !ToggleOffline && !OfflineMode;
+        [JsonIgnore]
+        public bool IsOffline => !IsOnline;
 
         [JsonIgnore]
         public IEnumerable<Tuple<string, string>> PicSources;
@@ -653,16 +657,16 @@ namespace BitnuaVideoPlayer
                 switch (value)
                 {
                     case "VideoDir1":
-                        mode = VideoModes.FirstOrDefault(x=> x.Text == "Video lib 1");
+                        mode = VideoModes.FirstOrDefault(x => x.Text == "Video lib 1");
                         break;
                     case "VideoDir2":
-                        mode = VideoModes.FirstOrDefault(x=> x.Text == "Video lib 2");
+                        mode = VideoModes.FirstOrDefault(x => x.Text == "Video lib 2");
                         break;
                     case "Youtube":
                         mode = m_VideoMode_Youtube_Clip;
                         break;
                     default:
-                        mode = VideoModes.FirstOrDefault(x=> x.Text == value);
+                        mode = VideoModes.FirstOrDefault(x => x.Text == value);
                         break;
                 }
 
@@ -682,7 +686,7 @@ namespace BitnuaVideoPlayer
                 OnPropertyChanged(nameof(IsClipMode));
             }
         }
-        
+
         [JsonIgnore]
         public bool IsClipMode => IsVideoModeClip();
         public bool IsStaticVideoMode(VideoMode mode) => IsVideoModeClip(mode) || IsVideoModeYoutubeClip(mode) || IsVideoModeYoutubeDance(mode);
@@ -707,6 +711,22 @@ namespace BitnuaVideoPlayer
 
             return mode == m_VideoMode_Youtube_Clip;
         }
+
+
+        private static string[] s_SongFieldsForSearch = new string[] {
+            nameof(Fields.Title),
+            nameof(Fields.Type),
+
+            nameof(Fields.Composer),
+            nameof(Fields.Performer),
+            nameof(Fields.Writer),
+            nameof(Fields.Creator),
+            
+            nameof(Fields.EventName),
+
+        };
+        [JsonIgnore]
+        public string[] SongFieldsForSearch => s_SongFieldsForSearch;
     }
 
     public class PresentationModeViewModel : ViewModelBase
@@ -1181,6 +1201,7 @@ namespace BitnuaVideoPlayer.ViewModels
             get { return m_Text; }
             set { m_Text = value; OnPropertyChanged(nameof(Text)); }
         }
+    
 
         private string m_Source;
         public string Source
@@ -1189,6 +1210,19 @@ namespace BitnuaVideoPlayer.ViewModels
             set { m_Source = value; OnPropertyChanged(nameof(Source)); }
         }
 
+        private string m_SearchPattern;
+        public string SearchPattern
+        {
+            get { return m_SearchPattern; }
+            set
+            {
+                Console.WriteLine($"set SearchPattern '{m_SearchPattern}' -> '{value}' ");
+                m_SearchPattern = value;
+                OnPropertyChanged(nameof(SearchPattern));
+            }
+        }
+
+        
 
         public VideoMode()
         {

@@ -7,7 +7,6 @@
         mc:Ignorable="d"
 
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:qc="http://QuickConverter.CodePlex.com/"
         xmlns:my="clr-namespace:BitnuaVideoPlayer"
         xmlns:UI="clr-namespace:BitnuaVideoPlayer.UI"
         Title="Bitnua Video Player"
@@ -90,14 +89,14 @@
                 </Grid.RowDefinitions>
 
                 <DockPanel Margin="4,0">
-                    <StackPanel Orientation="Vertical" Visibility="{Binding OnlineMode, Converter={StaticResource BoolToVis}}">
+                    <StackPanel Orientation="Vertical" Visibility="{Binding IsOnline, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="Client" Padding="2" Margin="2"
                                HorizontalAlignment="Left"/>
                         <ComboBox SelectedItem="{Binding CurrentClient}"
                           ItemsSource="{Binding ActiveClients}"
                           Padding="4" Margin="2"/>
                     </StackPanel>
-                    <TextBlock Visibility="{Binding OfflineMode, Converter={StaticResource BoolToVis}}"
+                    <TextBlock Visibility="{Binding IsOffline, Converter={StaticResource BoolToVis}}"
                             Text="Offline mode" Padding="2" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" DockPanel.Dock="Right"  
@@ -251,21 +250,46 @@
                                           CanUserAddRows="False"
                                           CanUserDeleteRows="True"
                                           CanUserReorderColumns="False"
-                                          PreviewKeyDown="VidsGrid_PreviewKeyDown">
+                                          PreviewKeyDown="VidsGrid_PreviewKeyDown"
+                                          KeyboardNavigation.AcceptsReturn="False"
+                                          KeyboardNavigation.DirectionalNavigation="None">
+                                    <DataGrid.Resources>
+                                        <my:BindingProxy x:Key="proxy" Data="{Binding}" />
+                                    </DataGrid.Resources>
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Text" Binding="{Binding Text}" Width="1*"/>
+                                        <DataGridTextColumn Header="Text" Binding="{Binding Text}" Width="Auto"/>
 
-                                        <DataGridTemplateColumn Header="Source" Width="2.5*">
+                                        <DataGridTemplateColumn Header="Source" Width="2*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <TextBlock x:Name="brsVidDir" Tag="{Binding}" PreviewMouseLeftButtonUp="BrsVidDir_PreviewMouseLeftButtonUp">
                                                         <TextBlock.Text>
-                                                            <Binding Mode="TwoWay"  Path="Source"></Binding>
+                                                            <Binding Mode="TwoWay" Path="Source"></Binding>
                                                         </TextBlock.Text>
                                                     </TextBlock>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Header = "Pattern" Width="2*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <!--<TextBox>
+                                                        <TextBox.Text>
+                                                            <Binding Mode="TwoWay" Path="SearchPattern"></Binding>
+                                                        </TextBox.Text>
+                                                        <i:Interaction.Behaviors>
+                                                            <props:AutoCompleteBehavior AutoCompleteItemsSource="{Binding Data.SongFieldsForSearch, Source={StaticResource proxy}}" AutoCompleteIndicator="@"/>
+                                                        </i:Interaction.Behaviors>
+                                                    </TextBox>-->
+
+                                                    <UI:AutoCompleteTextBox ItemsSource="{Binding Data.SongFieldsForSearch, Source={StaticResource proxy}}" 
+                                                                            Indicator="@"
+                                                                            AutoCompleteText="{Binding SearchPattern, Mode=TwoWay}"/>
+
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <!--<DataGridTextColumn Binding="{Binding SearchPattern, Mode=TwoWay}"/>-->
                                     </DataGrid.Columns>
                                     <DataGrid.RowStyle>
                                         <Style TargetType="{x:Type DataGridRow}">
@@ -647,12 +671,7 @@
                             <Style TargetType="{x:Type ListViewItem}">
                                 <Setter Property="Canvas.Left" Value="{Binding X, Mode=TwoWay}" />
                                 <Setter Property="Canvas.Top" Value="{Binding Y, Mode=TwoWay}" />
-                                <!--<Setter Property="RotateTransform.Angle" Value="{Binding Angle, Mode=TwoWay }"/>-->
-                                <Setter Property="RenderTransform" >
-                                    <Setter.Value>
-                                        <RotateTransform Angle="{Binding Angle, Mode=TwoWay}"/>
-                                    </Setter.Value>
-                                </Setter>
+                                <Setter Property="RenderTransform" Value="{Binding Angle, Mode=TwoWay, Converter={StaticResource AngleConverter}}"/>
                                 <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
                                 <EventSetter Event="PreviewMouseDown" Handler="pItemPreviewMouseDown"/>
                                 <EventSetter Event="KeyDown" Handler="pItemKeyDown"/>
