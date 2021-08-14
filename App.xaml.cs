@@ -193,7 +193,7 @@ namespace BitnuaVideoPlayer
             var vmJson = JsonConvert.SerializeObject(VM, Formatting.Indented);
             UserSettings.Set(c_MainVmSettingKey, vmJson);
 
-            if (!VM.OfflineMode)
+            if (VM.IsOnline)
                 DeInitMongoDb();
         }
 
@@ -236,54 +236,41 @@ namespace BitnuaVideoPlayer
             RegisterBannerPicsChanged();
             ShowLastSong();
 
-            if (!VM.OfflineMode)
+            if (VM.IsOnline)
                 await ConnectDb();
         }
 
         private async Task ConnectDb()
         {
-            if (CheckForInternetConnection())
+            if (IsNetworkAvailable())
             {
                 await InitMongoDb();
             }
             else
             {
-                m_WatchCloudDBToken = new CancellationTokenSource();
-#pragma warning disable
-                CheckConnectionLoop(m_WatchCloudDBToken.Token).ContinueWith(t =>
-                {
-                    if (t.IsCompleted)
-                        return InitMongoDb();
-                    else
-                        return Task.FromCanceled(m_WatchCloudDBToken.Token);
-                });
+                VM.ToggleOffline = true;
+//                m_WatchCloudDBToken = new CancellationTokenSource();
+//#pragma warning disable
+//                CheckConnectionLoop(m_WatchCloudDBToken.Token).ContinueWith(t =>
+//                {
+//                    if (t.IsCompleted)
+//                        return InitMongoDb();
+//                    else
+//                        return Task.FromCanceled(m_WatchCloudDBToken.Token);
+//                });
+//#pragma warning restore
             }
-#pragma warning restore
         }
 
         public static async Task CheckConnectionLoop(CancellationToken token)
         {
-            while (!token.IsCancellationRequested && !CheckForInternetConnection())
+            while (!token.IsCancellationRequested && !IsNetworkAvailable())
             {
-                await Task.Delay(1000);
+                await Task.Delay(5000);
             }
         }
 
-        public static bool CheckForInternetConnection()
-        {
-            try
-            {
-                using (var client = new WebClient())
-                using (client.OpenRead("http://google.com"))
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        public static bool IsNetworkAvailable() => System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
 
         private void RegisterBannerPicsChanged()
         {
