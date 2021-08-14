@@ -275,6 +275,7 @@
     </Compile>
     <Compile Include="SettingBindingExtension.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="UI\AppCommands.cs" />
     <Compile Include="UI\AttachedProps\DelayExecuter.cs" />
     <Compile Include="UI\AttachedProps\MarqueeTextBlockBehavior.cs" />
     <Compile Include="UI\AttachedProps\UGrid.cs" />
@@ -310,7 +311,6 @@
     <Compile Include="UI\Converters\StringToEnumConverter.cs" />
     <Compile Include="UI\Converters\GridLengthConverter.cs" />
     <Compile Include="UI\Converters\NullVisibilityConverter.cs" />
-    <Compile Include="UI\RelayCommand.cs" />
     <Compile Include="UI\SongInfoControl.xaml.cs">
       <DependentUpon>SongInfoControl.xaml</DependentUpon>
     </Compile>
@@ -469,6 +469,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="BitnuaPlayer_debug.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\pause.png" />
+    <Resource Include="Resources\stop.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

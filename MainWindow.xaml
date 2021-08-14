@@ -152,25 +152,38 @@
                       DockPanel.Dock="Left"
                       VerticalAlignment="Center"
                       Margin="6,0"/>
-                    
-                    <ToggleButton IsChecked="{Binding MuteSound, Mode=TwoWay}" 
-                                  HorizontalAlignment="Right" ToolTip="Sound On/Off"
-                                  DockPanel.Dock="Right" Width="34" Height="34">
-                        <Image Margin="2">
-                            <Image.Style>
-                                <Style TargetType="{x:Type Image}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding MuteSound}" Value="true">
-                                            <Setter Property="Source" Value="Resources/sound-off.png"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding MuteSound}" Value="false">
-                                            <Setter Property="Source" Value="Resources/sound-on.png"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Image.Style>
-                        </Image>
-                    </ToggleButton>
+
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right" >
+                        <Button x:Name="playPauseBtn" Command="UI:AppCommands.PlayToggleCommand"
+                                      ToolTip="Play/Pause"
+                                      Width="34" Height="34" Margin="0,0,4,0">
+                            <Image Margin="2" Source="Resources/pause.png"/>
+                        </Button>
+                        <Button Command="UI:AppCommands.StopCommand"
+                                      ToolTip="Stop"
+                                      Width="34" Height="34" Margin="0,0,4,0">
+                            <Image Margin="2" Source="Resources/stop.png"/>
+                        </Button>
+                        <ToggleButton IsChecked="{Binding MuteSound, Mode=TwoWay}" 
+                                      ToolTip="Sound On/Off"
+                                      Width="34" Height="34">
+                            <Image Margin="2">
+                                <Image.Style>
+                                    <Style TargetType="{x:Type Image}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding MuteSound}" Value="true">
+                                                <Setter Property="Source" Value="Resources/sound-off.png"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding MuteSound}" Value="false">
+                                                <Setter Property="Source" Value="Resources/sound-on.png"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                        </ToggleButton>
+                    </StackPanel>
+
                 </DockPanel>
 
                 <TabControl Grid.Row="2" Margin="10" BorderBrush="Gainsboro">
@@ -262,11 +275,8 @@
                                         <DataGridTemplateColumn Header="Source" Width="2*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock x:Name="brsVidDir" Tag="{Binding}" PreviewMouseLeftButtonUp="BrsVidDir_PreviewMouseLeftButtonUp">
-                                                        <TextBlock.Text>
-                                                            <Binding Mode="TwoWay" Path="Source"></Binding>
-                                                        </TextBlock.Text>
-                                                    </TextBlock>
+                                                    <TextBlock x:Name="brsVidDir" Tag="{Binding}" PreviewMouseLeftButtonUp="BrsVidDir_PreviewMouseLeftButtonUp"
+                                                               ToolTip="{Binding Path=Source}" Text="{Binding Path=Source, Mode=TwoWay}"/>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
@@ -283,8 +293,9 @@
                                                     </TextBox>-->
 
                                                     <UI:AutoCompleteTextBox ItemsSource="{Binding Data.SongFieldsForSearch, Source={StaticResource proxy}}" 
+                                                                            AutoCompleteText="{Binding SearchPattern, Mode=TwoWay}"
                                                                             Indicator="@"
-                                                                            AutoCompleteText="{Binding SearchPattern, Mode=TwoWay}"/>
+                                                                            ToolTip="{Binding SearchPattern}"/>
 
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>

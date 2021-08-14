@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interactivity;
 
 namespace BitnuaVideoPlayer.UI.AttachedProps
@@ -28,6 +29,35 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         private void RegisterEvents()
         {
             AssociatedObject.IsVisibleChanged += AssociatedObject_IsVisibleChanged;
+
+
+            var binding = new CommandBinding(AppCommands.PlayToggleCommand, TogglePause, CanPause);
+            CommandManager.RegisterClassCommandBinding(typeof(Window), binding);
+
+            binding = new CommandBinding(AppCommands.StopCommand, DoStop, CanStop);
+            CommandManager.RegisterClassCommandBinding(typeof(Window), binding);
+        }
+
+        private void DoStop(object sender, ExecutedRoutedEventArgs e)
+        {
+            Stop();
+        }
+
+        private void TogglePause(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (PlayerCtrl?.MediaPlayer?.CanPause ?? false)
+                PlayerCtrl?.MediaPlayer?.Pause();
+            else
+                Play();
+        }
+
+        private void CanPause(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+        private void CanStop(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = PlayerCtrl?.MediaPlayer?.CanPause ?? false;
         }
 
         private void AssociatedObject_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -36,10 +66,10 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
             if (!isVisible)
                 Stop();
             else
-                Start();
+                Play();
         }
 
-        protected virtual void Start()
+        protected virtual void Play()
         {
             AutoPlay();
         }
@@ -144,10 +174,18 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
 
     public class VideoDirPlayerBehaviour : VideoCtrlBehavior
     {
-        protected override async void OnAttached()
+        protected override void OnAttached()
         {
             base.OnAttached();
-            await StartVideoTask();
+            PlayerCtrl.MediaPlayer.EndReached += VlcMediaPlayer_EndReached;
+
+            Play();
+        }
+
+        protected override void OnDetaching()
+        {
+            base.OnDetaching();
+            PlayerCtrl.MediaPlayer.EndReached -= VlcMediaPlayer_EndReached;
         }
 
         #region Props
@@ -175,47 +213,43 @@ namespace BitnuaVideoPlayer.UI.AttachedProps
         private int m_VideosCount;
         #endregion
 
-        protected Task Play(VideoView player, int videoId)
+        protected void Play(VideoView player, int videoId)
         {
-            if (player == null)
-                return Task.CompletedTask;
-
-            return player.Dispatcher.BeginInvoke((Action)(() => Play(player?.MediaPlayer, Videos[videoId]))).Task;
+            if (player != null)
+                player.Dispatcher.BeginInvoke((Action)(() => Play(player?.MediaPlayer, Videos[videoId])));
         }
 
         protected override void Stop()
         {
             base.Stop();
-            PlayerCtrl.MediaPlayer.EndReached -= VlcMediaPlayer_EndReached;
         }
 
-        private static async void OnVideosChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnVideosChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var @this = d as VideoDirPlayerBehaviour;
             if (@this.AssociatedObject == null)
                 return;
 
-            await @this.StartVideoTask();
+            @this.Play();
         }
 
-        private Task StartVideoTask()
+        protected override void Play()
         {
             Stop();
             if (Videos == null || Videos.Count == 0)
-                return Task.CompletedTask;
+                return;
 
-            PlayerCtrl.MediaPlayer.EndReached += VlcMediaPlayer_EndReached;
             m_VideosCount = Videos.Count;
             m_CurrVideo = 0;
-            return Play(PlayerCtrl, m_CurrVideo);
+            Play(PlayerCtrl, m_CurrVideo);
         }
 
-        private async void VlcMediaPlayer_EndReached(object sender, EventArgs e)
+        private void VlcMediaPlayer_EndReached(object sender, EventArgs e)
         {
-            await Dispatcher.BeginInvoke((Action)(async () =>
+            Dispatcher.BeginInvoke((Action)(() =>
             {
                 m_CurrVideo = ++m_CurrVideo % m_VideosCount;
-                await Play(PlayerCtrl, m_CurrVideo);
+                Play(PlayerCtrl, m_CurrVideo);
             }));
         }
 
