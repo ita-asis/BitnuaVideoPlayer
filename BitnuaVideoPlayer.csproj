@@ -273,7 +273,6 @@
     <Compile Include="PresentaionWindow.xaml.cs">
       <DependentUpon>PresentaionWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
     <Compile Include="SettingBindingExtension.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\AttachedProps\DelayExecuter.cs" />
