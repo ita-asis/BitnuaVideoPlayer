@@ -1214,16 +1214,10 @@ namespace BitnuaVideoPlayer.ViewModels
         public string SearchPattern
         {
             get { return m_SearchPattern; }
-            set
-            {
-                Console.WriteLine($"set SearchPattern '{m_SearchPattern}' -> '{value}' ");
-                m_SearchPattern = value;
-                OnPropertyChanged(nameof(SearchPattern));
-            }
+            set { m_SearchPattern = value; OnPropertyChanged(nameof(SearchPattern)); }
         }
 
         
-
         public VideoMode()
         {
             this.Id = ++VideoMode.c_id;
