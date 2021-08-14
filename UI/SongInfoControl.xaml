@@ -16,6 +16,7 @@
         <my:BoolToGridRowHeightMultiConverter x:Key="bool2GridMulti" />
         <my:BitmapImageConverter x:Key="BitmapImageConverter"/>
         <my:Bool2ValueConverter x:Key="bool2FlowDirection" TrueValue="{x:Static FlowDirection.RightToLeft}" FalseValue="{x:Static FlowDirection.LeftToRight}"/>
+        <my:NullImageConverter x:Key="nullImageConverter"/>
     </UserControl.Resources>
     <Grid>
         <Grid x:Name="defualtLayoutGridRowSpliterHover"
@@ -328,7 +329,7 @@
             <Image x:Name="m_ArtistPic"
                        Grid.Column="1"
                        Grid.Row="2"
-                       Source="{Binding ArtistPicSource}"
+                       Source="{Binding ArtistPicSource, Converter={StaticResource nullImageConverter}}"
                        HorizontalAlignment="Right"
                        Visibility="{Binding ShowSongInfoPic, Converter={StaticResource BoolToVis}}"
                        StretchDirection="DownOnly"

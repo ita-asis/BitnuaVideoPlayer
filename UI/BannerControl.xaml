@@ -28,7 +28,7 @@
        
         <!--<TextBlock Text="{Binding Banner.Text}" 
                            FontSize="{Binding Banner.Font.Size}"
-                           FontFamily="{Binding Banner.Font.FontFamily}"
+                           FontFamily="{Binding Banner.FontFamily}"
                            Foreground="{Binding Banner.ForeColor, Converter={StaticResource colorCnv}}"
                            >
                     <i:Interaction.Behaviors>
@@ -55,7 +55,7 @@
             </ItemsControl>
             <TextBlock Text="{Binding Banner.Text}" 
                                FontSize="{Binding Banner.Font.Size}"
-                               FontFamily="{Binding Banner.Font.FontFamily}"
+                               FontFamily="{Binding Banner.FontFamily}"
                                Foreground="{Binding Banner.ForeColor, Converter={StaticResource colorCnv}}"
                                VerticalAlignment="Center"
                                >

@@ -29,7 +29,9 @@
             <my:StringToEnumConverter x:Key="stringToEnum"/>
             <my:BoolToGridGridLengthConverter x:Key="bool2Grid" />
             <my:BoolToGridRowHeightMultiConverter x:Key="bool2GridMulti" />
-            
+            <my:AngleConverter x:Key="AngleConverter"/>
+            <my:NullImageConverter x:Key="nullImageConverter"/>
+
             <DataTemplate DataType="{x:Type my:PictureItem}">
             <UI:PresentationCanvasItem>
                 <Viewbox StretchDirection="Both" Stretch="Fill">
@@ -242,8 +244,7 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Viewbox StretchDirection="Both" Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}">
-                            <Image Source="{Binding LeftPicSource}"
-                               />
+                                <Image Source="{Binding LeftPicSource, Converter={StaticResource nullImageConverter}}"/>
                         </Viewbox>
                         <Grid Grid.Row="1"
                               Background ="{Binding LeftPicTitle.BackColor, Converter={StaticResource colorCnv}}"
@@ -283,7 +284,7 @@
                           Visibility="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVis}}" >
 
                         <Image x:Name="m_FlyerPic"
-                           Source="{Binding LeftPicSource}"
+                           Source="{Binding LeftPicSource, Converter={StaticResource nullImageConverter}}"
                            StretchDirection="Both"
                            Stretch="{Binding PicStretch, Mode=OneWay, Converter={StaticResource stringToEnum}}"
                            />
@@ -350,12 +351,8 @@
                         <Style TargetType="{x:Type ContentPresenter}">
                             <Setter Property="Canvas.Left" Value="{Binding X, Mode=TwoWay}" />
                             <Setter Property="Canvas.Top" Value="{Binding Y, Mode=TwoWay}" />
-                            <!--<Setter Property="RotateTransform.Angle" Value="{Binding Angle, Mode=TwoWay }"/>-->
-                            <Setter Property="RenderTransform" >
-                                <Setter.Value>
-                                    <RotateTransform Angle="{Binding Angle, Mode=TwoWay}"/>
-                                </Setter.Value>
-                            </Setter>
+                            <Setter Property="Tag" Value="{Binding}" />
+                            <Setter Property="RenderTransform" Value="{Binding Angle, Mode=TwoWay, Converter={StaticResource AngleConverter}}"/>
                             <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
                         </Style>
                     </ItemsControl.ItemContainerStyle>
