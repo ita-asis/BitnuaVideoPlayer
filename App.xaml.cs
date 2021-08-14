@@ -337,6 +337,8 @@ namespace BitnuaVideoPlayer
 
         private async Task InitMongoDb()
         {
+            try
+        {
             var url = new MongoUrl("mongodb+srv://svc_bitnua:zIGloC1lGQ3uw24d@bitnua-vplayer.b4rhw.mongodb.net/bitnua_vplayer?retryWrites=true&w=majority");
             m_MongoClient = new MongoClient(url);
             
@@ -347,6 +349,12 @@ namespace BitnuaVideoPlayer
             DB_ActiveClients.InsertOne(m_BitnuaClient);
 
             VM.ActiveClients = await GetActiveClients();
+
+            }
+            catch
+            {
+                VM.ToggleOffline = true;
+            }
         }
 
         private void DeInitMongoDb()
